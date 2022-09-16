@@ -1,5 +1,4 @@
 # coding=utf-8
-import math
 import os
 import re
 import time
@@ -9,13 +8,35 @@ import shutil
 import zipfile
 from uuid import uuid4
 from urllib.parse import urlparse, urlencode
-from .source import routes, apis
-from .page.utils import downloader, danmaku2ass, acfun_video_downloader
+from .utils import downloader, danmaku2ass, acfun_video_downloader
 from bs4 import BeautifulSoup as Bs
 from rich.progress import Progress
 from jinja2 import PackageLoader, Environment
 
 __author__ = 'dolacmeo'
+
+scheme = "https"
+
+domains = {
+    "main": "www.acfun.cn",
+}
+
+routes = {
+    "bangumi": f"{scheme}://{domains['main']}/bangumi/aa",
+    "video": f"{scheme}://{domains['main']}/v/ac",
+    "article": f"{scheme}://{domains['main']}/a/ac",
+    "album": f"{scheme}://{domains['main']}/a/aa",
+    "up": f"{scheme}://{domains['main']}/u/",
+    'moment': f"{scheme}://{domains['main']}/moment/am",
+}
+
+apis = {
+    'cdn_domain': f"{scheme}://{domains['main']}/rest/pc-direct/image/cdnDomain",
+    'emot': f"{scheme}://{domains['main']}/rest/pc-direct/emotion/getUserEmotion",
+    'userInfo': f"{scheme}://{domains['main']}/rest/pc-direct/user/userInfo",
+    'qrcode': "https://ksurl.cn/createqrcode",
+
+}
 
 
 def unix2datestr(t: (int, float, None) = None, f: str = "%Y-%m-%d %H:%M:%S"):
