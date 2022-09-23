@@ -11,7 +11,7 @@ import subprocess
 from urllib import parse
 from rich.progress import Progress
 from jinja2 import PackageLoader, Environment
-from .libs.ffmpeg_progress_yield import FfmpegProgress
+from .ffmpeg_progress_yield import FfmpegProgress
 from .source import SaverData
 from acfunsdk.source import AcSource
 
@@ -67,6 +67,15 @@ class SaverBase:
 
     def _update_js_data(self):
         pass
+
+
+def saver_template(**filters):
+    templates = Environment(loader=PackageLoader('acsaver', 'templates'))
+    templates.filters['unix2datestr'] = unix2datestr
+    templates.filters['math_ceil'] = math.ceil
+    for name, func in filters.items():
+        templates.filters[name] = func
+    return templates
 
 
 def unix2datestr(t: (int, float, None) = None, f: str = "%Y-%m-%d %H:%M:%S"):
@@ -338,50 +347,59 @@ def acfun_video_downloader(client, data: dict,
     return False
 
 
-def downloader(client, src_url, fname: [str, None] = None, dest_dir: [str, None] = None, display: bool = True):
-    if dest_dir is None:
-        dest_dir = os.getcwd()
-    elif os.path.isabs(dest_dir) is False:
-        dest_dir = os.path.abspath(dest_dir)
-    if not os.path.isdir(dest_dir):
-        os.makedirs(dest_dir, exist_ok=True)
-    if fname is None:
-        fname = parse.urlparse(src_url).path.split('/')[-1]
-    fpath = os.path.join(dest_dir, fname)
-
-    try:
-        with open(fpath, 'wb') as download_file:
-            with client.stream("GET", src_url) as response:
-                if response.status_code // 100 != 2:
-                    download_file.close()
-                    os.remove(fpath)
-                    return None
-                total = int(response.headers.get("Content-Length", 0))
-                total = None if total == 0 else total // 1024
-                with Progress(disable=not display) as pp:
-                    download = pp.add_task(fname, total=total or 100)
-                    for chunk in response.iter_bytes():
-                        download_file.write(chunk)
-                        if total is None:
-                            pp.update(download, advance=1)
-                        else:
-                            pp.update(download, completed=response.num_bytes_downloaded // 1024)
-                    pp.update(download, completed=total or 100)
-                    pp.stop()
-    except (httpx.ConnectError, httpx.ConnectTimeout, httpx.ReadTimeout):
-        print("httpx.ConnectError:", src_url)
-        os.remove(fpath)
-        return None
-    except KeyboardInterrupt:
-        os.remove(fpath)
-        raise KeyboardInterrupt
-
-    if os.path.isfile(fpath) and os.path.exists(fpath):
-        if '.' not in fname:
-            kind = filetype.guess_extension(fpath)
-            if kind is not None:
-                new_fpath = ".".join([fpath, kind])
-                shutil.move(fpath, new_fpath)
-                return new_fpath
-        return fpath
-    return None
+def downloader(client, src_urls_with_filename: list,
+               dest_dir: [os.PathLike, str, None] = None,
+               display: [bool, None] = None) -> dict:
+    assert isinstance(client, httpx.Client)
+    assert len(src_urls_with_filename) > 0 and len(src_urls_with_filename[0]) == 2
+    dest_dir = os.getcwd() if dest_dir is None else dest_dir
+    assert os.path.isdir(dest_dir)
+    total = len(src_urls_with_filename)
+    display = (total > 5) if display is None else display
+    done_mark = dict()
+    with Progress(disable=not display) as pp:
+        for src_url, filename in src_urls_with_filename:
+            ext_guess = filename is None
+            if filename is None:
+                filename = src_url.split("/")[-1] if filename is None else filename
+                filename = os.path.join(dest_dir, filename)
+            try:
+                with client.stream("GET", src_url) as resp:
+                    if resp.status_code // 100 != 2:
+                        continue
+                    total = int(resp.headers.get("Content-Length", 0))
+                    total = None if total == 0 else total // 1024
+                    download_task = pp.add_task(filename, total=(total or 100))
+                    with open(filename, 'wb') as save_file:
+                        for chunk in resp.iter_bytes():
+                            save_file.write(chunk)
+                            if total is None:
+                                pp.update(download_task, advance=1)
+                            else:
+                                pp.update(download_task, completed=resp.num_bytes_downloaded // 1024)
+                        pp.update(download_task, completed=total or 100)
+            except (httpx.ConnectError, httpx.ConnectTimeout, httpx.ReadTimeout):
+                print("httpx.ConnectError:", src_url)
+                if os.path.isfile(filename):
+                    os.remove(filename)
+                if src_url.startswith("https://raw.githubusercontent.com"):
+                    for x in SaverData.github_booster:
+                        new_url = src_url.replace("raw.githubusercontent.com", x)
+                        print(f"Retry With Github Booster: {new_url}")
+                        resp = downloader(client, [(new_url, filename)])
+                        if all(list(resp.values())):
+                            break
+                continue
+            except KeyboardInterrupt:
+                if os.path.isfile(filename):
+                    os.remove(filename)
+                raise KeyboardInterrupt
+            finally:
+                done_mark[src_url] = os.path.isfile(filename)
+                if os.path.isfile(filename) is True and ext_guess is True:
+                    if '.' not in filename:
+                        kind = filetype.guess_extension(filename)
+                        if kind is not None:
+                            new_fpath = ".".join([filename, kind])
+                            shutil.move(filename, new_fpath)
+    return done_mark

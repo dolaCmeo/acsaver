@@ -43,7 +43,7 @@ class FfmpegProgress:
         self.dry_run = dry_run
         self.stderr = None
 
-    def run_command_with_progress(self, popen_kwargs={}) -> Generator[int, None, None]:
+    def run_command_with_progress(self, popen_kwargs=None) -> Generator[int, None, None]:
         """
         Run an ffmpeg command, trying to capture the process output and calculate
         the duration / progress.
@@ -52,6 +52,8 @@ class FfmpegProgress:
         Args:
             popen_kwargs (dict): A dict to specify extra arguments to the popen call, e.g. { creationflags: CREATE_NO_WINDOW }
         """
+        if popen_kwargs is None:
+            popen_kwargs = {}
         if self.dry_run:
             return
 

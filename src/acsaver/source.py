@@ -7,6 +7,10 @@ __author__ = 'dolacmeo'
 
 @dataclass(frozen=True)
 class SaverData:
+    github_assets_map_url = "https://raw.githubusercontent.com/dolaCmeo/acsaver/assets/assets.map"
+    github_assets_zip_url = "https://raw.githubusercontent.com/dolaCmeo/acsaver/assets/assets.zip"
+    github_assets_base = "https://raw.githubusercontent.com/dolaCmeo/acsaver/assets/"
+    github_booster = ("raw.fastgit.org", "raw.githubusercontents.com", "raw.staticdn.net", "raw.iqiq.io")
     folder_names = ['article', 'video', 'bangumi', 'live', 'moment', 'member']
     emot_alias = ['default', 'ac', 'ac2', 'ac3', 'dog', 'tsj', 'brd', 'ais', 'td', 'zuohe', 'blizzard']
     ac_name_map = {
