@@ -7,7 +7,7 @@ __author__ = 'dolacmeo'
 
 @dataclass(frozen=True)
 class SaverData:
-    folder_names = ['article', 'video', 'bangumi', 'live', 'moment']
+    folder_names = ['article', 'video', 'bangumi', 'live', 'moment', 'member']
     emot_alias = ['default', 'ac', 'ac2', 'ac3', 'dog', 'tsj', 'brd', 'ais', 'td', 'zuohe', 'blizzard']
     ac_name_map = {
         "AcArticle": "article",
