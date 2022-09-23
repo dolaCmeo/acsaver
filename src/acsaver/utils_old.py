@@ -4,69 +4,147 @@ import math
 import time
 import json
 import httpx
-import shutil
 import random
+import shutil
 import filetype
 import subprocess
 from urllib import parse
+from urllib.parse import urlparse
 from rich.progress import Progress
-from jinja2 import PackageLoader, Environment
 from .libs.ffmpeg_progress_yield import FfmpegProgress
-from .source import SaverData
-from acfunsdk.source import AcSource
 
 __author__ = 'dolacmeo'
+__project__ = ''
+__doc__ = ''
 
-
-class SaverBase:
-    ac_obj = None
-    __save_root = None
-    __save_path = None
-
-    def __init__(self, acer, ac_obj):
-        self.acer = acer
-        self.ac_obj = ac_obj
-        self.loading()
-
-    @property
-    def _objname(self):
-        return self.__class__.__name__
-
-    def loading(self):
-        self.__save_root = self.acer.config.get("SaverRootPath", os.getcwd())
-        assert self.ac_obj._objname in SaverData.ac_name_map.keys()
-        folder_name = SaverData.ac_name_map[self.ac_obj._objname]
-        ac_name = str(self.ac_obj.resource_id)
-        self.__save_path = os.path.join(self.__save_root, folder_name, ac_name)
-        pass
-
-    def _save_raw(self):
-        url_saved = url_saver(self.ac_obj.referer, self.__save_path,
-                              f"{self.ac_obj.title}")
-        raw_saved = json_saver(self.ac_obj.raw_data, self.__save_path,
-                               f"{self.ac_obj.resource_id}_raw")
-        return all([url_saved, raw_saved])
-
-    def _save_image(self):
-        pass
-
-    def _save_video(self):
-        pass
-
-    def _save_danmaku(self):
-        pass
-
-    def _save_comment(self):
-        pass
-
-    def _save_member(self):
-        pass
-
-    def _gen_html(self):
-        pass
-
-    def _update_js_data(self):
-        pass
+videoQualitiesRefer = {
+    "2160p120HDR": {
+        "definition": "4K",
+        "disableAutoSwitch": True,
+        "limitType": 1,
+        "qualityLabel": "2160P120 HDR",
+        "qualityType": "2160p120HDR",
+        "width": 3840,
+        "height": 2160
+    },
+    "2160p120": {
+        "limitType": 1,
+        "disableAutoSwitch": True,
+        "qualityType": "2160p120",
+        "qualityLabel": "2160P120",
+        "definition": "4K",
+        "width": 3840,
+        "height": 2160
+    },
+    "2160p60HDR": {
+        "limitType": 1,
+        "disableAutoSwitch": True,
+        "qualityType": "2160p60HDR",
+        "qualityLabel": "2160P60 HDR",
+        "definition": "4K",
+        "width": 3840,
+        "height": 2160
+    },
+    "2160p60": {
+        "limitType": 1,
+        "disableAutoSwitch": True,
+        "qualityType": "2160p60",
+        "qualityLabel": "2160P60",
+        "definition": "4K",
+        "width": 3840,
+        "height": 2160
+    },
+    "2160pHDR": {
+        "limitType": 1,
+        "disableAutoSwitch": True,
+        "qualityType": "2160pHDR",
+        "qualityLabel": "2160P HDR",
+        "definition": "4K",
+        "width": 3840,
+        "height": 2160
+    },
+    "2160p": {
+        "limitType": 1,
+        "disableAutoSwitch": True,
+        "qualityType": "2160p",
+        "qualityLabel": "2160P",
+        "definition": "4K",
+        "width": 3840,
+        "height": 2160
+    },
+    "1080p60HDR": {
+        "limitType": 1,
+        "qualityType": "1080p60HDR",
+        "qualityLabel": "1080P60 HDR",
+        "definition": "HD",
+        "width": 1920,
+        "height": 1080
+    },
+    "1080p60": {
+        "limitType": 1,
+        "qualityType": "1080p60",
+        "qualityLabel": "1080P60",
+        "definition": "HD",
+        "width": 1920,
+        "height": 1080
+    },
+    "1080p+": {
+        "limitType": 1,
+        "qualityType": "1080p+",
+        "qualityLabel": "1080P+",
+        "definition": "HD",
+        "width": 1920,
+        "height": 1080
+    },
+    "1080pHDR": {
+        "limitType": 1,
+        "qualityType": "1080pHDR",
+        "qualityLabel": "1080P HDR",
+        "definition": "HD",
+        "width": 1920,
+        "height": 1080
+    },
+    "1080p": {
+        "limitType": 1,
+        "qualityType": "1080p",
+        "qualityLabel": "1080P",
+        "definition": "HD",
+        "width": 1920,
+        "height": 1080
+    },
+    "720p60": {
+        "limitType": 1,
+        "qualityType": "720p60",
+        "qualityLabel": "720P60",
+        "width": 1280,
+        "height": 720
+    },
+    "720p": {
+        "defaultSelect": True,
+        "qualityType": "720p",
+        "qualityLabel": "720P",
+        "width": 1280,
+        "height": 720
+    },
+    "540p": {
+        "qualityType": "540p",
+        "qualityLabel": "540P",
+        "width": 960,
+        "height": 540
+    },
+    "480p": {
+        "qualityType": "480p",
+        "qualityLabel": "480P",
+        "width": 720,
+        "height": 480
+    },
+    "360p": {
+        "qualityType": "360p",
+        "qualityLabel": "360P",
+        "width": 640,
+        "height": 360
+    },
+}
 
 
 def unix2datestr(t: (int, float, None) = None, f: str = "%Y-%m-%d %H:%M:%S"):
@@ -79,30 +157,6 @@ def unix2datestr(t: (int, float, None) = None, f: str = "%Y-%m-%d %H:%M:%S"):
     elif n < 10:
         t = t * math.pow(10, 10 - n)
     return time.strftime(f, time.localtime(t))
-
-
-def url_saver(url: str, base_path: [os.PathLike, str], filename: str):
-    file_path = os.path.join(base_path, filename)
-    if not file_path.endswith(".url"):
-        file_path = f"{file_path}.url"
-    raw_data = f"[InternetShortcut]\nURL={url}\n"
-    with open(file_path, 'wb') as url_file:
-        url_file.write(raw_data.encode())
-    result = os.path.isfile(file_path)
-    print("SAVED:", result, file_path)
-    return result
-
-
-def json_saver(data: dict, base_path: [os.PathLike, str], filename: str):
-    file_path = os.path.join(base_path, filename)
-    if not file_path.endswith(".json"):
-        file_path = f"{file_path}.json"
-    json_string = json.dumps(data, separators=(',', ':'))
-    with open(file_path, 'wb') as json_file:
-        json_file.write(json_string.encode())
-    result = os.path.isfile(file_path)
-    print("SAVED:", result, file_path)
-    return result
 
 
 def danmaku2ass(client, folder_path: str, filenameId: str, vq: str = "720p", fontsize: int = 40):
@@ -121,6 +175,7 @@ def danmaku2ass(client, folder_path: str, filenameId: str, vq: str = "720p", fon
     :return: ass file path
     :param fontsize: num px
     """
+
     # 检查路径
     assert os.path.isdir(folder_path) is True
     folder_name = os.path.basename(folder_path)
@@ -133,7 +188,7 @@ def danmaku2ass(client, folder_path: str, filenameId: str, vq: str = "720p", fon
     if len(danmaku_data) == 0:
         return None
 
-    thisVideoInfo = AcSource.videoQualitiesRefer[vq]
+    thisVideoInfo = videoQualitiesRefer[vq]
     thisVideoWidth = thisVideoInfo['width']
     thisVideoHeight = thisVideoInfo['height']
     thisDuration = 10
@@ -346,7 +401,7 @@ def downloader(client, src_url, fname: [str, None] = None, dest_dir: [str, None]
     if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir, exist_ok=True)
     if fname is None:
-        fname = parse.urlparse(src_url).path.split('/')[-1]
+        fname = urlparse(src_url).path.split('/')[-1]
     fpath = os.path.join(dest_dir, fname)
 
     try:
@@ -385,3 +440,7 @@ def downloader(client, src_url, fname: [str, None] = None, dest_dir: [str, None]
                 return new_fpath
         return fpath
     return None
+
+
+if __name__ == '__main__':
+    pass

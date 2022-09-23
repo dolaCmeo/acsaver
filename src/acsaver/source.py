@@ -1,0 +1,52 @@
+# coding=utf-8
+from dataclasses import dataclass
+from acfunsdk.source import AcSource
+
+__author__ = 'dolacmeo'
+
+
+@dataclass(frozen=True)
+class SaverData:
+    folder_names = ['article', 'video', 'bangumi', 'live', 'moment']
+    emot_alias = ['default', 'ac', 'ac2', 'ac3', 'dog', 'tsj', 'brd', 'ais', 'td', 'zuohe', 'blizzard']
+    ac_name_map = {
+        "AcArticle": "article",
+        "AcMoment": "moment",
+        "AcVideo": "video",
+        "AcBangumi": "bangumi",
+        "AcLive": "live",
+        "AcUp": "member"
+    }
+    ubb_tag_basic = {
+        r"\r\n": "<br>",
+        "[b]": "<b>", "[/b]": "</b>",
+        "[i]": "<i>", "[/i]": "</i>",
+        "[u]": "<u>", "[/u]": "</u>",
+        "[s]": "<s>", "[/s]": "</s>",
+        "[/color]": r"</color>"
+    }
+    ubb_tag_rex = {
+        "color": r"(\[color=(#[a-f0-9]{6})\])",
+        "size": r"(\[size=(\d+px)\]([^\[]+)\[/size\])",
+        "emot": r"(\[emot=acfun,(\S+?)\/])",
+        "emot_old": r"(\[emot=([a-z0-9]+),(\S+?)\/])",
+        "image": r"(\[img=\\u56fe\\u7247\]([^\[]*)\[\/img\])",
+        "at": r"(\[at uid=(\d+)\](@[^\[]+)\[/at\])",
+        "at_old": r"(\[at\]([^\[]+)\[/at\])",
+        "resource": r"(\[resource id=(\d+) type=([1-5]) icon=[^\]]*\]([^\[]*)\[\/resource\])",
+        "jump": r"(\[time duration=(\d+)\]([^\[]+)\[/time\])",
+    }
+    ubb_resource_url = {
+        "1": AcSource.routes['bangumi'],
+        "2": AcSource.routes['video'],
+        "3": AcSource.routes['article'],
+        "4": AcSource.routes['album'],
+        "5": AcSource.routes['up']
+    }
+    ubb_resource_icon = {
+        "1": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_video_pc.png\">',
+        "2": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_pc_vid_18_3.png\">',
+        "3": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_popup_article_pc.png\">',
+        "4": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_heji_pc.png\">',
+        "5": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_human_pc.png\">',
+    }
