@@ -3,6 +3,7 @@ import os
 import zipfile
 from .utils import downloader, saver_template
 from .source import SaverData
+from .article import ArticleSaver
 
 __author__ = 'dolacmeo'
 
@@ -22,11 +23,26 @@ class AcSaver:
     def loading(self):
         pass
 
+    def ArticleSaver(self, ac_obj):
+        return ArticleSaver(self.acer, ac_obj)
+
+    def _get_saver(self, ac_obj):
+        s = SaverData.ac_saver_map.get(ac_obj.__class__.__name__)
+        if s is None:
+            return None
+        return getattr(self, s)(ac_obj)
+
     def resource(self, rtype: int, rid: int):
-        pass
+        obj = self.acer.resource(rtype, rid)
+        if obj is None:
+            return None
+        return self._get_saver(obj)
 
     def get(self, url_str: str):
-        pass
+        obj = self.acer.get(url_str)
+        if obj is None:
+            return None
+        return self._get_saver(obj)
 
 
 class SaverLocal:

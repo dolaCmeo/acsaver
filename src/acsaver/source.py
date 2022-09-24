@@ -21,6 +21,14 @@ class SaverData:
         "AcLive": "live",
         "AcUp": "member"
     }
+    ac_saver_map = {
+        "AcBangumi": "BangumiSaver",
+        "AcArticle": "ArticleSaver",
+        "AcVideo": "VideoSaver",
+        "AcUp": "MemberSaver",
+        "AcMoment": "MomentSaver",
+        "AcLive": "LiveSaver",
+    }
     ubb_tag_basic = {
         r"\r\n": "<br>",
         "[b]": "<b>", "[/b]": "</b>",
