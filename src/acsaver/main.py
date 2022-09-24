@@ -4,6 +4,7 @@ import zipfile
 from .utils import downloader, saver_template
 from .source import SaverData
 from .article import ArticleSaver
+from .video import VideoSaver
 
 __author__ = 'dolacmeo'
 
@@ -25,6 +26,9 @@ class AcSaver:
 
     def ArticleSaver(self, ac_obj):
         return ArticleSaver(self.acer, ac_obj)
+
+    def VideoSaver(self, ac_obj):
+        return VideoSaver(self.acer, ac_obj)
 
     def _get_saver(self, ac_obj):
         s = SaverData.ac_saver_map.get(ac_obj.__class__.__name__)
@@ -60,7 +64,7 @@ class SaverLocal:
     def loading(self):
         self._folder_check()
         self._assets_check()
-        self._index_check()
+        self._page_check()
         pass
 
     def _folder_check(self):
@@ -117,7 +121,10 @@ class SaverLocal:
             return self._assets_check()
         return True
 
-    def _index_check(self):
+    def _page_check(self):
+        # 首页
+        # 搜索
+        # 用户
         index_html_path = os.path.join(self.root_path, 'index.html')
         if os.path.isfile(index_html_path) is False:
             templates = saver_template()

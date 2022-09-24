@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
-<head>
+<head>{% set RAW = saver.ac_obj.raw_data %}{% set UP = saver.ac_obj.up().raw_data %}
     <meta charset="UTF-8">
     <title>{{ RAW.title }}</title>
     <link href="../../assets/favicon.ico" rel="shortcut icon">
@@ -9,8 +9,6 @@
     <link type="text/css" rel="stylesheet" href="../../assets/css/player.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/comment.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
-    <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
-    <script type="text/javascript">var lazyLoadInstance = new LazyLoad({});</script>
     <style>
         .left-column.unfold{
             width: 100% !important;
@@ -35,7 +33,7 @@
                         <div class="container-player" style="">
                             <div class="container-video">
                                 <video id="localPlayer" preload="auto" poster="cover._" controls>
-                                    <source src="ac{{ v_num }}.mp4" type="video/mp4">
+                                    <source src="{{ saver.rid }}.mp4" type="video/mp4">
                                 </video>
                                 <div class="container-plugins-inner">
                                     <div class="container-controls">
@@ -54,7 +52,7 @@
             <div class="video-description clearfix dark-style">
                 <h1 class="title">
 <!--                    <a class="reco-tag" href="https://www.acfun.cn/rank/list/#cid=-1;range=1;pcid=-3" title="综合榜Top2" target="_blank">综合榜Top2</a>-->
-                    <a id="srcUrl" href="https://www.acfun.cn/v/ac{{ v_num }}"><span>{{ RAW.title }}</span></a>
+                    <a id="srcUrl" href="https://www.acfun.cn/v/ac{{ saver.rid }}"><span>{{ RAW.title }}</span></a>
                 </h1>
                 <div class="action-area">
                     <div class="left-area">
@@ -84,8 +82,8 @@
                                             <div id="share-component">
                                                 <div class="share-desc">获取原视频地址</div>
                                                 <div class="area-share clearfix">
-                                                    <input id="videoUrl" class="ipt-url fl" type="text" readonly="readonly" value="https://www.acfun.cn/v/ac{{ v_num }}">
-                                                    <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="copyText('https://www.acfun.cn/v/ac{{ v_num }}')">复制</span>
+                                                    <input id="videoUrl" class="ipt-url fl" type="text" readonly="readonly" value="https://www.acfun.cn/v/ac{{ saver.rid }}">
+                                                    <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="copyText('https://www.acfun.cn/v/ac{{ saver.rid }}')">复制</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -118,7 +116,7 @@
                         </a>
                         <div class="up-data">
                             <div class="up-info">
-                                <a class="up-name" href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank" title="注册于 {{ up_reg_date }}"
+                                <a class="up-name" href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank" title="注册于 {{ UP.registerTime|unix2datestr }}"
                                         {% if RAW.user.nameColor == 1 %} style="{{ RAW.user.nameStyle }}"{% endif %}>{{ RAW.user.name }}</a>
                                 {% if 1 in RAW.user.verifiedTypes %}
                                 <span class="verified-icon monkey-verified-icon" title="AcFun管理员认证"></span>
@@ -252,7 +250,9 @@
 </div>
 {% include 'parts/toolbar.html' %}
 {% include 'parts/footer.html' %}
+<script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
 <script type="text/javascript">
+    let lazyLoadInstance = new LazyLoad({});
     document.querySelector(".danmaku-fold").addEventListener('click', function (ev) {
         let father = document.querySelector(".danmaku-wrapper"),
             leftC = document.querySelector(".left-column"),
@@ -323,40 +323,37 @@
             script.onreadystatechange = function () {
                 if (script.readyState === "loaded" || script.readyState === "complete") {
                     script.onreadystatechange = null;
-                    callback();
+                    if(typeof callback !== "undefined")(callback());
                 }
             };
         } else {  //Others
             script.onload = function () {
-                callback();
+                if(typeof callback !== "undefined")(callback());
             };
         }
         document.body.append(script);
     }
-</script>
-<script type="text/javascript">
-    let sourceId = "ac{{ v_num }}", videos = {}, videoLast = [], commentData=[];
-</script>
-<script type="text/javascript" src="../../member/{{ RAW.user.id }}.js"></script>
-<script type="text/javascript" src="data/ac{{ v_num }}.js"></script>
-<script type="text/javascript" src="data/ac{{ v_num }}.danmaku.js"></script>
-<script type="text/javascript" src="data/ac{{ RAW.dougaId }}.comment.1.js"></script>
-<script type="text/javascript" src="../leatest.js"></script>
-<script type="text/javascript" src="../nums.js"></script>
-<script type="text/javascript">
-    let videoData = videos["ac{{ v_num }}"],
-        danmakuData = ac{{ v_num }}_danmaku,
-        commentCount = {{ RAW.commentCountRealValue }};
+    let sourceId = "{{ saver.rid }}", video = {}, videoLast = [], commentData=[];
+    let loads = [
+        "../../member/{{ RAW.user.id }}.js",
+        "data/{{ saver.rid }}.js",
+        "data/{{ saver.rid }}.comment.1.js",
+        "../../assets/js/comment.js",
+        "data/{{ saver.rid }}.danmaku.js",
+        "../../assets/js/danmakuList.js",
+        "../../assets/js/localplayer.js",
+        "../leatest.js",
+        "../nums.js"
+    ];
+    loads.forEach(function (p) {loadJs(p);});
+    let videoData = video["{{ saver.rid }}"], commentCount = {{ RAW.commentCountRealValue }};
     videoLast.forEach(function (acNum) {
         if(acNum!==sourceId){
             loadJs('../'+acNum+'/data/'+acNum+'.js', function () {
-                addRecommend(videos[acNum]);
+                addRecommend(video[acNum]);
             });
         }
     });
 </script>
-<script type="text/javascript" src="../../assets/js/localplayer.js"></script>
-<script type="text/javascript" src="../../assets/js/danmakuList.js"></script>
-<script type="text/javascript" src="../../assets/js/comment.js"></script>
 </body>
 </html>

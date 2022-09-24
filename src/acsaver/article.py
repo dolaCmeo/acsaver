@@ -14,8 +14,7 @@ class ArticleSaver(SaverBase):
         super().__init__(acer, ac_obj)
 
     def _gen_html(self) -> bool:
-        page_template = self.templates.get_template(f"{self.keyname}.html")
-        page_html = page_template.render(dict(saver=self))
+        page_html = self.page_template.render(dict(saver=self))
         html_obj = Bs(page_html, 'lxml')
         img_tasks = list()
         for img in html_obj.select('.article-content img'):
@@ -39,6 +38,4 @@ class ArticleSaver(SaverBase):
         self._save_image()
         self._gen_html()
         self._save_comment()
-        # call uper saver
-        # comment(with image)(with member)
-        pass
+        self._update_js_data()

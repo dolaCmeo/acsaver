@@ -43,6 +43,20 @@ def url_saver(url: str, base_path: [os.PathLike, str], filename: str):
     return result
 
 
+def json2js(src_path: [os.PathLike, str], keyname: str, dest_path: [str, None] = None):
+    data = json.load(open(src_path, 'r'))
+    str_data = json.dumps(data, separators=(',', ':'))
+    data_js = f"{keyname}={str_data};"
+    if dest_path is None:
+        if src_path.endswith(".json"):
+            dest_path = src_path[:-2]
+        else:
+            dest_path = os.path.join(os.path.dirname(src_path), f"{keyname}.js")
+    with open(dest_path, 'wb') as js:
+        js.write(data_js.encode())
+    return os.path.isfile(dest_path)
+
+
 def json_saver(data: dict, base_path: [os.PathLike, str], filename: str):
     file_path = os.path.join(base_path, filename)
     if not file_path.endswith(".json"):
@@ -55,7 +69,7 @@ def json_saver(data: dict, base_path: [os.PathLike, str], filename: str):
     return result
 
 
-def danmaku2ass(client, folder_path: str, filenameId: str, vq: str = "720p", fontsize: int = 40):
+def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: int = 40):
     """
     https://github.com/niuchaobo/acfun-helper/blob/master/src/fg/modules/danmaku.js
     基础代码复刻自acfun助手中弹幕相关处理
@@ -79,7 +93,6 @@ def danmaku2ass(client, folder_path: str, filenameId: str, vq: str = "720p", fon
     assert all([os.path.isfile(video_data_path), os.path.isfile(danmaku_data_path)]) is True
     video_data = json.load(open(video_data_path, 'rb'))
     danmaku_data = json.load(open(danmaku_data_path, 'rb'))
-    danmuMotionList = []
     if len(danmaku_data) == 0:
         return None
 
@@ -210,82 +223,24 @@ def get_usable_ffmpeg(cmd: [str, None] = None):
     return None
 
 
-def acfun_video_downloader(client, data: dict,
-                           save_path: [str, os.PathLike, None] = None, quality: [str, int, None] = 0):
-    save_path = os.getcwd() if save_path is None else save_path
-    quality = 0 if quality is None else quality
-    quality_index, quality_text, filesize_bytes = -1, None, 0
-    video_type, ac_num, part_num, ac_name, acfun_url = None, None, None, None, None
-    # 获取视频编号名称等信息
-    if "dougaId" in data:  # 视频类型
-        video_type = "video"
-        # ac_num = data.get("dougaId")
-        # part_num = data.get("priority") + 1
-        # ac_name = f"ac{ac_num}"
-        # if part_num > 1:
-        #     ac_name += f"_{part_num}"
-        # acfun_url = f"{routes['video']}{ac_name[2:]}"
-    elif "bangumiId" in data:  # 番剧类型
-        video_type = "bangumi"
-        # ac_num = data.get("bangumiId")
-        # part_num = data.get("priority") // 10
-        # item_id = data.get('itemId')
-        # ac_name = f"aa{ac_num}"
-        # if part_num > 1:
-        #     ac_name += f"_36188_{item_id}"
-        # acfun_url = f"{routes['bangumi']}{ac_name[2:]}"
-    else:
-        raise Exception("error: video type not support")
-    # 编码信息，视频尺寸
-    video_quality = data['currentVideoInfo']['transcodeInfos']
-    if isinstance(quality, int):
-        if quality not in range(len(video_quality)):
-            raise Exception('error: out of the quality length')
-        quality_index = quality
-        quality_text = video_quality[quality]['qualityType']
-        filesize_bytes = video_quality[quality]['sizeInBytes']
-    elif isinstance(quality, str):
-        for i, q in enumerate(video_quality):
-            if q['qualityType'] == quality:
-                quality_index = i
-                quality_text = q['qualityType']
-                filesize_bytes = q['sizeInBytes']
-    if quality_index == -1 or filesize_bytes == 0:
-        raise Exception('error: selected quality not found')
-    player_json = json.loads(data['currentVideoInfo']['ksPlayJson'])
-    quality_data = player_json['adaptationSet'][0]['representation'][quality_index]
-    m3u8_url = quality_data['url']
-    url_parse = parse.urlsplit(m3u8_url)
-    video_path = "/".join(url_parse.path.split('/')[:-1])
-    video_base_path = f"{url_parse.scheme}://{url_parse.netloc}{video_path}/"
-    m3u8_req = client.get(m3u8_url)
-    # 保存m3u8文件
-    os.makedirs(save_path, exist_ok=True)
-    with open(os.path.join(save_path, f"{ac_name}[{quality_text}].m3u8"), 'w') as m3u8_file:
-        for line in m3u8_req.text.split('\n'):
-            if line.startswith('#EXT'):
-                m3u8_file.write(line + "\n")
-                continue
-            m3u8_file.write(f"{video_base_path}{line}\n")
+def m3u8_downloader(m3u8_url: str, save_path: [str, os.PathLike, None] = None):
     # ffmpeg 下载
-    video_save_path = os.path.join(save_path, f"{ac_name}[{quality_text}].mp4")
+    filename = os.path.split(save_path)[-1]
     ffmpeg_cmd = get_usable_ffmpeg()
     ffmpeg_params = [
         ffmpeg_cmd, '-y', '-i', m3u8_url,
         '-c', 'copy', '-bsf:a', 'aac_adtstoasc',
-        '--', video_save_path
+        '--', save_path
     ]
     ff = FfmpegProgress(ffmpeg_params)
     with Progress() as pp:
-        ff_download = pp.add_task(f"{ac_name}[{quality_text}].mp4", total=100)
+        ff_download = pp.add_task(filename, total=100)
         for progress in ff.run_command_with_progress():
             if progress > 0:
                 pp.update(ff_download, completed=progress)
         pp.update(ff_download, completed=100)
         pp.stop()
-    if os.path.isfile(video_save_path):
-        return video_save_path
-    return False
+    return os.path.isfile(save_path)
 
 
 def downloader(client, src_urls_with_filename: list,
@@ -538,6 +493,10 @@ class SaverBase:
     def rid(self):
         return self.ac_obj.resource_id
 
+    @property
+    def page_template(self):
+        return self.templates.get_template(f"{self.keyname}.html")
+
     def loading(self):
         assert self.ac_obj.__class__.__name__ in SaverData.ac_name_map.keys()
         self.keyname = SaverData.ac_name_map[self.ac_obj.__class__.__name__]
@@ -549,6 +508,8 @@ class SaverBase:
     def _save_raw(self):
         url_saved = url_saver(self.ac_obj.referer, self._save_path, f"{self.ac_obj.title}")
         raw_saved = json_saver(self.ac_obj.raw_data, self._data_path, f"{self.ac_obj.resource_id}")
+        json2js(os.path.join(self._data_path, f"{self.rid}.json"), f"{self.keyname}['{self.rid}']")
+        self._save_member([self.ac_obj.up().uid], True)
         return all([url_saved, raw_saved])
 
     def _save_image(self):
@@ -563,11 +524,29 @@ class SaverBase:
         self.tasks = list()
         return t
 
-    def _save_video(self):
-        pass
+    def _part_video_name(self, num: int):
+        assert self.keyname in ['video', 'bangumi']
+        ends = "" if num == 0 else f"_{num + 1}"
+        if self.keyname == 'bangumi':
+            this_episode = self.ac_obj.episode_data[num]
+            item_id = this_episode['itemId']
+            vid = this_episode['videoId']
+            ends = "" if num == 0 else f"_36188_{item_id}"
+        return f"{self.rid}{ends}"
 
-    def _save_danmaku(self):
-        pass
+    def _save_video(self, num: int = 0, quality: [int, str] = "1080p"):
+        this_video = self.ac_obj.video(num)
+        m3u8_url = this_video.m3u8_url(quality, False)
+        vname = self._part_video_name(num)
+        save_path = os.path.join(self._save_path, f"{vname}.mp4")
+        return m3u8_downloader(m3u8_url[0], save_path)
+
+    def _save_danmaku(self, num: int = 0, quality: [int, str] = "1080p"):
+        this_video = self.ac_obj.video(num)
+        vname = self._part_video_name(num)
+        json_saver(this_video.danmaku.danmaku_data, self._data_path, f"{vname}.danmaku.json")
+        json2js(os.path.join(self._data_path, f"{self.rid}.danmaku.json"), f"let danmakuData")
+        return danmaku2ass(self._save_path, vname, quality)
 
     def _save_comment(self, update: bool = False):
         local_comment_data, local_comment_floors = None, []
@@ -607,6 +586,7 @@ class SaverBase:
             print(f"SAVED: {comment_json_path=}")
         img_task = tans_comment_uub2html(self._save_path)
         if len(img_task) > 0:
+            os.makedirs(os.path.join(self._save_path, 'img'), exist_ok=True)
             downloader(self.acer.client, img_task, display=True)
         return True
 
@@ -658,8 +638,50 @@ class SaverBase:
                 time.sleep(0.1)
             pp.update(get_member, completed=len(ids))
             pp.stop()
-        downloader(self.acer.client, avatar_task, display=True)
+        if len(avatar_task) > 0:
+            downloader(self.acer.client, avatar_task, display=True)
         return done
 
     def _update_js_data(self):
-        pass
+        self.__folder_list_update()
+        self.__record_last()
+
+    def __folder_list_update(self):
+        jsFiles = []
+        for fn in SaverData.folder_names:
+            fpath = os.path.join(self._save_root, fn)
+            f_all = os.listdir(fpath)
+            f_all = [i for i in f_all if os.path.isdir(os.path.join(fpath, i))]
+            f_all_string = json.dumps(f_all, separators=(',', ':'))
+            nums_js = f"let {fn}Nums={f_all_string};"
+            js_path = os.path.join(fpath, 'nums.js')
+            with open(os.path.join(fpath, 'nums.js'), 'wb') as js:
+                js.write(nums_js.encode())
+            jsFiles.append(os.path.isfile(js_path))
+        return all(jsFiles)
+
+    def __record_last(self):
+        last_data = []
+        last_path = os.path.join(self._save_root, self.keyname, 'leatest.js')
+        if os.path.isfile(last_path):
+            sn = len(f"{self.keyname}Last=")
+            last_text = open(last_path, 'r').read()
+            last_data = json.loads(last_text.strip()[sn:-1])
+        if self.rid not in last_data:
+            last_data.append(self.rid)
+        last_string = json.dumps(last_data, separators=(',', ':'))
+        last_js = f"{self.keyname}Last={last_string};"
+        with open(last_path, 'wb') as js:
+            js.write(last_js.encode())
+        recent_data = []
+        recent_path = os.path.join(self._save_root, 'assets', 'data', 'recent.js')
+        if os.path.isfile(recent_path):
+            recent_text = open(recent_path, 'r').read()
+            recent_data = json.loads(recent_text.strip()[12:-1])
+        if [self.keyname, self.rid] not in recent_data:
+            recent_data.append([self.keyname, self.rid])
+        recent_string = json.dumps(recent_data, separators=(',', ':'))
+        recent_js = f"AcCacheList={recent_string};"
+        with open(recent_path, 'wb') as js:
+            js.write(recent_js.encode())
+        return all([os.path.isfile(last_path), os.path.isfile(recent_path)])

@@ -275,9 +275,10 @@
         "../../member/{{ RAW.user.id }}.js",
         "data/{{ saver.rid }}.js",
         "data/{{ saver.rid }}.comment.1.js",
+        "../../assets/js/comment.js",
         "../leatest.js",
         "../nums.js"
-    ]
+    ];
     loads.forEach(function (p) {loadJs(p);});
     let contentData = articles["{{ saver.rid }}"], commentCount = {{ RAW.commentCount }};
     articleLast.forEach(function (acNum) {
@@ -287,7 +288,6 @@
             });
         }
     });
-    loadJs("../../assets/js/comment.js")
 </script>
 </body>
 </html>
