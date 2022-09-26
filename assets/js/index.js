@@ -25,9 +25,9 @@ let theList = {
         }
         loadJs(dataJs, function () {
             if(data[0]=='article'){
-                thisData = articles[data[1]];
+                thisData = article[data[1]];
             }else if(data[0]=='video'){
-                thisData = videos[data[1]];
+                thisData = video[data[1]];
             }
         // console.log(thisData);
         let cell = document.createElement('div'),
