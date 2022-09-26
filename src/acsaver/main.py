@@ -1,8 +1,7 @@
 # coding=utf-8
 import os
 import zipfile
-from .utils import downloader, saver_template
-from .source import SaverData
+from .utils import downloader, saver_template, SaverData
 from .article import ArticleSaver
 from .video import VideoSaver
 
