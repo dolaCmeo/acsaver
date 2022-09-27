@@ -10,7 +10,12 @@ class SaverData:
     github_assets_map_url = "https://raw.githubusercontent.com/dolaCmeo/acsaver/assets/assets.map"
     github_assets_zip_url = "https://raw.githubusercontent.com/dolaCmeo/acsaver/assets/assets.zip"
     github_assets_base = "https://raw.githubusercontent.com/dolaCmeo/acsaver/assets/"
-    github_booster = ("raw.fastgit.org", "raw.githubusercontents.com", "raw.staticdn.net", "raw.iqiq.io")
+    github_booster = (
+        "raw.fastgit.org",
+        # "raw.githubusercontents.com",
+        "raw.staticdn.net",
+        "raw.iqiq.io"
+    )
     folder_names = ['article', 'video', 'bangumi', 'live', 'moment', 'member']
     emot_alias = ['default', 'ac', 'ac2', 'ac3', 'dog', 'tsj', 'brd', 'ais', 'td', 'zuohe', 'blizzard']
     ac_name_map = {
@@ -18,7 +23,7 @@ class SaverData:
         "AcMoment": "moment",
         "AcVideo": "video",
         "AcBangumi": "bangumi",
-        "AcLive": "live",
+        "AcLiveUp": "live",
         "AcUp": "member"
     }
     ac_saver_map = {
@@ -27,7 +32,7 @@ class SaverData:
         "AcVideo": "VideoSaver",
         "AcUp": "MemberSaver",
         "AcMoment": "MomentSaver",
-        "AcLive": "LiveSaver",
+        "AcLiveUp": "LiveSaver",
     }
     ubb_tag_basic = {
         r"\r\n": "<br>",

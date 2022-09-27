@@ -10,6 +10,11 @@ import random
 import filetype
 import subprocess
 from urllib import parse
+from rich.console import Console
+from rich.text import Text
+from rich.align import Align
+from rich.panel import Panel
+from rich.live import Live
 from rich.progress import Progress
 from jinja2 import PackageLoader, Environment
 from acfunsdk.source import AcSource
@@ -22,19 +27,36 @@ __all__ = (
     "time",
     "json",
     "parse",
+    "subprocess",
+    "Console",
+    "Text",
+    "Align",
+    "Panel",
+    "Live",
     "Progress",
     "AcSource",
     "SaverData",
     "FfmpegProgress",
     "saver_template",
+    "sizeof_fmt",
+    "unix2datestr",
     "url_saver",
     "json_saver",
     "json2js",
     "downloader",
     "m3u8_downloader",
     "danmaku2ass",
+    "get_usable_ffmpeg",
     "tans_comment_uub2html"
 )
+
+
+def sizeof_fmt(num, suffix="B"):
+    for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
+        if abs(num) < 1024.0:
+            return f"{num:3.1f} {unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f} Yi{suffix}"
 
 
 def unix2datestr(t: (int, float, None) = None, f: str = "%Y-%m-%d %H:%M:%S"):

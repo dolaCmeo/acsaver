@@ -4,6 +4,7 @@ import zipfile
 from .utils import downloader, saver_template, SaverData
 from .article import ArticleSaver
 from .video import VideoSaver
+from .live import LiveSaver
 
 __author__ = 'dolacmeo'
 
@@ -28,6 +29,9 @@ class AcSaver:
 
     def VideoSaver(self, ac_obj):
         return VideoSaver(self.acer, ac_obj)
+
+    def LiveSaver(self, ac_obj):
+        return LiveSaver(self.acer, ac_obj)
 
     def _get_saver(self, ac_obj):
         s = SaverData.ac_saver_map.get(ac_obj.__class__.__name__)
@@ -89,8 +93,8 @@ class SaverLocal:
             pass
         assert os.path.isfile(assets_map_path) is True
         # 读取map文件，进行本地文件校验
-        assets_map_file = open(assets_map_path, 'r')
-        assets_map_data = assets_map_file.read().split("\n")
+        assets_map_file = open(assets_map_path, 'rb')
+        assets_map_data = assets_map_file.read().decode().split("\n")
         missing_assets = list()
         for x in assets_map_data:
             if not os.path.exists(os.path.join(self.root_path, x)):
