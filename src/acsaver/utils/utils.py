@@ -47,7 +47,8 @@ __all__ = (
     "m3u8_downloader",
     "danmaku2ass",
     "get_usable_ffmpeg",
-    "tans_comment_uub2html"
+    "tans_comment_uub2html",
+    "live_recorder"
 )
 
 
@@ -494,3 +495,67 @@ def saver_template(**filters):
     for name, func in filters.items():
         templates.filters[name] = func
     return templates
+
+
+def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] = 0):
+    assert live_obj.is_open is True
+    if isinstance(quality, str) and quality.isdigit():
+        quality = int(quality)
+    begin_time = live_obj.start_time.replace("-", "").replace(":", "").replace(" ", "")
+    save_dir = os.path.join(save_path, begin_time)
+    time_now = unix2datestr(f="%Y%m%d%H%M%S")
+    save_mp4 = os.path.join(save_dir, f"{time_now}.mp4")
+    os.makedirs(save_dir, exist_ok=True)
+    adapt = live_obj.m3u8_url(quality, False)
+    live_obs_stream = adapt['url']
+    stream_split = parse.urlsplit(live_obs_stream)
+    stream_key = parse.parse_qs(stream_split.query).get('auth_key', [])[0]
+    live_obs_stream = f"{stream_split.scheme}://{stream_split.netloc}{stream_split.path}?auth_key={stream_key}"
+    ffmpeg = get_usable_ffmpeg()
+    if ffmpeg is None:
+        print(f"record need ffmpeg")
+        return False
+    cmd_with_progress = [
+        ffmpeg,
+        "-progress", "-", "-nostats",
+        '-loglevel', '+repeat',
+        "-i", f"{live_obs_stream}",
+        "-c:v", "copy", "-c:a", "copy",
+        f"{save_mp4}"
+    ]
+    p = subprocess.Popen(
+        cmd_with_progress,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=False)
+    begin_read = False
+    tmp = dict()
+    console = Console()
+
+    def display_tui(data):
+        filesize = int(data.get('total_size', 0))
+        infos = f" 已录制 {data.get('out_time', '00:00:00.000000')}\r\n " \
+                f" 比特率: {data.get('bitrate', '???')}   " \
+                f"大小: {sizeof_fmt(filesize): >6} "
+        record_panel = Panel(Text(infos, justify='center'),
+                             title=f"AcLive({live_obj.uid})@{time_now}.mp4",
+                             border_style='red', width=50, style="black on white")
+        return record_panel
+
+    with Live(console=console) as live_console:
+        while True:
+            if p.stdout is None:
+                continue
+            stderr_line = p.stdout.readline().decode("utf-8", errors="replace").strip()
+            if stderr_line == "" and p.poll() is not None:
+                break
+            if stderr_line == "Press [q] to stop, [?] for help":
+                begin_read = True
+                continue
+            if begin_read is True:
+                r = stderr_line.split('=')
+                tmp.update({r[0]: r[1]})
+                live_console.update(Align.center(display_tui(tmp)))
+
+    return True

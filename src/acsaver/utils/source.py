@@ -1,4 +1,5 @@
 # coding=utf-8
+import os.path
 from dataclasses import dataclass
 from acfunsdk.source import AcSource
 
@@ -67,3 +68,4 @@ class SaverData:
         "4": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_heji_pc.png\">',
         "5": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_human_pc.png\">',
     }
+    cmd_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "__main__.py")
