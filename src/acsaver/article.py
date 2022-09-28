@@ -38,4 +38,4 @@ class ArticleSaver(SaverBase):
         self._save_image()
         self._gen_html()
         self._save_comment()
-        self._update_js_data()
+        self.update_js_data()

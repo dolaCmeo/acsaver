@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 import zipfile
-from .utils import downloader, saver_template, SaverData
+from .utils import downloader, saver_template, SaverData, update_js_data
 from .article import ArticleSaver
 from .video import VideoSaver
 from .live import LiveSaver
@@ -23,7 +23,7 @@ class AcSaver:
         self.loading()
 
     def loading(self):
-        pass
+        update_js_data(self.local.root_path)
 
     def ArticleSaver(self, ac_obj):
         return ArticleSaver(self.acer, ac_obj)

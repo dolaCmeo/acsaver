@@ -39,4 +39,4 @@ class MomentSaver(SaverBase):
         self._save_raw()
         self._gen_html()
         self._save_comment()
-        self._update_js_data()
+        self.update_js_data()

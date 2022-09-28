@@ -17,7 +17,7 @@ class SaverData:
         "raw.staticdn.net",
         "raw.iqiq.io"
     )
-    folder_names = ['article', 'video', 'bangumi', 'live', 'moment', 'member']
+    folder_names = ['bangumi', 'article', 'video', 'live', 'member', 'moment']
     emot_alias = ['default', 'ac', 'ac2', 'ac3', 'dog', 'tsj', 'brd', 'ais', 'td', 'zuohe', 'blizzard']
     ac_name_map = {
         "AcArticle": "article",

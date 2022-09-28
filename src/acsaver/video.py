@@ -31,4 +31,4 @@ class VideoSaver(SaverBase):
         self._save_video()
         self._save_danmaku()
         self._save_comment()
-        self._update_js_data()
+        self.update_js_data()

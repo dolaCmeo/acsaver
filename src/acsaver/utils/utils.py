@@ -49,7 +49,8 @@ __all__ = (
     "get_usable_ffmpeg",
     "tans_uub2html",
     "tans_comment_uub2html",
-    "live_recorder"
+    "live_recorder",
+    "update_js_data"
 )
 
 
@@ -560,3 +561,31 @@ def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] =
                 live_console.update(Align.center(display_tui(tmp)))
 
     return True
+
+
+def update_js_data(save_root: [os.PathLike, str]):
+    saver_data = dict()
+    saver_data_path = os.path.join(save_root, "data.js")
+    if os.path.isfile(saver_data_path):
+        with open(saver_data_path, 'r') as js_string:
+            saver_data = json.loads(js_string.read()[12:-1])  # let AcSaver=.....;
+    for fn in SaverData.folder_names:
+        if fn in ['member', 'live']:
+            continue
+        old_dirs = saver_data.get(fn, [])
+        fpath = os.path.join(save_root, fn)
+        now_dirs = [i for i in os.listdir(fpath) if os.path.isdir(os.path.join(fpath, i))]
+        news = list(set(now_dirs).difference(set(old_dirs)))
+        nomore = list(set(old_dirs).difference(set(now_dirs)))
+        final_dirs = list()
+        for x in old_dirs:
+            if x not in nomore:
+                final_dirs.append(x)
+        final_dirs.extend(news)
+        final_dirs = [n for n in final_dirs if os.path.isfile(os.path.join(save_root, fn, n, 'data', f'{n}.js'))]
+        saver_data[fn] = final_dirs
+    with open(saver_data_path, 'wb') as js:
+        saver_data_string = json.dumps(saver_data, separators=(',', ':'))
+        data_js = f"let AcSaver={saver_data_string};"
+        js.write(data_js.encode())
+    return os.path.isfile(saver_data_path)

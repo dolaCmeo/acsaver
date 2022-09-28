@@ -207,46 +207,5 @@ class SaverBase:
             downloader(self.acer.client, avatar_task, display=True)
         return done
 
-    def _update_js_data(self):
-        self.__folder_list_update()
-        self.__record_last()
-
-    def __folder_list_update(self):
-        jsFiles = []
-        for fn in SaverData.folder_names:
-            fpath = os.path.join(self._save_root, fn)
-            f_all = os.listdir(fpath)
-            f_all = [i for i in f_all if os.path.isdir(os.path.join(fpath, i))]
-            f_all_string = json.dumps(f_all, separators=(',', ':'))
-            nums_js = f"let {fn}Nums={f_all_string};"
-            js_path = os.path.join(fpath, 'nums.js')
-            with open(os.path.join(fpath, 'nums.js'), 'wb') as js:
-                js.write(nums_js.encode())
-            jsFiles.append(os.path.isfile(js_path))
-        return all(jsFiles)
-
-    def __record_last(self):
-        last_data = []
-        last_path = os.path.join(self._save_root, self.keyname, 'leatest.js')
-        if os.path.isfile(last_path):
-            sn = len(f"{self.keyname}Last=")
-            last_text = open(last_path, 'r').read()
-            last_data = json.loads(last_text.strip()[sn:-1])
-        if self.rid not in last_data:
-            last_data.append(self.rid)
-        last_string = json.dumps(last_data, separators=(',', ':'))
-        last_js = f"{self.keyname}Last={last_string};"
-        with open(last_path, 'wb') as js:
-            js.write(last_js.encode())
-        recent_data = []
-        recent_path = os.path.join(self._save_root, 'assets', 'data', 'recent.js')
-        if os.path.isfile(recent_path):
-            recent_text = open(recent_path, 'r').read()
-            recent_data = json.loads(recent_text.strip()[12:-1])
-        if [self.keyname, self.rid] not in recent_data:
-            recent_data.append([self.keyname, self.rid])
-        recent_string = json.dumps(recent_data, separators=(',', ':'))
-        recent_js = f"AcCacheList={recent_string};"
-        with open(recent_path, 'wb') as js:
-            js.write(recent_js.encode())
-        return all([os.path.isfile(last_path), os.path.isfile(recent_path)])
+    def update_js_data(self):
+        return update_js_data(self._save_root)
