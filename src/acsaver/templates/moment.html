@@ -68,10 +68,57 @@
                             </div>
                             <div class="feed-content">
                                 <div class="member-feed-moment">
-                                    <a id="srcUrl" href="{{ saver.ac_obj.referer }}">
-                                        <div class="member-feed-text">{{ saver.html_content|replace('emot/big', 'emot/small') }}</div>
-                                    </a>
+                                    <a id="srcUrl" href="{{ saver.ac_obj.referer }}"></a>
+                                    <div class="member-feed-text">{{ saver.html_content|replace('emot/big', 'emot/small') }}</div>
+                                    {% if RAW.get('imgs', [])|length %}{% set momentImages = RAW.get('imgs', []) %}
+                                    <div class="member-feed-moment-image member-feed-moment-image-{{ momentImages|length }}">
+                                        {% for img in momentImages %}
+                                        <img src="{{ img.originUrl }}" alt="">
+                                        {% endfor %}
+                                        <div><!----></div>
+                                    </div>
+                                    {% endif %}
+                                    {% if "repostSource" in RAW %}{% set source = saver.ac_obj.source_obj %}{% set repost = RAW.repostSource %}
+                                    <div class="member-feed-repost-content">
+                                        <div class="repost-up">
+                                            <span class="up-name">@{{ repost.user.userName }} </span>
+                                            <!---->
+                                            <span class="follow">关注</span>
+                                        </div>
+                                        <div class="member-feed-resource" data-impr-show="true">
+                                            <div class="member-feed-text"></div>
+                                            {% if repost.resourceType in [2, 3] %}
+                                            <div class="member-feed-resource-content">
+                                                <div class="content-left">
+                                                    <img src="{{ repost.coverUrl }}" alt="" class="cover">
+                                                    {% if repost.resourceType == 3 %}
+                                                    <span class="resource-tag">文章</span>
+                                                    {% endif %}
+                                                    <!---->
+                                                    <!---->
+                                                    <!---->
+                                                    <div class="video-time">{{ repost.playDuration }}</div>
+                                                </div>
+                                                <div class="content-right">
+                                                    <h1 class="title text-overflow feed-link">{{ repost.caption }}</h1>
+                                                    <div class="desc">{{ repost.detail.description }}</div>
+                                                    <div class="info">
+                                                        {% if repost.resourceType == 2 %}
+                                                        <span class="view"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.viewCount }}</span>
+                                                        <span class="danmu"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.detail.danmakuCount }}</span>
+                                                        {% elif repost.resourceType == 2 %}
+                                                        <span class="view article-view"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.viewCount }}</span>
+                                                        <span class="danmu"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.commentCount }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                 </div>
+
                             </div>
                             <div class="member-feed-interactive">
                                 <div class="feed-interactive">
