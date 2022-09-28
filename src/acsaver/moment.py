@@ -1,5 +1,5 @@
 # coding=utf-8
-from .utils import os, SaverBase, downloader, tans_uub2html
+from .utils import os, SaverBase, SaverData, downloader, tans_uub2html
 
 __author__ = 'dolacmeo'
 
@@ -18,8 +18,26 @@ class MomentSaver(SaverBase):
             downloader(self.acer.client, img_task, display=True)
         return html_str.replace(r"\"", '"')
 
+    @property
+    def images(self):
+        imgs = self.ac_obj.raw_data.get("imgs", [])
+        if len(imgs) == 0:
+            return imgs
+        img_task = list()
+        for i in imgs:
+            filename = i['originUrl'].split("/")[-1]
+            s = os.path.join(self._data_path, filename)
+            img_task.append((i['originUrl'], s))
+        res = downloader(self.acer.client, img_task)
+        for i, x in enumerate(imgs):
+            is_ok = res.get(x['originUrl'], False)
+            if is_ok is True:
+                filename = x['originUrl'].split("/")[-1]
+                imgs[i]['originUrl'] = f"data/{filename}"
+        return imgs
+
     def _gen_html(self):
-        page_html = self.page_template.render(dict(saver=self))
+        page_html = self.page_template.render(dict(saver=self, rtype_names=SaverData.rtype_name_map))
         html_path = os.path.join(self._save_path, f"{self.rid}.html")
         with open(html_path, 'wb') as html_file:
             html_file.write(page_html.encode())

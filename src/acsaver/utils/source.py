@@ -35,6 +35,16 @@ class SaverData:
         "AcMoment": "MomentSaver",
         "AcLiveUp": "LiveSaver",
     }
+    rtype_name_map = {
+        "1": "番剧",  # bangumi
+        "2": "视频",  # video
+        "3": "文章",  # article
+        "4": "合辑",  # album
+        "5": "用户",  # member
+        "6": "评论",  # comment
+        # "8": "私信",
+        "10": "动态",  # moment
+    }
     ubb_tag_basic = {
         r"\r\n": "<br>",
         "[b]": "<b>", "[/b]": "</b>",

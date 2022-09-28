@@ -12,7 +12,7 @@
 <body>
     <div id="app">
         <div class="layout">
-            {% include 'parts/inner_header.html' %}
+{% include 'parts/inner_header.html' %}
             <main>
                 <div class="ac-moment">
                     <div class="ac-moment-wrap">
@@ -28,7 +28,8 @@
                                     </div>
                                     <div class="feed-up-info">
                                         <div class="up-name no-color">
-                                            <a href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank" class="text-overflow"{% if RAW.user.nameColor == 1 %} style="{{ RAW.user.nameStyle }}"{% endif %}>{{ RAW.user.name }}</a>
+                                            <a href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank" {% if RAW.user.nameColor == 1 %} style="{{ RAW.user.nameStyle }}"{% endif %}
+                                               class="text-overflow">{{ RAW.user.name }}</a>
                                             <div class="ac-trigger-content" style="min-width: 0px; display: none;"></div>
                                         </div>
                                         <div class="verify">
@@ -52,6 +53,11 @@
                                                 <img src="../../assets/img/icon_gjdm.svg" class="icon-img" alt="高弹达人标识">
                                             </span>
                                             {% endif %}
+                                            {% if 5 in RAW.user.verifiedTypes %}
+                                            <span class="ac-icon ac-icon-small">
+                                                <img src="../../assets/img/icon_up.svg" class="icon-img" alt="阿普学院标志">
+                                            </span>
+                                            {% endif %}
                                         </div>
                                         <span class="feed-time">{{ RAW.createTime }}</span>
                                     </div>
@@ -70,7 +76,7 @@
                                 <div class="member-feed-moment">
                                     <a id="srcUrl" href="{{ saver.ac_obj.referer }}"></a>
                                     <div class="member-feed-text">{{ saver.html_content|replace('emot/big', 'emot/small') }}</div>
-                                    {% if RAW.get('imgs', [])|length %}{% set momentImages = RAW.get('imgs', []) %}
+                                    {% if RAW.get('imgs', [])|length %}{% set momentImages = saver.images %}
                                     <div class="member-feed-moment-image member-feed-moment-image-{{ momentImages|length }}">
                                         {% for img in momentImages %}
                                         <img src="{{ img.originUrl }}" alt="">
@@ -91,13 +97,13 @@
                                             <div class="member-feed-resource-content">
                                                 <div class="content-left">
                                                     <img src="{{ repost.coverUrl }}" alt="" class="cover">
-                                                    {% if repost.resourceType == 3 %}
-                                                    <span class="resource-tag">文章</span>
-                                                    {% endif %}
+                                                    <span class="resource-tag">{{ rtype_names[repost.resourceType|string] }}</span>
                                                     <!---->
                                                     <!---->
                                                     <!---->
+                                                    {% if repost.resourceType == 2 %}
                                                     <div class="video-time">{{ repost.playDuration }}</div>
+                                                    {% endif %}
                                                 </div>
                                                 <div class="content-right">
                                                     <h1 class="title text-overflow feed-link">{{ repost.caption }}</h1>
@@ -118,7 +124,6 @@
                                     </div>
                                     {% endif %}
                                 </div>
-
                             </div>
                             <div class="member-feed-interactive">
                                 <div class="feed-interactive">
