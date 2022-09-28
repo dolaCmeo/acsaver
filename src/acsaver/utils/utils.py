@@ -47,6 +47,7 @@ __all__ = (
     "m3u8_downloader",
     "danmaku2ass",
     "get_usable_ffmpeg",
+    "tans_uub2html",
     "tans_comment_uub2html",
     "live_recorder"
 )
@@ -342,7 +343,7 @@ def downloader(client, src_urls_with_filename: list,
     return done_mark
 
 
-def tans_uub2html(src: str, emot_map: dict, save_path: str) -> tuple:
+def tans_uub2html(src: str, save_path: str) -> tuple:
     ubb_tag_basic = {
         r"\r\n": "<br>",
         "[b]": "<b>", "[/b]": "</b>",
@@ -376,6 +377,9 @@ def tans_uub2html(src: str, emot_map: dict, save_path: str) -> tuple:
         "4": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_heji_pc.png\">',
         "5": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_human_pc.png\">',
     }
+    root_path = os.path.dirname(os.path.dirname(save_path))
+    emot_map_path = os.path.join(root_path, 'assets', 'emot', 'emotion_map.json')
+    emot_map = json.load(open(emot_map_path, 'r'))
     # 基础替换：换行,加粗,斜体,下划线,删除线,颜色结尾
     for ubb, tag in ubb_tag_basic.items():
         src = src.replace(ubb, tag)
@@ -424,7 +428,6 @@ def tans_uub2html(src: str, emot_map: dict, save_path: str) -> tuple:
 
 def tans_comment_uub2html(data_path):
     rid = os.path.basename(data_path)
-    root_path = os.path.dirname(os.path.dirname(data_path))
     comment_json_path = os.path.join(data_path, 'data', f"{rid}.comment.json")
     comment_json_temp = os.path.join(data_path, 'data', f"{rid}.comment.temp")
     temp_ok = os.path.isfile(comment_json_temp)
@@ -435,9 +438,7 @@ def tans_comment_uub2html(data_path):
     else:
         comment_json_string = open(comment_json_path, 'r').read()
         print('process comment ubb tags')
-        emot_map_path = os.path.join(root_path, 'assets', 'emot', 'emotion_map.json')
-        emot_map = json.load(open(emot_map_path, 'r'))
-        comment_json_string, img_task = tans_uub2html(comment_json_string, emot_map, data_path)
+        comment_json_string, img_task = tans_uub2html(comment_json_string, data_path)
         print('SAVE TEMP')
         with open(comment_json_temp, 'w') as t:
             t.write(comment_json_string)

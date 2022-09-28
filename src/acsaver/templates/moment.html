@@ -1,44 +1,104 @@
 <!DOCTYPE html>
 <html lang="zh">
-<head>
+<head>{% set RAW = saver.ac_obj.raw_data %}{% set UP = saver.ac_obj.up().raw_data %}{% set source = saver.ac_obj.source_obj %}
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="moment.css">
+    <title>AcFun弹幕视频网 - 认真你就输啦 (・ω・)ノ- ( ゜- ゜)つロ</title>
+    <link href="../../assets/favicon.ico" rel="shortcut icon">
+    <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
+    <link type="text/css" rel="stylesheet" href="../../assets/css/comment.css"/>
+    <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
+    <link type="text/css" rel="stylesheet" href="../../assets/css/moment.css">
 </head>
 <body>
     <div id="app">
         <div class="layout">
-            <header id="header"></header>
+            {% include 'parts/inner_header.html' %}
             <main>
                 <div class="ac-moment">
                     <div class="ac-moment-wrap">
                         <div class="ac-moment-feed">
-                            <div class="member-feed-user"></div>
-                            <div class="feed-content"></div>
+                            <div class="member-feed-user">
+                                <div class="feed-up">
+                                    <div class="feed-up-avatar">
+                                        <a href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank">
+                                            <img src="../../member/{{ RAW.user.href }}_avatar">
+                                            <div class="live-status">直播</div>
+                                        </a>
+                                        <div class="ac-trigger-content" style="min-width: 0px; display: none;"></div>
+                                    </div>
+                                    <div class="feed-up-info">
+                                        <div class="up-name no-color">
+                                            <a href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank" class="text-overflow"{% if RAW.user.nameColor == 1 %} style="{{ RAW.user.nameStyle }}"{% endif %}>{{ RAW.user.name }}</a>
+                                            <div class="ac-trigger-content" style="min-width: 0px; display: none;"></div>
+                                        </div>
+                                        <div class="verify">
+                                            {% if 1 in RAW.user.verifiedTypes %}
+                                            <span class="ac-icon ac-icon-small">
+                                                <img src="../../assets/img/icon_monkey_new.svg" class="icon-img" alt="AcFun管理员认证">
+                                            </span>
+                                            {% endif %}
+                                            {% if 2 in RAW.user.verifiedTypes %}
+                                            <span class="ac-icon ac-icon-small">
+                                                <img src="../../assets/img/icon_v.svg" class="icon-img" alt="AcFun官方认证">
+                                            </span>
+                                            {% endif %}
+                                            {% if 3 in RAW.user.verifiedTypes %}
+                                            <span class="ac-icon ac-icon-small">
+                                                <img src="../../assets/img/icon_avi.svg" class="icon-img" alt="AVI虚拟偶像标识">
+                                            </span>
+                                            {% endif %}
+                                            {% if 4 in RAW.user.verifiedTypes %}
+                                            <span class="ac-icon ac-icon-small">
+                                                <img src="../../assets/img/icon_gjdm.svg" class="icon-img" alt="高弹达人标识">
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        <span class="feed-time">{{ RAW.createTime }}</span>
+                                    </div>
+                                </div>
+                                {% if 5 in RAW.user.verifiedTypes %}
+                                <div class="ac-trigger-content ac-verify-icon-dropdown" style="min-width: 0px; margin: 0px; display: none;">
+                                    <div>
+                                        <p style="color: rgb(153, 153, 153);">尊贵的阿普学院标志</p> 
+                                        <a rel="noopener" href="//member.acfun.cn/academy" target="_blank" class="link" style="display: block;">如何获得标志？</a>
+                                    </div>
+                                    <div data-popper-arrow="true" class="ac-trigger-content-arrow"><span></span></div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="feed-content">
+                                <div class="member-feed-moment">
+                                    <a id="srcUrl" href="{{ saver.ac_obj.referer }}">
+                                        <div class="member-feed-text">{{ saver.html_content|replace('emot/big', 'emot/small') }}</div>
+                                    </a>
+                                </div>
+                            </div>
                             <div class="member-feed-interactive">
                                 <div class="feed-interactive">
-                                    <div class="feed-interactive-repost">
-                                        <span class="ac-icon"><i class="iconfont"></i></span>
-                                        <span>分享</span>
-                                    </div>
                                     <div class="feed-interactive-comment active">
-                                        <span class="ac-icon"><i class="iconfont"></i></span>20
+                                        <span class="ac-icon"><i class="iconfont"></i></span>
+                                        <span>{{ RAW.commentCount }}</span>
                                     </div>
                                     <div class="feed-interactive-banana">
                                         <span class="icon_path ac-icon"><i class="iconfont"></i></span>
                                         <span class="icon_fill ac-icon"><i class="iconfont"></i></span>
-                                        <span>26</span>
+                                        <span>{{ RAW.bananaCount }}</span>
                                     </div>
                                     <div class="feed-interactive-like">
                                         <span class="icon_path ac-icon"><i class="iconfont"></i></span>
-                                        <span class="icon_fill ac-icon"><i class="iconfont"></i></span>58
+                                        <span class="icon_fill ac-icon"><i class="iconfont"></i></span>
+                                        <span>{{ RAW.likeCount }}</span>
+                                    </div>
+                                    <div class="feed-interactive-repost">
+                                        <span class="ac-icon"><i class="iconfont"></i></span>
+                                        <span>{{ RAW.shareCount }}</span>
                                     </div>
                                     <div class="ac-trigger-content" style="min-width: 0px; display: none;"></div>
                                     <div class="ac-trigger-content" style="min-width: 0px; display: none;"></div>
                                 </div>
                                 <div>
                                     <div class="feed-comment">
-                                        <div class="ac-pc-comment " id="ac-pc-comment-1664290486485">
+                                        <div class="ac-pc-comment" id="ac-pc-comment-{{ RAW.resourceId }}">
                                             <!--标题-->
                                             <div class="ac-comment-title">
                                                 <div class="area-comm-title-left">
@@ -47,7 +107,7 @@
                                                 </div>
                                                 <div class="area-comm-title-right">
                                                     <a class="area-update update" title="刷新">
-                                                        <img class="update" src="//imgs.aixifan.com/2020/04/07/refresh-icon.png">
+                                                        <img class="update" src="../../assets/img/refresh-icon.png">
                                                     </a>  
                                                 </div> 
                                             </div>
@@ -56,54 +116,15 @@
                                             <!--顶部评论框-->
                                             <div class="ac-comment-top-editor">
                                                 <!--editor的div为富文本的承载容器-->
-                                                <div class="area-editor fold"></div>
+                                                <!--<div class="area-editor fold"></div>-->
                                             </div>
                                             <!--顶部翻页-->
                                             <div class="ac-comment-top-pager"></div>
                                             <div class="ac-comment-loading"></div>
                                             <!--评论列表-->
                                             <div class="ac-comment-list">
-                                                <div class="ac-comment-hot-list"></div>
-                                                <div class="ac-comment-root-list">
-                                                    <div>
-                                                        <div class="area-comment-top clearfix" data-commentid="723397499" data-uuid="32341827991EB177" id="comment-32341827991EB177">
-                                                            <div class="area-comment-first clearfix">
-                                                                <div class="area-comment-left">
-                                                                    <a class="thumb" target="_blank" href="http://www.acfun.cn/u/4084436">
-                                                                        <img class="avatar" src="http://tx-free-imgs2.acfun.cn/bs2/zt-image-host/088a8c081089c8fad504">
-                                                                        <img class="avatar-bg-2018062102 " src="https://tx-free-imgs.acfun.cn/HGxVLInCIR-QJFfIz-A7vqyi-RZr6za-N36NZ3.gif?imageslim">
-                                                                    </a>
-                                                                </div>
-                                                                <div class="area-comment-right">
-                                                                    <div class="area-comment-title">
-                                                                        <a class="name" target="_blank" data-userid="4084436" href="https://www.acfun.cn/u/4084436" style="color: #fd4c5c">排出毒素</a>
-                                                                        <span class="time_day">发表于</span>
-                                                                        <span class="time_times">1分钟前</span>
-                                                                    </div>
-                                                                    <div class="area-comment-des">
-                                                                        <p class="area-comment-des-content">搁外面我都说我跟超哥混的，</p>
-                                                                    </div>
-                                                                    <div class="area-comment-tool">
-                                                                        <a class="area-comment-like  area-comment-up">赞 </a>
-                                                                        <a class="area-comment-reply">回复</a>
-                                                                        <span class="area-comment-from">
-                                                                            <span>来自</span>
-                                                                            <a class="deviceModel" target="_blank" href="https://www.acfun.cn/app/">iPhone14,5</a>
-                                                                        </span>
-                                                                        <span class="area-comment-more"></span>
-                                                                        <div class="area-comm-more" style="display: none">
-                                                                            <span class="area-comm-report">举报</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <span class="index-comment">#20</span>
-                                                            </div>
-                                                            <div class="editor-holder editor-holder-main " id="editor-holder-32341827991EB177"></div>
-                                                            <div id="comment-sec-32341827991EB177"></div>
-                                                            <hr>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <div class="ac-comment-hot-list" id="comment-hot-list"></div>
+                                                <div class="ac-comment-root-list" id="comment-root-list"></div>
                                             </div><!--底部翻页-->
                                             <div class="ac-comment-bottom-pager"></div>
                                             <!--底部评论框-->
@@ -124,8 +145,48 @@
                     </div>
                 </div>
             </main>
-            <footer id="footer"></footer>
+            <footer id="footer">
+                <div class="wp footer-con">
+                    <div class="footer-bottom">
+                        <a href="https://www.acfun.cn">
+                            <img src="../../assets/img/logo-gray.png" width="78" height="24" loading="lazy"></a>
+                        <p>Copyright © 2007-<script>document.write(new Date().getFullYear().toString())</script> AcFun. 保留所有权利</p></div>
+                </div>
+            </footer>
         </div>
     </div>
+{% include 'parts/toolbar.html' %}
+<script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
+<script type="text/javascript">
+    let lazyLoadInstance = new LazyLoad({});
+    let sourceId = "{{ saver.rid }}", commentData=[], commentCount = {{ RAW.commentCount }};
+    function loadJs(path, callback) {
+        let script = document.createElement('script');
+        script.setAttribute('type', 'text/javascript');
+        script.setAttribute('src', path);
+        if (script.readyState) {  // only required for IE <9
+            script.onreadystatechange = function () {
+                if (script.readyState === "loaded" || script.readyState === "complete") {
+                    script.onreadystatechange = null;
+                    if(typeof callback !== "undefined")(callback());
+                }
+            };
+        } else {  //Others
+            script.onload = function () {
+                if(typeof callback !== "undefined")(callback());
+            };
+        }
+        document.body.append(script);
+    }
+    let loads = [
+        //"../../member/{{ RAW.user.id }}.js",
+        //"data/{{ saver.rid }}.js",
+        "data/{{ saver.rid }}.comment.1.js",
+        "../../assets/js/comment.js",
+        //"../leatest.js",
+        //"../nums.js"
+    ];
+    loads.forEach(function (p) {loadJs(p);});
+</script>
 </body>
 </html>

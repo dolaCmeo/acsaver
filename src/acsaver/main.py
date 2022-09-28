@@ -5,6 +5,7 @@ from .utils import downloader, saver_template, SaverData
 from .article import ArticleSaver
 from .video import VideoSaver
 from .live import LiveSaver
+from .moment import MomentSaver
 
 __author__ = 'dolacmeo'
 
@@ -32,6 +33,9 @@ class AcSaver:
 
     def LiveSaver(self, ac_obj):
         return LiveSaver(self.acer, ac_obj)
+
+    def MomentSaver(self, ac_obj):
+        return MomentSaver(self.acer, ac_obj)
 
     def _get_saver(self, ac_obj):
         s = SaverData.ac_saver_map.get(ac_obj.__class__.__name__)
