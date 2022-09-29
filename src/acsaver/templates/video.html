@@ -62,7 +62,7 @@
                         <div class="views"><span class="viewsCount" title="{{ RAW.viewCount }}">{{ RAW.viewCountShow }}</span>播放</div>
                         <div class="danmu"><span class="danmuCount sp2" title="{{ RAW.danmakuCount }}">{{ RAW.danmakuCountShow }}</span>弹幕</div>
                         <div class="comment"><span class="commentCount" title="{{ RAW.commentCount }}">{{ RAW.commentCountShow }}</span>评论</div>
-                        <div class="cache"><span>{{ cache_date }}</span><span>缓存</span></div>
+                        <div class="cache"><span>{{ None|unix2datestr }}</span><span>缓存</span></div>
                     </div>
                     <div class="right-area">
                         <div class="like"><span class="icon"></span><span class="likeCount" title="{{ RAW.likeCount }}">{{ RAW.likeCountShow }}</span></div>
@@ -251,109 +251,12 @@
 {% include 'parts/toolbar.html' %}
 {% include 'parts/footer.html' %}
 <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
-    document.querySelector(".danmaku-fold").addEventListener('click', function (ev) {
-        let father = document.querySelector(".danmaku-wrapper"),
-            leftC = document.querySelector(".left-column"),
-            rightC = document.querySelector(".right-column");
-        [this, father, leftC, rightC].forEach(function (item) {
-            item.classList.toggle('unfold');
-        })
-    });
-    {% if RAW.videoList|length > 1 %}
-    document.querySelectorAll(".part-wrap .single-p").forEach(function (item) {
-        item.addEventListener('click', function (ev) {
-            window.location.href = item.getAttribute('data-href');
-        });
-    });
-    {% endif %}
-    const copyText = (text) => navigator.clipboard?.writeText && navigator.clipboard.writeText(text)
-    function goTo(domId) {
-        let aTag = document.createElement('a');
-        aTag.setAttribute('href', '#'+domId);
-        aTag.click();
-    }
-    function addRecommend(data) {
-        let base = document.createElement('figure'),
-            leftS = document.createElement('a'),
-            info = document.createElement('div'),
-            viewC = document.createElement('span'),
-            commC = document.createElement('span'),
-            cover = document.createElement('img'),
-            rightS = document.createElement('figure'),
-            h3 = document.createElement('h3'),
-            title = document.createElement('a'),
-            up = document.createElement('a');
-        base.setAttribute('class', 'fl block-box block-video no-animate auto-recommend block-show');
-        leftS.setAttribute('class', 'block-img has-danmu');
-        leftS.setAttribute('target', '_self');
-        leftS.setAttribute('href', '../ac'+data.dougaId+'/ac'+data.dougaId+'.html');
-        info.setAttribute('class', 'action-data');
-        viewC.setAttribute('class', 'viewCount');
-        viewC.innerHTML = data.viewCountShow;
-        info.append(viewC);
-        commC.setAttribute('class', 'commentCount');
-        commC.innerHTML = data.commentCountShow;
-        info.append(commC);
-        leftS.append(info);
-        cover.setAttribute('src', '../ac'+data.dougaId+'/cover._');
-        leftS.append(cover);
-        rightS.setAttribute('class', 'block-title');
-        title.setAttribute('title', data.title);
-        title.setAttribute('target', '_self');
-        title.setAttribute('href', '../ac'+data.dougaId+'/ac'+data.dougaId+'.html');
-        title.innerHTML = data.title;
-        h3.append(title);
-        rightS.append(h3);
-        up.setAttribute('class', 'uper-name');
-        up.setAttribute('target', '_blank');
-        up.setAttribute('href', 'https://www.acfun.cn/u/'+data.user.id);
-        up.innerHTML = "UP：" + data.user.name;
-        rightS.append(up);
-        base.append(leftS);
-        base.append(rightS);
-        document.getElementById('recommends').append(base);
-    }
-    function loadJs(path, callback) {
-        let script = document.createElement('script');
-        script.setAttribute('type', 'text/javascript');
-        script.setAttribute('src', path);
-        if (script.readyState) {  // only required for IE <9
-            script.onreadystatechange = function () {
-                if (script.readyState === "loaded" || script.readyState === "complete") {
-                    script.onreadystatechange = null;
-                    if(typeof callback !== "undefined")(callback());
-                }
-            };
-        } else {  //Others
-            script.onload = function () {
-                if(typeof callback !== "undefined")(callback());
-            };
-        }
-        document.body.append(script);
-    }
-    let sourceId = "{{ saver.rid }}", video = {}, videoLast = [], commentData=[];
-    let loads = [
-        "../../member/{{ RAW.user.id }}.js",
-        "data/{{ saver.rid }}.js",
-        "data/{{ saver.rid }}.comment.1.js",
-        "../../assets/js/comment.js",
-        "data/{{ saver.rid }}.danmaku.js",
-        "../../assets/js/danmakuList.js",
-        "../../assets/js/localplayer.js",
-        "../leatest.js",
-        "../nums.js"
-    ];
-    loads.forEach(function (p) {loadJs(p);});
-    let videoData = video["{{ saver.rid }}"], commentCount = {{ RAW.commentCountRealValue }};
-    videoLast.forEach(function (acNum) {
-        if(acNum!==sourceId){
-            loadJs('../'+acNum+'/data/'+acNum+'.js', function () {
-                addRecommend(video[acNum]);
-            });
-        }
-    });
+    let PAGE = {{ saver.page_data }};
+    let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
+    pageInit(PAGE);
 </script>
 </body>
 </html>

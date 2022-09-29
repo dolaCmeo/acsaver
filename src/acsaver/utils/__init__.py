@@ -42,6 +42,11 @@ class SaverBase:
         return self.ac_obj.resource_id
 
     @property
+    def page_data(self):
+        data = {"rType": self.rtype, "rId": self.rid, "objName": self._objname, "keyName": self.keyname}
+        return json.dumps(data, separators=(',', ':'))
+
+    @property
     def page_template(self):
         return self.templates.get_template(f"{self.keyname}.html")
 
@@ -56,7 +61,7 @@ class SaverBase:
     def _save_raw(self):
         url_saved = url_saver(self.ac_obj.referer, self._save_path, f"{self.ac_obj.title}")
         raw_saved = json_saver(self.ac_obj.raw_data, self._data_path, f"{self.ac_obj.resource_id}")
-        json2js(os.path.join(self._data_path, f"{self.rid}.json"), f"{self.keyname}['{self.rid}']")
+        json2js(os.path.join(self._data_path, f"{self.rid}.json"), f"LOADED.{self.keyname}['{self.rid}']")
         self._save_member([self.ac_obj.up().uid], True)
         return all([url_saved, raw_saved])
 
@@ -82,11 +87,13 @@ class SaverBase:
             ends = "" if num == 0 else f"_36188_{item_id}"
         return f"{self.rid}{ends}"
 
-    def _save_video(self, num: int = 0, quality: [int, str] = "1080p"):
+    def _save_video(self, num: int = 0, quality: [int, str] = 0):
         this_video = self.ac_obj.video(num)
         m3u8_url = this_video.m3u8_url(quality, False)
         vname = self._part_video_name(num)
         save_path = os.path.join(self._save_path, f"{vname}.mp4")
+        if os.path.isfile(save_path):
+            return True
         return m3u8_downloader(m3u8_url[0], save_path)
 
     def _record_live(self, quality: [int, str] = -1):

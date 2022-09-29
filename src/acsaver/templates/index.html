@@ -52,26 +52,10 @@
     </div>
 </body>
 <script type="text/javascript" src="assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
-    let article = {}, articleLast = [],
-        video = {}, videoLast = [],
-        AcCacheList=[];
-    function loadJs(path, callback) {
-        let script = document.createElement('script');
-        script.setAttribute('type', 'text/javascript');
-        script.setAttribute('src', path);
-
-        if (script.readyState) {
-            script.onreadystatechange = function () {
-                if (script.readyState === "loaded" || script.readyState === "complete") {
-                    console.log(script.readyState);
-                    script.onreadystatechange = null;callback();
-                }};
-        } else {script.onload = function () {callback();};}
-        document.body.append(script);
-    }
+    let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
 </script>
-<script type="text/javascript" src="assets/data/recent.js"></script>
 <script type="text/javascript" src="assets/js/index.js"></script>
 </html>

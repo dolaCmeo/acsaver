@@ -209,36 +209,12 @@
     </div>
 {% include 'parts/toolbar.html' %}
 <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
-    let sourceId = "{{ saver.rid }}", commentData=[], commentCount = {{ RAW.commentCount }};
-    function loadJs(path, callback) {
-        let script = document.createElement('script');
-        script.setAttribute('type', 'text/javascript');
-        script.setAttribute('src', path);
-        if (script.readyState) {  // only required for IE <9
-            script.onreadystatechange = function () {
-                if (script.readyState === "loaded" || script.readyState === "complete") {
-                    script.onreadystatechange = null;
-                    if(typeof callback !== "undefined")(callback());
-                }
-            };
-        } else {  //Others
-            script.onload = function () {
-                if(typeof callback !== "undefined")(callback());
-            };
-        }
-        document.body.append(script);
-    }
-    let loads = [
-        //"../../member/{{ RAW.user.id }}.js",
-        //"data/{{ saver.rid }}.js",
-        "data/{{ saver.rid }}.comment.1.js",
-        "../../assets/js/comment.js",
-        //"../leatest.js",
-        //"../nums.js"
-    ];
-    loads.forEach(function (p) {loadJs(p);});
+    let PAGE = {{ saver.page_data }};
+    let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
+    pageInit(PAGE);
 </script>
 </body>
 </html>

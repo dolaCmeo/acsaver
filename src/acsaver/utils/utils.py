@@ -66,7 +66,7 @@ def unix2datestr(t: (int, float, None) = None, f: str = "%Y-%m-%d %H:%M:%S"):
     if t is None:
         return time.strftime(f, time.localtime(time.time()))
     t = int(t)
-    n = int(math.log10(t))
+    n = int(math.log10(t)) + 1
     if n > 10:
         t = t // math.pow(10, n - 10)
     elif n < 10:
@@ -275,14 +275,18 @@ def m3u8_downloader(m3u8_url: str, save_path: [str, os.PathLike, None] = None):
         '-c', 'copy', '-bsf:a', 'aac_adtstoasc',
         '--', save_path
     ]
-    ff = FfmpegProgress(ffmpeg_params)
-    with Progress() as pp:
-        ff_download = pp.add_task(filename, total=100)
-        for progress in ff.run_command_with_progress():
-            if progress > 0:
-                pp.update(ff_download, completed=progress)
-        pp.update(ff_download, completed=100)
-        pp.stop()
+    try:
+        ff = FfmpegProgress(ffmpeg_params)
+        with Progress() as pp:
+            ff_download = pp.add_task(filename, total=100)
+            for progress in ff.run_command_with_progress():
+                if progress > 0:
+                    pp.update(ff_download, completed=progress)
+            pp.update(ff_download, completed=100)
+            pp.stop()
+    except RuntimeError as e:
+        print(f"error: {e=}")
+        return False
     return os.path.isfile(save_path)
 
 
@@ -482,7 +486,7 @@ def tans_comment_uub2html(data_path):
         comment_block_js_path = os.path.join(data_path, 'data', f"{rid}.comment.{i+1}.js")
         comment_block_js_string = json.dumps(B, separators=(',', ':'))
         with open(comment_block_js_path, 'wb') as js_file:
-            comment_js = f"commentData[{i+1}]={comment_block_js_string};"
+            comment_js = f"LOADED.comment[{i+1}]={comment_block_js_string};"
             js_file.write(comment_js.encode())
         print("SAVED:", os.path.isfile(comment_block_js_path), comment_block_js_path)
     if temp_ok:
@@ -569,6 +573,7 @@ def update_js_data(save_root: [os.PathLike, str]):
     if os.path.isfile(saver_data_path):
         with open(saver_data_path, 'r') as js_string:
             saver_data = json.loads(js_string.read()[12:-1])  # let AcSaver=.....;
+    least = saver_data.get('least', [])
     for fn in SaverData.folder_names:
         if fn in ['member', 'live']:
             continue
@@ -581,9 +586,15 @@ def update_js_data(save_root: [os.PathLike, str]):
         for x in old_dirs:
             if x not in nomore:
                 final_dirs.append(x)
+            least_v = (fn, x)
+            if x in nomore and least_v in least:
+                least.remove(least_v)
         final_dirs.extend(news)
         final_dirs = [n for n in final_dirs if os.path.isfile(os.path.join(save_root, fn, n, 'data', f'{n}.js'))]
         saver_data[fn] = final_dirs
+        for i in news:
+            least.append((fn, i))
+    saver_data['least'] = least
     with open(saver_data_path, 'wb') as js:
         saver_data_string = json.dumps(saver_data, separators=(',', ':'))
         data_js = f"let AcSaver={saver_data_string};"
