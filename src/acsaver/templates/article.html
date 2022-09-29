@@ -10,7 +10,7 @@
     <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
 </head>
 <body>
-{% include 'parts/header.html' %}
+<header id="header"></header>
 <div id="main" class="main">
     <section class="clearfix area contentBottom wp">
         <div class="clearfix wp area head"></div>
@@ -141,7 +141,16 @@
                         </div>
                     </div>
                 </section>
-                {% include "parts/comment.html" %}
+                <div class="pagelet_newcomment" style="visibility: visible;">
+                    <div class="comment-area">
+                        <div class="clearfix comm">
+                            <div class="columen-left fl">
+                                <div id="area-comment" class="block"></div>
+                                <div class="ac-pc-comment" id="ac-pc-comment"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="fr" style="width:280px">
                 <section id="up-info">
@@ -194,14 +203,17 @@
         </div>
     </section>
 </div>
-{% include 'parts/toolbar.html' %}
-{% include 'parts/footer.html' %}
+<div id="pagelet_toolbar" style="visibility: visible;"></div>
+<div id="pagelet_footer" style="visibility: visible;"></div>
 <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="../../assets/js/loader.js"></script>
 <script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
     let PAGE = {{ saver.page_data }};
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
+    let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];
+    tagsLoader(pagelets);
     pageInit(PAGE);
 </script>
 </body>

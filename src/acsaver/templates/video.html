@@ -23,7 +23,7 @@
     </style>
 </head>
 <body>
-{% include 'parts/header.html' %}
+<header id="header"></header>
 <div id="main" class="single-part">
     <div id="main-content" class="clearfix" style="margin: 0 auto;">
         <div class="left-column">
@@ -181,7 +181,16 @@
                     </div>
                 </div>
             </div>
-            {% include "parts/comment.html" %}
+            <div class="pagelet_newcomment" style="visibility: visible;">
+                <div class="comment-area">
+                    <div class="clearfix comm">
+                        <div class="columen-left fl">
+                            <div id="area-comment" class="block"></div>
+                            <div class="ac-pc-comment" id="ac-pc-comment"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="right-column">
             <div id="danmaku" style="display: block;">
@@ -240,22 +249,23 @@
             <div id="pagelet_newrecommend" style="visibility: visible;">
                 <div class="recmd">
                     <h2 class="recommend-title">最新保存</h2>
-                    <div class="clearfix area recommendation" id="recommends">
-
-                    </div>
+                    <div class="clearfix area recommendation" id="recommends"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% include 'parts/toolbar.html' %}
-{% include 'parts/footer.html' %}
+<div id="pagelet_toolbar" style="visibility: visible;"></div>
+<div id="pagelet_footer" style="visibility: visible;"></div>
 <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="../../assets/js/loader.js"></script>
 <script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
     let PAGE = {{ saver.page_data }};
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
+    let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];
+    tagsLoader(pagelets);
     pageInit(PAGE);
 </script>
 </body>
