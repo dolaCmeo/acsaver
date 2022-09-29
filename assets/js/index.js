@@ -24,11 +24,7 @@ let theList = {
             return sub;
         }
         loadJs(dataJs, function () {
-            if(data[0]=='article'){
-                thisData = article[data[1]];
-            }else if(data[0]=='video'){
-                thisData = video[data[1]];
-            }
+            thisData = LOADED[data[0]][data[1]];
         // console.log(thisData);
         let cell = document.createElement('div'),
             leftC = document.createElement('div'),
@@ -133,7 +129,8 @@ let theList = {
         });
     }
 };
-
-AcCacheList.reverse().forEach(function (item) {
-    theList.addCard(item);
+loadJs("data.js", function(){
+    AcSaver.least.reverse().forEach(function (item) {
+        theList.addCard(item);
+    });
 });

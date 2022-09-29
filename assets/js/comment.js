@@ -260,7 +260,7 @@ function commentPager(curPage, total) {
 }
 
 function loadComments(pageNum) {
-    let cData = commentData[pageNum];
+    let cData = LOADED.comment[pageNum];
     if(cData==undefined){
         let src = "data/" + sourceId + ".comment." + pageNum + ".js";
         loadJs(src, function () {loadComments(pageNum);});
@@ -271,10 +271,10 @@ function loadComments(pageNum) {
     let totalToolbar = document.querySelector('#to-comm>.pts'),
         totalText = totalToolbar.innerHTML,
         total = parseInt(totalText);
-    document.querySelector(".area-comm-number").innerHTML =
-        commentCount + "(总) / "+
-        cData.totalComment.toString()+"(存) / "+
-        (total - cData.totalComment).toString()+"(删)";
+    ////document.querySelector(".area-comm-number").innerHTML =
+    ////    commentCount + "(总) / "+
+    ////    cData.totalComment.toString()+"(存) / "+
+    ////    (total - cData.totalComment).toString()+"(删)";
     cData.hotComments.forEach(function (item, index) {
         hotList.appendChild(commentBlock(item, cData.subCommentsMap, true, index==(cData.hotComments.length-1)));
     });
