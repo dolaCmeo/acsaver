@@ -2947,3 +2947,7 @@ span.text {
 .sharecount:hover .sharehead{
     display: block !important;
 }
+
+#header .nav {
+    width: 1190px;
+}

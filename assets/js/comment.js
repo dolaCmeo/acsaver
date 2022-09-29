@@ -9,7 +9,7 @@ function commentBlock(commentItem, subCommentsMap, isTop=false, nohr =false) {
         return t.toLocaleString("zh-CN");
     }
 
-    let userLink = 'http://www.acfun.cn/u/',
+    let userLink = 'https://www.acfun.cn/u/',
         userPath = '../../member/',
         cid = commentItem.commentId.toString(),
         ncolor = {
@@ -142,7 +142,7 @@ function commentBlock(commentItem, subCommentsMap, isTop=false, nohr =false) {
             commentSec.appendChild(commentArea);
         commentMain.appendChild(commentFirst);
         commentMain.appendChild(commentSec);
-        if(nohr==false){
+        if(nohr===false){
             commentMain.appendChild(commentEnd);
         }
     mainDiv.appendChild(commentMain);
@@ -159,7 +159,7 @@ function commentBlock(commentItem, subCommentsMap, isTop=false, nohr =false) {
 }
 
 function commentPager(curPage, total) {
-    if(total==1){return false;}
+    if(total===1){return false;}
     function pageBtn(n) {
         let p = document.createElement('a');
         p.setAttribute('class', 'pager__btn');
@@ -201,9 +201,9 @@ function commentPager(curPage, total) {
     pageInputDiv.append("跳至");
     pageInput.setAttribute('type', 'text');
     pageInput.addEventListener('keydown', function (ev) {
-        if (ev.key == 'Enter') {
+        if (ev.key === 'Enter') {
             let i = parseInt(pageInput.value);
-            if (i == NaN || 1 > i > total || i == commentPageNow) {
+            if (isNaN(i) || 1 > i > total || i === commentPageNow) {
                 return false;
             } else {
                 loadComments(i);
@@ -219,11 +219,11 @@ function commentPager(curPage, total) {
     for (let i = pStart; i <= pEnd; i++) {
         // console.log(i);
         let nPage = pageBtn(i);
-        if(i == curPage) { // 当前页
+        if(i === curPage) { // 当前页
             nPage.setAttribute('class', 'pager__btn pager__btn__selected');
             pageTags.push(nPage);
-        }else if(curPage - i == cMax){ // 第一个
-            if(i != 1){
+        }else if(curPage - i === cMax){ // 第一个
+            if(i !== 1){
                 let ellipsis = document.createElement('span');
                 ellipsis.setAttribute('class', 'pager__ellipsis');
                 ellipsis.innerHTML = "...";
@@ -233,8 +233,8 @@ function commentPager(curPage, total) {
             }else{
                 pageTags.push(nPage);
             }
-        }else if(i - curPage == cMax){ // 最后一个
-            if(i != total){
+        }else if(i - curPage === cMax){ // 最后一个
+            if(i !== total){
                 let ellipsis = document.createElement('span');
                 ellipsis.setAttribute('class', 'pager__ellipsis');
                 ellipsis.innerHTML = "...";
@@ -261,8 +261,8 @@ function commentPager(curPage, total) {
 
 function loadComments(pageNum) {
     let cData = LOADED.comment[pageNum];
-    if(cData==undefined){
-        let src = "data/" + sourceId + ".comment." + pageNum + ".js";
+    if(cData===undefined){
+        let src = "data/" + PAGE.rId + ".comment." + pageNum + ".js";
         loadJs(src, function () {loadComments(pageNum);});
         return false
     }
@@ -276,7 +276,7 @@ function loadComments(pageNum) {
     ////    cData.totalComment.toString()+"(存) / "+
     ////    (total - cData.totalComment).toString()+"(删)";
     cData.hotComments.forEach(function (item, index) {
-        hotList.appendChild(commentBlock(item, cData.subCommentsMap, true, index==(cData.hotComments.length-1)));
+        hotList.appendChild(commentBlock(item, cData.subCommentsMap, true, index===(cData.hotComments.length-1)));
     });
     if(cData.hotComments.length>0){
         hotList.innerHTML += "<div><div class=\"hot-comment-divid\"><hr><span>以上为热门评论</span><hr></div></div>";
@@ -297,10 +297,10 @@ function loadComments(pageNum) {
         lastP.style.display = "none";
         nextP.style.display = "none";
     }else{
-        if(pageNum==1){
+        if(pageNum===1){
             lastP.style.display = "none";
             nextP.style.display = "";
-        }else if(pageNum==cData.total){
+        }else if(pageNum===cData.total){
             lastP.style.display = "";
             nextP.style.display = "none";
         }else{

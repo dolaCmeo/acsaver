@@ -102,8 +102,16 @@ let resentLoader = {
     document.getElementById('recommends').append(base);
 }
 };
+function subNavLoader() {
+    let bread = document.querySelector(".nav-bread"),
+        cInfo = LOADED[PAGE.keyName][PAGE.rId]['channel'];
+    let cMain = "<a href=\"https://www.acfun.cn/v/list"+cInfo.parentId+"/index.htm\" target=\"_blank\" class=\"channel-second\">"+cInfo.parentName+"</a>",
+        cSub = "<a href=\"https://www.acfun.cn/v/list"+cInfo.id+"/index.htm\" target=\"_blank\" class=\"channel-third\">"+cInfo.name+"</a>";
+    bread.innerHTML = cMain + cSub;
+}
 let pageLoader = {
         2: function () { // 视频
+            subNavLoader();
             document.querySelector(".danmaku-fold").addEventListener('click', function (ev) {
                 let father = document.querySelector(".danmaku-wrapper"),
                     leftC = document.querySelector(".left-column"),
@@ -119,6 +127,7 @@ let pageLoader = {
             });
         },
         3: function () { // 文章
+            subNavLoader();
             document.querySelectorAll(".parts-container li.art-part").forEach(function (item) {
                 item.addEventListener('click', function (ev) {
                     if(!item.classList.contains('active')){
@@ -138,9 +147,10 @@ let pageLoader = {
         10: function () {}
     };
 function pageInit(pageData){
+    // 载入基本数据
+    loadJs("data/"+pageData.rId+".js", pageLoader[pageData.rType]);
     let jsList = {
         2: [
-            "data/"+pageData.rId+".js",
             "data/"+pageData.rId+".comment.1.js",
             "../../assets/js/comment.js",
             "data/"+pageData.rId+".danmaku.js",
@@ -148,18 +158,14 @@ function pageInit(pageData){
             "../../assets/js/localplayer.js"
         ],
         3: [
-            "data/"+pageData.rId+".js",
             "data/"+pageData.rId+".comment.1.js",
             "../../assets/js/comment.js"
         ],
         10: [
-            "data/"+pageData.rId+".js",
             "data/"+pageData.rId+".comment.1.js",
             "../../assets/js/comment.js"
         ]
     }
-    // 载入基本数据
-    loadJs("data/"+pageData.rId+".js", pageLoader[pageData.rType]);
     jsList[pageData.rType].forEach(function (p) {loadJs(p);});
     // 载入近期缓存
     if([2, 3].indexOf(pageData.rType)>-1){

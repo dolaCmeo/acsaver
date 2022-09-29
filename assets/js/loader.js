@@ -5,6 +5,7 @@ let htmlString = {
         "        <a href=\"https://www.acfun.cn/\" class=\"logo\"><img src=\"../../assets/img/acfunlogo.svg\" width=\"94\" height=\"30\"></a>\n" +
         "    </div>\n" +
         "    <div class=\"nav-title\" style=\"display:none;\"><a href></a></div>\n" +
+        "    <div class=\"nav-bread\"></div>\n" +
         "    <div class=\"nav-guide\">\n" +
         "        <span class=\"nav-guide-main\">导航<span class=\"ac-icon\"><i class=\"iconfont\">&#xe15c;</i></span></span>\n" +
         "        <ul class=\"nav-guide-2\"></ul>\n" +
@@ -52,7 +53,7 @@ let htmlString = {
         "    </div>\n" +
         "    <div class=\"area-comm-title-right\">\n" +
         "        <a class=\"area-update update\" title=\"刷新\">\n" +
-        "            <img class=\"update\" src=\"../../assets/img/refresh-icon.png\"></a>\n" +
+        "            <img class=\"update\" src=\"../../assets/img/refresh-icon.png\" alt=''></a>\n" +
         "    </div> \n" +
         "</div>\n" +
         "<div class=\"ac-comment-warn\"></div>\n" +
@@ -90,7 +91,7 @@ let htmlString = {
         "    <div class=\"wp footer-con\">\n" +
         "        <div class=\"footer-bottom\">\n" +
         "            <a href=\"https://www.acfun.cn\">\n" +
-        "                <img src=\"../../assets/img/logo-gray.png\" width=\"78\" height=\"24\" loading=\"lazy\"></a>\n" +
+        "                <img src=\"../../assets/img/logo-gray.png\" width=\"78\" height=\"24\" loading=\"lazy\" alt=''></a>\n" +
         "            <p>Copyright © 2007-<script>document.write(new Date().getFullYear().toString())</script> AcFun. 保留所有权利</p></div>\n" +
         "    </div>\n" +
         "</div>\n"

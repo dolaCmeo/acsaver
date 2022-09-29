@@ -2,11 +2,14 @@ assets\favicon.ico
 assets\css\article.css
 assets\css\base.css
 assets\css\comment.css
+assets\css\header.css
 assets\css\moment.css
 assets\css\pager.min.css
 assets\css\player.css
 assets\css\userCard.css
 assets\css\video.css
+assets\css\viewer.css
+assets\css\viewer.min.css
 assets\emot\emotion.json
 assets\emot\emotion_map.json
 assets\emot\icon.png
@@ -2336,5 +2339,8 @@ assets\js\html2canvas.min.js
 assets\js\index.js
 assets\js\lazyload.js
 assets\js\lazyload.min.js
+assets\js\loader.js
 assets\js\localplayer.js
 assets\js\saver.js
+assets\js\viewer.js
+assets\js\viewer.min.js
