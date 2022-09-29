@@ -7,7 +7,6 @@ assets\css\pager.min.css
 assets\css\player.css
 assets\css\userCard.css
 assets\css\video.css
-assets\data\recent.js
 assets\emot\emotion.json
 assets\emot\emotion_map.json
 assets\emot\icon.png
@@ -2298,6 +2297,7 @@ assets\img\icon_v_big.svg
 assets\img\img-logo.png
 assets\img\likeFrames.png
 assets\img\liveing.gif
+assets\img\loading.gif
 assets\img\logo-gray.png
 assets\img\logo.png
 assets\img\logo.svg
@@ -2337,3 +2337,4 @@ assets\js\index.js
 assets\js\lazyload.js
 assets\js\lazyload.min.js
 assets\js\localplayer.js
+assets\js\saver.js
