@@ -6,9 +6,11 @@
     <title>AcFun弹幕视频网 - 认真你就输啦 (・ω・)ノ- ( ゜- ゜)つロ</title>
     <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
     <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
+    <link type="text/css" rel="stylesheet" href="../../assets/css/header.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/comment.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/moment.css">
+    <link type="text/css" rel="stylesheet" href="../../assets/css/viewer.min.css">
 </head>
 <body>
     <div id="app">
@@ -22,7 +24,7 @@
                                 <div class="feed-up">
                                     <div class="feed-up-avatar">
                                         <a href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank">
-                                            <img src="../../member/{{ RAW.user.href }}_avatar">
+                                            <img src="../../member/{{ RAW.user.href }}_avatar" onerror="this.src='../../assets/img/defaultAvatar.jpg';" alt="{{ RAW.user.name }}">
                                             <div class="live-status">直播</div>
                                         </a>
                                         <div class="ac-trigger-content" style="min-width: 0px; display: none;"></div>
@@ -162,10 +164,12 @@
 <div id="pagelet_footer" style="visibility: visible;"></div>
 <div id="pagelet_toolbar" style="visibility: visible;"></div>
 <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="../../assets/js/viewer.min.js"></script>
 <script type="text/javascript" src="../../assets/js/loader.js"></script>
 <script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
+    let gallery = new Viewer(document.getElementsByClassName("member-feed-moment-image")[0]);
     let PAGE = {{ saver.page_data }};
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
     let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];

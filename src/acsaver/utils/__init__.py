@@ -59,7 +59,10 @@ class SaverBase:
         pass
 
     def _save_raw(self):
-        url_saved = url_saver(self.ac_obj.referer, self._save_path, f"{self.ac_obj.title}")
+        url_name = f"{self.ac_obj.title}"
+        if self.rid == 10:
+            url_name = f"@{self.ac_obj.raw_data['user']['name']}"
+        url_saved = url_saver(self.ac_obj.referer, self._save_path, url_name)
         raw_saved = json_saver(self.ac_obj.raw_data, self._data_path, f"{self.ac_obj.resource_id}")
         json2js(os.path.join(self._data_path, f"{self.rid}.json"), f"LOADED.{self.keyname}['{self.rid}']")
         self._save_member([self.ac_obj.up().uid], True)

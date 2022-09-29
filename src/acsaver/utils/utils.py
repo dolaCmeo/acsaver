@@ -473,6 +473,12 @@ def tans_comment_uub2html(data_path):
     totals = 0
     for v in blocks.values():
         totals += len(v["rootComments"])
+    if totals == 0:
+        comment_block_js_path = os.path.join(data_path, 'data', f"{rid}.comment.1.js")
+        with open(comment_block_js_path, 'wb') as js_file:
+            comment_js = "LOADED.comment[1]={'hotComments':[],'rootComments':[],'subCommentsMap':{},};"
+            js_file.write(comment_js.encode())
+        return img_task
     blocks = [j for i, j in sorted(blocks.items(), reverse=True)]
     blocks[0]["hotComments"] = comment_data["hotComments"]
     for Y in blocks[0]["hotComments"]:

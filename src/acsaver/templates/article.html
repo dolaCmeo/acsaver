@@ -3,12 +3,13 @@
 <head>{% set RAW = saver.ac_obj.raw_data %}{% set UP = saver.ac_obj.up().raw_data %}
     <meta charset="UTF-8">
     <title>{{ RAW.title }}</title>
-    <link href="../../assets/favicon.ico" rel="shortcut icon">
+    <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
     <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/header.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/article.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/comment.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
+    <link type="text/css" rel="stylesheet" href="../../assets/css/viewer.min.css">
 </head>
 <body>
 <header id="header"></header>
@@ -72,7 +73,7 @@
                 <section id="article-content">
                     <div id="article-up" class="article-up">
                         <a href="https://www.acfun.cn/u/{{ RAW.user.href }}" target="_blank">
-                            <img class="up-cover live-avatar" src="../../member/{{ RAW.user.href }}_avatar" onerror="javascript:this.src='../../assets/img/defaultAvatar.jpg';" alt="">
+                            <img class="up-cover live-avatar" src="../../member/{{ RAW.user.href }}_avatar" onerror="this.src='../../assets/img/defaultAvatar.jpg';" alt="">
                         </a>
                         <div class="up-abstract">
                             <div class="up-name">
@@ -207,10 +208,12 @@
 <div id="pagelet_toolbar" style="visibility: visible;"></div>
 <div id="pagelet_footer" style="visibility: visible;"></div>
 <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="../../assets/js/viewer.min.js"></script>
 <script type="text/javascript" src="../../assets/js/loader.js"></script>
 <script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
+    let gallery = new Viewer(document.getElementsByClassName("article-content")[0]);
     let PAGE = {{ saver.page_data }};
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
     let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];

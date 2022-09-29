@@ -3,7 +3,7 @@
 <head>{% set RAW = saver.ac_obj.raw_data %}{% set UP = saver.ac_obj.up().raw_data %}
     <meta charset="UTF-8">
     <title>{{ RAW.title }}</title>
-    <link href="../../assets/favicon.ico" rel="shortcut icon">
+    <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
     <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/header.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/video.css"/>
@@ -113,7 +113,7 @@
                     {% if not hasStaffContribute %}
                     <div class="up-details">
                         <a href="https://www.acfun.cn/u/{{ RAW.user.href }}" class="up-avatar up-avatar-wrapper" target="_blank">
-                            <img src="../../member/{{ RAW.user.href }}_avatar" class="avatar live-avatar">
+                            <img src="../../member/{{ RAW.user.href }}_avatar" onerror="this.src='../../assets/img/defaultAvatar.jpg';" class="avatar live-avatar" alt="">
                         </a>
                         <div class="up-data">
                             <div class="up-info">
