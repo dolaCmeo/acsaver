@@ -9,7 +9,54 @@
 <body>
     <div id="app">
         <div class="layout">
-            <main>
+            <header id="header" style="width: 100%;margin: 0;">
+                <div class="nav" style="width: 1190px;">
+                    <div class="nav-links">
+                        <a href="https://www.acfun.cn/" class="logo"><img src="assets/img/acfunlogo.svg" width="94" height="30"></a>
+                    </div>
+                    <div class="nav-title" style="display:none;"><a href=""></a></div>
+                    <div class="nav-bread"></div>
+                    <div class="nav-guide">
+                        <span class="nav-guide-main">导航<span class="ac-icon"><i class="iconfont"></i></span></span>
+                        <ul class="nav-guide-2"><div class="nav-guide-3-place"></div></ul>
+                    </div>
+                    <div class="nav-entrance-wrap" style="display:none;">
+                        <a href="https://shop213417608.taobao.com/" target="_blank" class="nav-mall">
+                            <span class="ac-icon"><i class="iconfont"></i></span>
+                            <span class="entrance-title">周边商城</span></a>
+                        <a href="https://www.acfun.cn/face-catcher" target="_blank" class="face-catcher">
+                            <span class="ac-icon"><i class="iconfont"></i></span>
+                            <span class="entrance-title">AcFun面捕助手</span></a>
+                    </div>
+                    <div class="nav-search">
+                        <span class="nav-search-input ac-input-wrapper ac-input-suffix">
+                            <input placeholder="" autocomplete="off" minlength="" maxlength="" type="text" value="" class="ac-input">
+                            <div class="ac-input-suffix-item"><span class="ac-icon"><i class="iconfont"></i></span></div>
+                        </span>
+                    </div>
+                    <div class="nav-user">
+                        <a href="https://www.acfun.cn/app" target="_blank" rel="noopener" class="app"><span class="ac-icon"><i class="iconfont"></i></span></a>
+                        <a href="https://www.acfun.cn/login" target="_blank" class="nologin">登录/注册</a>
+                        <a rel="noopener" href="https://message.acfun.cn" target="_blank" class="user-message nav-user-item">
+                            <span class="icon ac-badge ac-badge-normal"><span class="ac-icon"><i class="iconfont"></i></span></span>
+                            <p class="desc">消息</p></a>
+                        <a rel="noopener" href="https://www.acfun.cn/member/history" target="_blank" class="user-history nav-user-item">
+                            <span class="icon ac-icon"><i class="iconfont"></i></span>
+                            <p class="desc">历史</p></a>
+                        <a href="https://www.acfun.cn/member/feeds" target="_blank" class="user-favourite nav-user-item">
+                            <span class="icon ac-icon"><i class="iconfont"></i></span>
+                            <p class="desc">动态</p></a>
+                        <a href="https://member.acfun.cn" target="_blank" class="user-creative nav-user-item">
+                            <span class="icon ac-icon"><i class="iconfont"></i></span>
+                            <p class="desc">创作者</p></a>
+                        <a href="https://member.acfun.cn" target="_blank" rel="noopener" class="user-upload">
+                            <button type="button" class="ac-button ac-button-primary ac-button-normal">
+                                <span class="ac-icon" style="margin-right:4px;"><i class="iconfont"></i></span> 投稿
+                            </button></a>
+                    </div>
+                </div>
+                </header>
+            <main style="margin: 60px 0 0;">
                 <div class="ac-rank-wrapper">
                     <div class="header">
                         <div class="header__content">
@@ -37,25 +84,34 @@
                         </div>
                     </div>
                 </div>
-                <div id="pagelet_footer" style="visibility: visible;">
-                    <div id="footer">
-                        <div class="wp footer-con">
-                            <div class="footer-bottom">
-                                <a href="https://www.acfun.cn">
-                                    <img src="assets/img/logo-gray.png" width="78" height="24" loading="lazy" alt=""></a>
-                                <p>Copyright © 2007-<script>document.write(new Date().getFullYear().toString())</script> AcFun. 保留所有权利</p></div>
-                        </div>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
-</body>
+<div id="pagelet_footer" style="visibility: visible;">
+    <div id="footer">
+        <div class="wp footer-con">
+            <div class="footer-bottom">
+                <a href="https://www.acfun.cn">
+                    <img src="assets/img/logo-gray.png" width="78" height="24" loading="lazy" alt=""></a>
+                <p>Copyright © 2007-<script>document.write(new Date().getFullYear().toString())</script> AcFun. 保留所有权利</p></div>
+        </div>
+    </div>
+</div>
+<div id="pagelet_toolbar" style="visibility: visible;">
+    <div id="toolbar" class="toolbar showAll">
+        <a href="#main">
+            <div id="to-top" title="返回顶部" class="icon icon-arrow-slim-up tool-item tool-to-top toBottom"></div>
+        </a>
+    </div>
+</div>
 <script type="text/javascript" src="assets/js/lazyload.min.js"></script>
+<script type="text/javascript" src="assets/js/loader.js"></script>
 <script type="text/javascript" src="assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
+    navItemLoader();
 </script>
 <script type="text/javascript" src="assets/js/index.js"></script>
+</body>
 </html>
