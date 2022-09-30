@@ -152,5 +152,5 @@ def create_assets_zip(assets_path: [os.PathLike, str, None] = r"assets") -> str:
 
 
 if __name__ == '__main__':
-    save_emot()
+#     save_emot()
     create_assets_zip()

@@ -42,9 +42,9 @@ let theList = {
             upLink = document.createElement('a'),
             upSign = document.createElement('p'),
             upInfo = document.createElement('div');
-        if(data[0]=='article'){
+        if(data[0]==='article'){
             playIcon.innerHTML = "<i class=\"iconfont\"></i>";
-        }else{
+        }else if(data[0]==='video'){
             playIcon.innerHTML = "<i class=\"iconfont\"></i>";
         }
         playIcon.setAttribute('class', 'play-hover ac-icon');
@@ -80,9 +80,9 @@ let theList = {
                 'iconfont', '', thisData.danmakuCountShow || ""));
         }
         let channelText=thisData.channel.name;
-        if(data[0]=='article'){
+        if(data[0]==='article'){
             channelText = thisData.realm.realmName + " / " + channelText;
-        }else {
+        }else if(data[0]==='video'){
             channelText += " / " + thisData.channel.parentName;
         }
         // 频道名
@@ -131,6 +131,8 @@ let theList = {
 };
 loadJs("data.js", function(){
     AcSaver.least.reverse().forEach(function (item) {
-        theList.addCard(item);
+        if(['article', 'video'].indexOf(item[0])>-1){
+            theList.addCard(item);
+        }
     });
 });
