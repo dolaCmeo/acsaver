@@ -285,7 +285,7 @@ def m3u8_downloader(m3u8_url: str, save_path: [str, os.PathLike, None] = None):
             pp.update(ff_download, completed=100)
             pp.stop()
     except RuntimeError as e:
-        print(f"error: {e=}")
+        print(f"downloader ERROR: {ffmpeg_params=}")
         return False
     return os.path.isfile(save_path)
 

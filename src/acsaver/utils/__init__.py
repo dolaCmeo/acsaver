@@ -97,7 +97,10 @@ class SaverBase:
         save_path = os.path.join(self._save_path, f"{vname}.mp4")
         if os.path.isfile(save_path):
             return True
-        return m3u8_downloader(m3u8_url[0], save_path)
+        first_try = m3u8_downloader(m3u8_url[0], save_path)
+        if first_try is False:
+            return m3u8_downloader(m3u8_url[1], save_path)
+        return True
 
     def _record_live(self, quality: [int, str] = -1):
         live = self.ac_obj.live
