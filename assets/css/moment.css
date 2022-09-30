@@ -1,3 +1,5 @@
+@import url('comment.css');
+
 .layout > main {
     width: 100%;
     background-color: #f8f8f8;

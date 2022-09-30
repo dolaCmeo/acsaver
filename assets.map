@@ -2,6 +2,8 @@ assets\favicon.ico
 assets\css\article.css
 assets\css\base.css
 assets\css\comment.css
+assets\css\fonts.css
+assets\css\footer.css
 assets\css\header.css
 assets\css\moment.css
 assets\css\pager.min.css
