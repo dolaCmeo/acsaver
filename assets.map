@@ -2210,6 +2210,7 @@ assets\img\404img.png
 assets\img\42.gif
 assets\img\acfunfavicon.png
 assets\img\acfunlogo.svg
+assets\img\acfun_player_logo.png
 assets\img\acniang404.png
 assets\img\app-download.png
 assets\img\arrow.png
@@ -2337,6 +2338,8 @@ assets\img\wechat.png
 assets\img\weibo.png
 assets\js\comment.js
 assets\js\danmakuList.js
+assets\js\DPlayer.min.js
+assets\js\DPlayer.min.js.map
 assets\js\html2canvas.min.js
 assets\js\index.js
 assets\js\lazyload.js

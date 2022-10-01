@@ -20,28 +20,31 @@ let htmlString = {
         "    </div>\n" +
         "    <div class=\"nav-search\">\n" +
         "        <span class=\"nav-search-input ac-input-wrapper ac-input-suffix\">\n" +
-        "            <input placeholder=\"\" autocomplete=\"off\" minlength=\"\" maxlength=\"\" type=\"text\" value=\"\" class=\"ac-input\"> \n" +
+        "            <input placeholder=\"\" autocomplete=\"off\" minlength=\"\" maxlength=\"\" type=\"text\" value=\"\" class=\"ac-input\" id='nav-search' style='cursor: default;'> \n" +
         "            <div class=\"ac-input-suffix-item\"><span class=\"ac-icon\"><i class=\"iconfont\">&#xe15d;</i></span></div>\n" +
         "        </span>\n" +
         "    </div>\n" +
         "    <div class=\"nav-user\">\n" +
-        "        <a href=\"https://www.acfun.cn/app\" target=\"_blank\" rel=\"noopener\" class=\"app\"><span class=\"ac-icon\"><i class=\"iconfont\">&#xe242;</i></span></a>\n" +
-        "        <a href=\"https://www.acfun.cn/login\" target=\"_blank\" class=\"nologin\">登录/注册</a>\n" +
+//        "        <a href=\"https://www.acfun.cn/app\" target=\"_blank\" rel=\"noopener\" class=\"app\"><span class=\"ac-icon\"><i class=\"iconfont\">&#xe242;</i></span></a>\n" +
+//        "        <a href=\"https://www.acfun.cn/login\" target=\"_blank\" class=\"nologin\">登录/注册</a>\n" +
         "        <a rel=\"noopener\" href=\"https://message.acfun.cn\" target=\"_blank\" class=\"user-message nav-user-item\">\n" +
         "            <span class=\"icon ac-badge ac-badge-normal\"><span class=\"ac-icon\"><i class=\"iconfont\">&#xe15e;</i></span></span>\n" +
         "            <p class=\"desc\">消息</p></a> \n" +
-        "        <a rel=\"noopener\" href=\"https://www.acfun.cn/member/history\" target=\"_blank\" class=\"user-history nav-user-item\">\n" +
-        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe15f;</i></span>\n" +
-        "            <p class=\"desc\">历史</p></a> \n" +
-        "        <a href=\"https://www.acfun.cn/member/feeds\" target=\"_blank\" class=\"user-favourite nav-user-item\">\n" +
+        "        <a rel=\"noopener\" href=\"https://www.acfun.cn/member/feeds\" target=\"_blank\" class=\"user-history nav-user-item\">\n" +
         "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe160;</i></span>\n" +
         "            <p class=\"desc\">动态</p></a> \n" +
-        "        <a href=\"https://member.acfun.cn\" target=\"_blank\" class=\"user-creative nav-user-item\">\n" +
+        "        <a href=\"https://live.acfun.cn\" target=\"_blank\" class=\"user-favourite nav-user-item\">\n" +
+        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe2af;</i></span>\n" +
+        "            <p class=\"desc\">直播</p></a> \n" +
+        "        <a href=\"https://github.com/dolaCmeo/acfunsdk\" target=\"_blank\" class=\"user-favourite nav-user-item\">\n" +
         "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe2ea;</i></span>\n" +
-        "            <p class=\"desc\">创作者</p></a> \n" +
-        "        <a href=\"https://member.acfun.cn\" target=\"_blank\" rel=\"noopener\" class=\"user-upload\">\n" +
+        "            <p class=\"desc\">AcSDK</p></a> \n" +
+        "        <a href=\"https://github.com/dolaCmeo/acsaver\" target=\"_blank\" class=\"user-creative nav-user-item\">\n" +
+        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe15f;</i></span>\n" +
+        "            <p class=\"desc\">AcSaver</p></a> \n" +
+        "        <a href=\"https://www.acfun.cn\" target=\"_blank\" rel=\"noopener\" class=\"user-upload\" id='online-link'>\n" +
         "            <button type=\"button\" class=\"ac-button ac-button-primary ac-button-normal\">\n" +
-        "                <span class=\"ac-icon\" style=\"margin-right:4px;\"><i class=\"iconfont\">&#xe15b;</i></span> 投稿\n" +
+        "                <span class=\"ac-icon\" style=\"margin-right:4px;\"><i class=\"iconfont\">&#xe3c9;</i></span> 看线上\n" +
         "            </button></a>\n" +
         "    </div>\n" +
         "</div>\n",
@@ -90,8 +93,7 @@ let htmlString = {
         "<div id=\"footer\">\n" +
         "    <div class=\"wp footer-con\">\n" +
         "        <div class=\"footer-bottom\">\n" +
-        "            <a href=\"https://www.acfun.cn\">\n" +
-        "                <img src=\"../../assets/img/logo-gray.png\" width=\"78\" height=\"24\" loading=\"lazy\" alt=''></a>\n" +
+        "            <a><img src=\"../../assets/img/logo-gray.png\" width=\"78\" height=\"24\" loading=\"lazy\" alt=''></a>\n" +
         "            <p>Copyright © 2007-<script>document.write(new Date().getFullYear().toString())</script> AcFun. 保留所有权利</p></div>\n" +
         "    </div>\n" +
         "</div>\n"
@@ -1440,6 +1442,16 @@ function navItemLoader() {
         navMain.append(nav2);
     });
     navMain.innerHTML += "<div class=\"nav-guide-3-place\"></div>";
+    document.getElementById("online-link").setAttribute("href", document.getElementById("srcUrl").getAttribute('href'));
+    document.getElementById("nav-search").addEventListener("keypress", function(event) {
+        // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            window.open("https://www.acfun.cn/search?keyword=" + this.value, "_blank");
+        }
+    });
 }
 
 function tagsLoader(tids){

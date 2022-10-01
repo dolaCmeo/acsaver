@@ -455,7 +455,7 @@ a:hover {
 .art-title-head .art-title-census .census-right > div {
     min-width: 48px;
     height: 30px;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .art-title-head .art-title-census .census-right > div i {

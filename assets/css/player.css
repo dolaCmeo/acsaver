@@ -56,7 +56,7 @@
 
 .container-player .container-video video {
     height: -webkit-calc(100% - 40px);
-    height: calc(100% - 40px);
+    height: calc(100% - 40px)
 }
 
 @-webkit-keyframes loading {
@@ -367,8 +367,8 @@
 
 .container-controls {
     position: absolute;
-    /*height: 40px;*/
-    bottom: 40px;
+    height: 40px;
+    /*bottom: 40px;*/
     width: 100%;
     opacity: 1;
     overflow: visible;
@@ -3585,7 +3585,7 @@
     width: 233px;
     height: 50px;
     opacity: 1;
-    bottom: 60px;
+    bottom: 100px;
     right: 40px;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
@@ -7330,4 +7330,19 @@
     right: 3px;
     top: 2px;
     left: 17px
+}
+
+.dplayer-bar-preview {
+    z-index: 10 !important;
+}
+.dplayer-controller .dplayer-icons .dplayer-comment{
+    display: none !important;
+}
+
+body.dplayer-web-fullscreen-fix video {
+    height: 100% !important;
+}
+
+body.dplayer-web-fullscreen-fix #header{
+    z-index: unset !important;
 }

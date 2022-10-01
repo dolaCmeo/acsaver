@@ -4,7 +4,8 @@
     font-size: 12px;
     position: relative;
     min-width: 1180px;
-    align-self: stretch
+    align-self: stretch;
+    height: 50px;
 }
 
 #footer .clearfix {

@@ -149,29 +149,39 @@ let pageLoader = {
 function pageInit(pageData){
     // 载入基本数据
     loadJs("data/"+pageData.rId+".js", pageLoader[pageData.rType]);
+    function commentLoader() {
+        loadJs("data/"+pageData.rId+".comment.1.js", function () {
+            loadJs("../../assets/js/comment.js");});
+    }
+    function danmakuLoader() {
+        loadJs("data/"+pageData.rName+".danmaku.js", function () {
+            loadJs("../../assets/js/danmakuList.js");});
+    }
     let jsList = {
         2: [
-            "data/"+pageData.rId+".comment.1.js",
-            "../../assets/js/comment.js",
-            "data/"+pageData.rId+".danmaku.js",
-            "../../assets/js/danmakuList.js",
+            commentLoader,
+            danmakuLoader,
             "../../assets/js/localplayer.js"
         ],
         3: [
-            "data/"+pageData.rId+".comment.1.js",
-            "../../assets/js/comment.js"
+            commentLoader
         ],
         10: [
-            "data/"+pageData.rId+".comment.1.js",
-            "../../assets/js/comment.js"
+            commentLoader
         ]
     }
-    jsList[pageData.rType].forEach(function (p) {loadJs(p);});
+    jsList[pageData.rType].forEach(function (p) {
+        if (typeof p === "string"){
+            loadJs(p);
+        } else if(typeof p === "function"){
+            p()
+        }
+    });
     // 载入近期缓存
     if([2, 3].indexOf(pageData.rType)>-1){
         loadJs("../../data.js", function(){
             AcSaver[pageData.keyName].splice(0,9).forEach(function (rid) {
-                if(rid!==pageData.rId){
+                if(parseInt(rid)!==parseInt(pageData.rId)){
                     loadJs('../'+rid+'/data/'+rid+'.js', function () {
                         resentLoader[pageData.rType](LOADED[pageData.keyName][rid]);
                     });

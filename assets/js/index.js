@@ -70,7 +70,7 @@ let theList = {
         // 评论数量
         leftExtra.append(iconText('pts shallow-gray', 'icon ac-icon',
             'iconfont', '', thisData.formatCommentCount || thisData.commentCountShow));
-        if(data[0]=='article'){
+        if(data[0]==='article'){
             // 收藏数量
             leftExtra.append(iconText('pts shallow-gray', 'icon ac-icon',
                 'iconfont', '', thisData.formatStowCount || ""));
@@ -130,9 +130,12 @@ let theList = {
     }
 };
 loadJs("data.js", function(){
+    let ADDED = [];
     AcSaver.least.reverse().forEach(function (item) {
-        if(['article', 'video'].indexOf(item[0])>-1){
-            theList.addCard(item);
+        if(['article', 'video'].indexOf(item[0])>-1 &&
+            ADDED.indexOf({t: item[0], i: item[1]})===-1){
+            theList.addCard(item);ADDED.push({t: item[0], i: item[1]});
         }
     });
+    console.log(ADDED);
 });

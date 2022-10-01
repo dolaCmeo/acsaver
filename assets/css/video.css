@@ -938,7 +938,7 @@ a:hover {
 .video-description .action-area .right-area > div {
     display: inline-block;
     vertical-align: middle;
-    cursor: pointer;
+    /*cursor: pointer;*/
     height: 30px;
     padding-top: 5px;
     margin-top: -5px;
