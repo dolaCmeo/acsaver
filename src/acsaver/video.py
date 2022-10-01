@@ -1,6 +1,5 @@
 # coding=utf-8
-import os
-from .utils import SaverBase
+from .utils import os, SaverBase
 
 __author__ = 'dolacmeo'
 
@@ -14,7 +13,7 @@ class VideoSaver(SaverBase):
 
     def _gen_html(self, index: int = 0) -> bool:
         vname = self._part_video_name(index)
-        page_html = self.page_template.render(dict(saver=self, partNum=index))
+        page_html = self.page_template.render(dict(saver=self, vname=vname, partNum=index))
         html_path = os.path.join(self._save_path, f"{vname}.html")
         with open(html_path, 'wb') as html_file:
             html_file.write(page_html.encode())
@@ -27,8 +26,9 @@ class VideoSaver(SaverBase):
     def save_all(self):
         self._save_raw()
         self._save_image()
-        self._gen_html()
-        self._save_video()
-        self._save_danmaku()
+        for n in range(len(self.video_list)):
+            self._gen_html(n)
+            self._save_video(n)
+            self._save_danmaku(n)
         self._save_comment()
         self.update_js_data()

@@ -7,18 +7,6 @@
     <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/video.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
-    <style>
-        .left-column.unfold{
-            width: 100% !important;
-            max-width: calc(100% - 40px) !important;
-        }
-        .right-column.unfold{
-            width: 0 !important;
-        }
-        .left-column.unfold #player{
-            position: unset !important;
-        }
-    </style>
 </head>
 <body>
 <header id="header"></header>
@@ -30,15 +18,10 @@
                     <div id="ACPlayer">
                         <div class="container-player" style="">
                             <div class="container-video">
-                                <video id="localPlayer" preload="auto" poster="cover._" controls>
-                                    <source src="{{ saver.rid }}.mp4" type="video/mp4">
-                                </video>
                                 <div class="container-plugins-inner">
                                     <div class="container-controls">
+                                        <div class="control-bar-bottom"></div>
                                         <div class="video-status" data-bind-key="playStatus" data-bind-attr="pause"></div>
-                                    </div>
-                                    <div class='player-plugin-advanced-danmaku-container'>
-                                        <div class='danmaku-g-rendered-stage' style="width: 100%;height: 100%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -50,7 +33,7 @@
             <div class="video-description clearfix dark-style">
                 <h1 class="title">
 <!--                    <a class="reco-tag" href="https://www.acfun.cn/rank/list/#cid=-1;range=1;pcid=-3" title="综合榜Top2" target="_blank">综合榜Top2</a>-->
-                    <a id="srcUrl" href="https://www.acfun.cn/v/ac{{ saver.rid }}"><span>{{ RAW.title }}</span></a>
+                    <a id="srcUrl" href="https://www.acfun.cn/v/ac{{ saver.rid }}" style="cursor: default;"><span>{{ RAW.title }}</span></a>
                 </h1>
                 <div class="action-area">
                     <div class="left-area">
@@ -192,7 +175,7 @@
         </div>
         <div class="right-column">
             <div id="danmaku" style="display: block;">
-                <div class="danmaku-wrapper unfold">
+                <div class="danmaku-wrapper">
                     <div class="danmaku-container">
                         <div class="danmaku-list-container">
                             <div class="danmaku-list">
@@ -226,18 +209,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="danmaku-fold unfold">弹幕列表</div>
+                    <div class="danmaku-fold">弹幕列表</div>
                 </div>
             </div>
             {% if RAW.videoList|length > 1 %}
             <div class="part">
                 <div class="part-title"><h3>分段列表</h3>
-                    <p>共{{ RAW.videoList|length }}P, 当前正在播放<span class="current-priority">{{ partNum }}</span>P</p></div>
+                    <p>共{{ RAW.videoList|length }}P, 当前正在播放<span class="current-priority">{{ partNum + 1 }}</span>P</p></div>
                 <div class="fl part-wrap">
                     <ul class="scroll-div">
                         {% for part in RAW.videoList %}
-                        <li class="single-p{% if loop.index == partNum %} active{% endif %}"
-                            data-href="ac{{ RAW.dougaId }}{{ "_"+loop.index|string if loop.index > 1 else "" }}.html"
+                        <li class="single-p{% if loop.index0 == partNum %} active{% endif %}"
+                            data-href="{{ RAW.dougaId }}{{ "_"+loop.index|string if loop.index > 1 else "" }}.html"
                             title="{{ part.title }}" data-id="{{ part.id }}">{{ part.title }}</li>
                         {% endfor %}
                     </ul>
@@ -257,10 +240,11 @@
 <div id="pagelet_footer" style="visibility: visible;"></div>
 <script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
 <script type="text/javascript" src="../../assets/js/loader.js"></script>
+<script type="text/javascript" src="../../assets/js/DPlayer.min.js"></script>
 <script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
-    let PAGE = {{ saver.page_data }};
+    let PAGE = {{ saver.page_data }};PAGE.rName = "{{ vname }}";
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
     let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];
     tagsLoader(pagelets);

@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 import zipfile
-from .utils import downloader, saver_template, SaverData, update_js_data
+from .utils import downloader, saver_template, SaverData, update_js_data, create_py_http_server_bat
 from .article import ArticleSaver
 from .video import VideoSaver
 from .live import LiveSaver
@@ -24,6 +24,7 @@ class AcSaver:
 
     def loading(self):
         update_js_data(self.local.root_path)
+        create_py_http_server_bat(self.local.root_path)
 
     def ArticleSaver(self, ac_obj):
         return ArticleSaver(self.acer, ac_obj)

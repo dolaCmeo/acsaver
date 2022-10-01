@@ -10,6 +10,7 @@ import random
 import filetype
 import subprocess
 from urllib import parse
+from PIL import Image
 from rich.console import Console
 from rich.text import Text
 from rich.align import Align
@@ -45,13 +46,22 @@ __all__ = (
     "json2js",
     "downloader",
     "m3u8_downloader",
+    "scenes_to_thumbnails",
+    "danmaku2dplayer",
     "danmaku2ass",
     "get_usable_ffmpeg",
     "tans_uub2html",
     "tans_comment_uub2html",
     "live_recorder",
-    "update_js_data"
+    "update_js_data",
+    "create_py_http_server_bat"
 )
+
+
+def clean_file_name(filename:str):
+    invalid_chars='[\\\/:*?"<>|]'
+    replace_char='-'
+    return re.sub(invalid_chars,replace_char,filename)
 
 
 def sizeof_fmt(num, suffix="B"):
@@ -75,7 +85,7 @@ def unix2datestr(t: (int, float, None) = None, f: str = "%Y-%m-%d %H:%M:%S"):
 
 
 def url_saver(url: str, base_path: [os.PathLike, str], filename: str):
-    file_path = os.path.join(base_path, filename)
+    file_path = os.path.join(base_path, clean_file_name(filename))
     if not file_path.endswith(".url"):
         file_path = f"{file_path}.url"
     raw_data = f"[InternetShortcut]\nURL={url}\n"
@@ -112,6 +122,45 @@ def json_saver(data: dict, base_path: [os.PathLike, str], filename: str):
     return result
 
 
+def scenes_to_thumbnails(base_path: [os.PathLike, str]):
+    rid = os.path.basename(base_path)
+    scenes_img_path = os.path.join(base_path, "data", f"{rid}.scenes.png")
+    scenes_data_path = os.path.join(base_path, "data", f"{rid}.scenes.json")
+    if not (os.path.isfile(scenes_img_path) and os.path.isfile(scenes_data_path)):
+        return False
+    pos = json.load(open(scenes_data_path, 'r'))['pos']
+    pos = [x[2] for x in pos]
+    if len(pos) != 0 and len(pos) % 50 != 0:
+        return False
+    scenes = Image.open(scenes_img_path)
+    thumbnails = Image.new('RGB', (16000, 90))
+    for i in range(100):
+        x, y, w, h = list(map(int, pos[i // 2].split(',')))
+        region = scenes.crop((x, y, x + w, y + h))
+        thumbnails.paste(region, (160 * i, 0))
+    thumbnails_path = os.path.join(base_path, "data", f"{rid}.thumbnails.png")
+    thumbnails.save(thumbnails_path, "png")
+    return os.path.isfile(thumbnails_path)
+
+
+def danmaku2dplayer(folder_path: str, filenameId: str):
+    # 检查路径
+    assert os.path.isdir(folder_path) is True
+    danmaku_data_path = os.path.join(folder_path, 'data', f"{filenameId}.danmaku.json")
+    assert os.path.isfile(danmaku_data_path) is True
+    danmaku_data = json.load(open(danmaku_data_path, 'rb'))
+    dplayer_data = dict(code=0, data=list())
+    for danmaku in danmaku_data:
+        dplayer_data['data'].append([
+            round(danmaku['position'] / 1000, 3),
+            danmaku['mode'] - 1,
+            danmaku['color'],
+            f"{danmaku['userId']}",
+            danmaku['body']
+        ])
+    return json_saver(dplayer_data, os.path.join(folder_path, 'data'), f"{filenameId}.dplayer.json")
+
+
 def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: int = 40):
     """
     https://github.com/niuchaobo/acfun-helper/blob/master/src/fg/modules/danmaku.js
@@ -131,25 +180,36 @@ def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: i
     # 检查路径
     assert os.path.isdir(folder_path) is True
     folder_name = os.path.basename(folder_path)
-    video_data_path = os.path.join(folder_path, 'data', f"{filenameId}.json")
+    main_json_name = f"{filenameId}.json"
+    if "_" in filenameId:
+        main_json_name = f"{filenameId.split('_')[0]}.json"
+    main_data_path = os.path.join(folder_path, 'data', main_json_name)
     danmaku_data_path = os.path.join(folder_path, 'data', f"{filenameId}.danmaku.json")
-    assert all([os.path.isfile(video_data_path), os.path.isfile(danmaku_data_path)]) is True
-    video_data = json.load(open(video_data_path, 'rb'))
+    video_data_path = os.path.join(folder_path, 'data', f"{filenameId}.video.json")
+    assert all([os.path.isfile(main_data_path), os.path.isfile(danmaku_data_path)]) is True
+    main_data = json.load(open(main_data_path, 'rb'))
     danmaku_data = json.load(open(danmaku_data_path, 'rb'))
+    video_data = json.load(open(video_data_path, 'rb'))
+    ks_data = json.loads(video_data['ksPlayJson'])
+    quality_data = None
+    for x in ks_data['adaptationSet'][0]['representation']:
+        if x['qualityType'] == vq:
+            quality_data = x
+    if isinstance(quality_data, dict) is False:
+        return None
     if len(danmaku_data) == 0:
         return None
-
     thisVideoInfo = AcSource.videoQualitiesRefer[vq]
-    thisVideoWidth = thisVideoInfo['width']
-    thisVideoHeight = thisVideoInfo['height']
+    thisVideoWidth = quality_data['width']
+    thisVideoHeight = quality_data['height']
     thisDuration = 10
     channelNum = math.floor(thisVideoWidth / fontsize)
     scriptInfo = "\n".join([
         "[Script Info]",
         f"; AcVid: {folder_name}",
-        f"; StreamName: {video_data['title']}",
-        f"Title: {folder_name} - {video_data['user']['name']} - {video_data['title']}",
-        f"Original Script: {folder_name} - {video_data['user']['name']} - {video_data['title']}",
+        f"; StreamName: {main_data['title']}",
+        f"Title: {folder_name} - {main_data['user']['name']} - {main_data['title']}",
+        f"Original Script: {folder_name} - {main_data['user']['name']} - {main_data['title']}",
         "Script Updated By: acfunSDK转换",
         "ScriptType: v4.00+",
         "Collisions: Normal",
@@ -238,15 +298,7 @@ def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: i
     ass_path = os.path.join(folder_path, f"{filenameId}.ass")
     with open(ass_path, 'w', encoding="utf_8_sig") as ass_file:
         ass_file.write(result)
-    ass_js_path = os.path.join(folder_path, 'data', f"{filenameId}.ass.js")
-    ass_js_data = [
-        "let assData=\"\" + \n",
-        *[f"\"{x}\" + \n" for x in result.split('\n')],
-        "\"\";"
-    ]
-    with open(ass_js_path, 'wb') as ass_js:
-        ass_js.write("".join(ass_js_data).encode())
-    return ass_path
+    return os.path.isfile(ass_path)
 
 
 def get_usable_ffmpeg(cmd: [str, None] = None):
@@ -595,14 +647,29 @@ def update_js_data(save_root: [os.PathLike, str]):
             least_v = (fn, x)
             if x in nomore and least_v in least:
                 least.remove(least_v)
-        final_dirs.extend(news)
+        for y in news:
+            if y not in final_dirs:
+                final_dirs.append(y)
         final_dirs = [n for n in final_dirs if os.path.isfile(os.path.join(save_root, fn, n, 'data', f'{n}.js'))]
         saver_data[fn] = final_dirs
         for i in news:
-            least.append((fn, i))
-    saver_data['least'] = least
+            if [fn, i] not in news:
+                least.append([fn, i])
+    new = list()
+    for u in least:
+        if u not in new and u[1] in saver_data[u[0]]:
+            new.append(u)
+    saver_data['least'] = new
     with open(saver_data_path, 'wb') as js:
         saver_data_string = json.dumps(saver_data, separators=(',', ':'))
         data_js = f"let AcSaver={saver_data_string};"
         js.write(data_js.encode())
     return os.path.isfile(saver_data_path)
+
+
+def create_py_http_server_bat(save_root: [os.PathLike, str]):
+    cmd = "@echo off\nstart http://127.0.0.1:666\npython -m http.server 666\n"
+    bat_path = os.path.join(save_root, "pyHttpServer.bat")
+    with open(bat_path, 'w') as bat:
+        bat.write(cmd)
+    return os.path.isfile(bat_path)

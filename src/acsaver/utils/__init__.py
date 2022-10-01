@@ -94,6 +94,16 @@ class SaverBase:
         this_video = self.ac_obj.video(num)
         m3u8_url = this_video.m3u8_url(quality, False)
         vname = self._part_video_name(num)
+        json_saver(this_video.raw_data, self._data_path, f"{vname}.video.json")
+        scenes_data = this_video.scenes
+        if isinstance(scenes_data, dict):
+            json_saver(scenes_data, self._data_path, f"{vname}.scenes.json")
+            scenes_image_path = os.path.join(self._data_path, f"{vname}.scenes.png")
+            downloader(self.acer.client, [(scenes_data['sprite_image'], scenes_image_path)])
+            scenes_to_thumbnails(self._save_path)
+        hotspot_data = this_video.hotspot
+        if isinstance(hotspot_data, dict):
+            json_saver(hotspot_data, self._data_path, f"{vname}.hotspot.json")
         save_path = os.path.join(self._save_path, f"{vname}.mp4")
         if os.path.isfile(save_path):
             return True
@@ -124,7 +134,9 @@ class SaverBase:
         vname = self._part_video_name(num)
         json_saver(this_video.danmaku.danmaku_data, self._data_path, f"{vname}.danmaku.json")
         json2js(os.path.join(self._data_path, f"{self.rid}.danmaku.json"), f"let danmakuData")
-        return danmaku2ass(self._save_path, vname, quality)
+        ass_req = danmaku2ass(self._save_path, vname, quality)
+        player_req = danmaku2dplayer(self._save_path, vname)
+        return all([ass_req, player_req])
 
     def _save_comment(self, update: bool = False):
         local_comment_data, local_comment_floors = None, []
