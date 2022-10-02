@@ -92,7 +92,6 @@ def url_saver(url: str, base_path: [os.PathLike, str], filename: str):
     with open(file_path, 'wb') as url_file:
         url_file.write(raw_data.encode())
     result = os.path.isfile(file_path)
-    print("SAVED:", result, file_path)
     return result
 
 
@@ -118,7 +117,6 @@ def json_saver(data: dict, base_path: [os.PathLike, str], filename: str):
     with open(file_path, 'wb') as json_file:
         json_file.write(json_string.encode())
     result = os.path.isfile(file_path)
-    print("SAVED:", result, file_path)
     return result
 
 
@@ -337,7 +335,7 @@ def m3u8_downloader(m3u8_url: str, save_path: [str, os.PathLike, None] = None):
             pp.update(ff_download, completed=100)
             pp.stop()
     except RuntimeError as e:
-        print(f"downloader ERROR: {ffmpeg_params=}")
+        print(f"RuntimeError.ERROR: downloader run {ffmpeg_params=}")
         return False
     return os.path.isfile(save_path)
 
@@ -457,8 +455,6 @@ def tans_uub2html(src: str, save_path: str) -> tuple:
                     src = src.replace(tag[0], f'<img class=\\"ubb-emotion\\" src=\\"{emot_map["saved"][alias]}\\">')
                 elif alias in emot_map['lost']:
                     pass
-                else:
-                    print("??? emot:", tag)
             elif n == 'image':
                 img_name = tag[1].split('/')[-1]
                 img_path = os.path.join(save_path, 'img', img_name)
@@ -490,16 +486,12 @@ def tans_comment_uub2html(data_path):
     temp_ok = os.path.isfile(comment_json_temp)
     img_task = list()
     if temp_ok:
-        print('loading temp')
         comment_json_string = open(comment_json_temp, 'r').read()
     else:
         comment_json_string = open(comment_json_path, 'r').read()
-        print('process comment ubb tags')
         comment_json_string, img_task = tans_uub2html(comment_json_string, data_path)
-        print('SAVE TEMP')
         with open(comment_json_temp, 'w') as t:
             t.write(comment_json_string)
-    print('split comment data')
     comment_data = json.loads(comment_json_string)
     total_comment = len(comment_data['rootComments'])
     # 评论分块存储，每块100条；跟楼按每页划分。
@@ -546,7 +538,6 @@ def tans_comment_uub2html(data_path):
         with open(comment_block_js_path, 'wb') as js_file:
             comment_js = f"LOADED.comment[{i+1}]={comment_block_js_string};"
             js_file.write(comment_js.encode())
-        print("SAVED:", os.path.isfile(comment_block_js_path), comment_block_js_path)
     if temp_ok:
         os.remove(comment_json_temp)
     return img_task
@@ -577,7 +568,7 @@ def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] =
     live_obs_stream = f"{stream_split.scheme}://{stream_split.netloc}{stream_split.path}?auth_key={stream_key}"
     ffmpeg = get_usable_ffmpeg()
     if ffmpeg is None:
-        print(f"record need ffmpeg")
+        print(f"ERROR: record need ffmpeg")
         return False
     cmd_with_progress = [
         ffmpeg,

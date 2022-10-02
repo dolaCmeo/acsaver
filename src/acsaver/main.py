@@ -119,8 +119,7 @@ class SaverLocal:
                 # 下载完整压缩包，覆盖解压处理
                 assert_zip_path = os.path.join(self.root_path, "assets.zip")
                 if not os.path.isfile(assert_zip_path):
-                    downloader(self.acer.client, [(SaverData.github_assets_zip_url,
-                                                   assert_zip_path)], display=True)
+                    downloader(self.acer.client, [(SaverData.github_assets_zip_url, assert_zip_path)], display=True)
                 zip_file = zipfile.ZipFile(assert_zip_path)
                 zip_file.extractall(self.root_path)
             # 循环调用检查，并计数，最大次数3次后报错

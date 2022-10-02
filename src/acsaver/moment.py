@@ -55,6 +55,7 @@ class MomentSaver(SaverBase):
 
     def save_all(self):
         self._save_raw()
+        # self._save_image()
         self._gen_html()
         self._save_comment()
         self.update_js_data()

@@ -60,7 +60,7 @@ class SaverBase:
 
     def _save_raw(self):
         url_name = f"{self.ac_obj.title}"
-        if self.rid == 10:
+        if self.rtype == 10:
             url_name = f"@{self.ac_obj.raw_data['user']['name']}"
         url_saved = url_saver(self.ac_obj.referer, self._save_path, url_name)
         raw_saved = json_saver(self.ac_obj.raw_data, self._data_path, f"{self.ac_obj.resource_id}")
@@ -143,7 +143,6 @@ class SaverBase:
         comment_json_path = os.path.join(self._data_path, f"{self.rid}.comment.json")
         comment_json_path_saved = os.path.isfile(comment_json_path)
         if comment_json_path_saved:
-            print("loading comment data.json")
             local_comment_data = json.load(open(comment_json_path, 'rb'))
             local_comment_floors = [x['floor'] for x in local_comment_data['rootComments']]
         if update is True or comment_json_path_saved is False:
@@ -173,7 +172,6 @@ class SaverBase:
                         uids.append(j['userId'])
             self._save_member(uids)
             json_saver(comment_data, self._data_path, f"{self.rid}.comment.json")
-            print(f"SAVED: {comment_json_path=}")
         img_task = tans_comment_uub2html(self._save_path)
         if len(img_task) > 0:
             os.makedirs(os.path.join(self._save_path, 'img'), exist_ok=True)
@@ -191,7 +189,7 @@ class SaverBase:
         ids = list(set(ids_with_ext).difference([x for x in saved if x.endswith('.json')]))
         ids = [y.split('.')[0] for y in ids]
         avatar_task = list()
-        with Progress() as pp:
+        with Progress(disable=len(ids) <= 5) as pp:
             get_member = pp.add_task("save members", total=len(ids))
             for uid in ids:
                 if all([f"{uid}.json" in saved, f"{uid}.js" in saved, f"{uid}_avatar" in saved]) is True \
