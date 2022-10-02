@@ -1,8 +1,27 @@
+let is_LOCAL = window.location.protocol === "file:";
+let rTypeMap = {
+        1: "bangumi",
+        2: "video",
+        3: "article",
+        4: "album",
+        5: "member",
+        6: "comment",
+        10: "moment"
+    },
+    rTypeCnName = {
+        1: "番剧",
+        2: "视频",
+        3: "文章",
+        4: "合辑",
+        5: "用户",
+        6: "评论",
+        10: "动态"
+    };
 let htmlString = {
     "header": "\n" +
         "<div class=\"nav\">\n" +
         "    <div class=\"nav-links\">\n" +
-        "        <a href=\"https://www.acfun.cn/\" class=\"logo\"><img src=\"../../assets/img/acfunlogo.svg\" width=\"94\" height=\"30\"></a>\n" +
+        "        <a href=\"../../index.html\" class=\"logo\"><img src=\"../../assets/img/acsaverlogo.svg\" width=\"94\" height=\"30\"></a>\n" +
         "    </div>\n" +
         "    <div class=\"nav-title\" style=\"display:none;\"><a href></a></div>\n" +
         "    <div class=\"nav-bread\"></div>\n" +
@@ -11,36 +30,25 @@ let htmlString = {
         "        <ul class=\"nav-guide-2\"></ul>\n" +
         "    </div>\n" +
         "    <div class=\"nav-entrance-wrap\" style=\"display:none;\">\n" +
-        "        <a href=\"https://shop213417608.taobao.com/\" target=\"_blank\" class=\"nav-mall\">\n" +
-        "            <span class=\"ac-icon\"><i class=\"iconfont\">&#xe420;</i></span>\n" +
-        "            <span class=\"entrance-title\">周边商城</span></a> \n" +
-        "        <a href=\"https://www.acfun.cn/face-catcher\" target=\"_blank\" class=\"face-catcher\">\n" +
-        "            <span class=\"ac-icon\"><i class=\"iconfont\">&#xe3e8;</i></span>\n" +
-        "            <span class=\"entrance-title\">AcFun面捕助手</span></a>\n" +
+        "        <a href=\"index.html\" class=\"nav-mall\">\n" +
+        "            <span class=\"ac-icon\"><i class=\"iconfont\">&#xe3c5;</i></span>\n" +
+        "            <span class=\"entrance-title\">近期保存内容</span></a> \n" +
+        "        <a href=\"feed.html\" class=\"face-catcher\">\n" +
+        "            <span class=\"ac-icon\"><i class=\"iconfont\">&#xe3c4;</i></span>\n" +
+        "            <span class=\"entrance-title\">近期保存动态</span></a>\n" +
         "    </div>\n" +
         "    <div class=\"nav-search\">\n" +
         "        <span class=\"nav-search-input ac-input-wrapper ac-input-suffix\">\n" +
         "            <input placeholder=\"\" autocomplete=\"off\" minlength=\"\" maxlength=\"\" type=\"text\" value=\"\" class=\"ac-input\" id='nav-search' style='cursor: default;'> \n" +
-        "            <div class=\"ac-input-suffix-item\"><span class=\"ac-icon\"><i class=\"iconfont\">&#xe15d;</i></span></div>\n" +
+        "            <div class=\"ac-input-suffix-item\" id='nav-search-btn'><span class=\"ac-icon\"><i class=\"iconfont\">&#xe15d;</i></span></div>\n" +
         "        </span>\n" +
         "    </div>\n" +
         "    <div class=\"nav-user\">\n" +
-//        "        <a href=\"https://www.acfun.cn/app\" target=\"_blank\" rel=\"noopener\" class=\"app\"><span class=\"ac-icon\"><i class=\"iconfont\">&#xe242;</i></span></a>\n" +
-//        "        <a href=\"https://www.acfun.cn/login\" target=\"_blank\" class=\"nologin\">登录/注册</a>\n" +
-        "        <a rel=\"noopener\" href=\"https://message.acfun.cn\" target=\"_blank\" class=\"user-message nav-user-item\">\n" +
-        "            <span class=\"icon ac-badge ac-badge-normal\"><span class=\"ac-icon\"><i class=\"iconfont\">&#xe15e;</i></span></span>\n" +
-        "            <p class=\"desc\">消息</p></a> \n" +
-        "        <a rel=\"noopener\" href=\"https://www.acfun.cn/member/feeds\" target=\"_blank\" class=\"user-history nav-user-item\">\n" +
-        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe160;</i></span>\n" +
-        "            <p class=\"desc\">动态</p></a> \n" +
-        "        <a href=\"https://live.acfun.cn\" target=\"_blank\" class=\"user-favourite nav-user-item\">\n" +
-        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe2af;</i></span>\n" +
-        "            <p class=\"desc\">直播</p></a> \n" +
         "        <a href=\"https://github.com/dolaCmeo/acfunsdk\" target=\"_blank\" class=\"user-favourite nav-user-item\">\n" +
-        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe2ea;</i></span>\n" +
+        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe353;</i></span>\n" +
         "            <p class=\"desc\">AcSDK</p></a> \n" +
         "        <a href=\"https://github.com/dolaCmeo/acsaver\" target=\"_blank\" class=\"user-creative nav-user-item\">\n" +
-        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe15f;</i></span>\n" +
+        "            <span class=\"icon ac-icon\"><i class=\"iconfont\">&#xe62e;</i></span>\n" +
         "            <p class=\"desc\">AcSaver</p></a> \n" +
         "        <a href=\"https://www.acfun.cn\" target=\"_blank\" rel=\"noopener\" class=\"user-upload\" id='online-link'>\n" +
         "            <button type=\"button\" class=\"ac-button ac-button-primary ac-button-normal\">\n" +
@@ -1418,22 +1426,32 @@ let navData = [
 ];
 
 
+function createTag(tagName, className="", attrs=[]) {
+    let thisTag = document.createElement(tagName);
+    if(className.length){thisTag.setAttribute("class", className);}
+    attrs.forEach(function (attr) {
+        thisTag.setAttribute(attr[0], attr[1]);
+    });
+    return thisTag;
+}
+
 function navItemLoader() {
     let navMain = document.querySelector(".nav-guide-2");
     navData.forEach(function (item) {
-        let nav2 = document.createElement("li"),
-            nav2link = document.createElement("a"),
-            nav2sub = document.createElement("ul");
-        nav2.setAttribute("class", "nav-guide-2-item");
-        nav2link.setAttribute("href", "https://www.acfun.cn" + item.link);
+        let nav2 = createTag("li", "nav-guide-2-item"),
+            nav2link = createTag("a", "", [
+                ["target", "_blank"],
+                ["href", "https://www.acfun.cn" + item.link]
+            ]),
+            nav2sub = createTag("ul", "nav-guide-3");
         nav2link.innerHTML = item.navName;
         nav2.append(nav2link);
-        nav2sub.setAttribute("class", "nav-guide-3");
         item.children.forEach(function (sub) {
-            let nav3 = document.createElement("li"),
-                nav3link = document.createElement("a");
-            nav3.setAttribute("class", "nav-guide-3-item");
-            nav3link.setAttribute("href", "https://www.acfun.cn" + sub.link);
+            let nav3 = createTag("li", "nav-guide-3-item"),
+                nav3link = createTag("a", "", [
+                    ["target", "_blank"],
+                    ["href", "https://www.acfun.cn" + sub.link]
+                ]);
             nav3link.innerHTML = sub.navName;
             nav3.append(nav3link);
             nav2sub.append(nav3);
@@ -1442,16 +1460,22 @@ function navItemLoader() {
         navMain.append(nav2);
     });
     navMain.innerHTML += "<div class=\"nav-guide-3-place\"></div>";
-    document.getElementById("online-link").setAttribute("href", document.getElementById("srcUrl").getAttribute('href'));
-    document.getElementById("nav-search").addEventListener("keypress", function(event) {
-        // If the user presses the "Enter" key on the keyboard
+    let olink = document.getElementById("online-link");
+    if(olink!==null){
+        olink.setAttribute("href", document.getElementById("srcUrl").getAttribute('href'));
+    }
+    let nav_input = document.getElementById("nav-search"),
+        nav_btn = document.getElementById("nav-search-btn");
+    nav_input.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
-            // Cancel the default action, if needed
             event.preventDefault();
-            // Trigger the button element with a click
             window.open("https://www.acfun.cn/search?keyword=" + this.value, "_blank");
         }
     });
+    nav_btn.addEventListener("click", function(event) {
+        window.open("https://www.acfun.cn/search?keyword=" + nav_input.value, "_blank");
+    });
+
 }
 
 function tagsLoader(tids){
@@ -1459,4 +1483,206 @@ function tagsLoader(tids){
         document.querySelector("#" + tid).innerHTML = htmlString[tid];
         if(tid==='header'){navItemLoader();}
     });
+}
+
+function emot2html(s='') {
+    let regex = /(?<emot>\[emot=(?<key>\w+),(?<num>\d+)\/])/gm,
+        rep = '<img class="ubb-emotion" src="assets/emot/$2/$3.gif" alt="$1">';
+    return s
+        .replace(regex, rep)
+        .replace(/src="assets\/emot\/acfun\//gm, 'src="assets/emot/small/');
+}
+
+function momentLoader(rId) {
+    let RAW = LOADED.moment[rId],mLink="moment/"+rId+"/"+rId+".html";
+    if(RAW===undefined){return false;}
+    let momentMain = createTag("div", "ac-member-feed"),
+        momentUser = createTag("div", "member-feed-user"),
+        momentContent = createTag("div", "feed-content"),
+        momentInfos = createTag("div", "member-feed-interactive"),
+        momentSeparate = createTag("div", "feed-separate"),
+        momentMore = createTag("div", "feed-more");
+    // feed-up
+    let feed_up = createTag("div", "feed-up"),
+        up_avatar = createTag("div", "feed-up-avatar"),
+        up_link = createTag("a", "", [
+            ["target", "_blank"],
+            ["href", "https://www.acfun.cn/u/" + RAW.user.href]
+        ]),
+        up_avatar_img = createTag("img", "", [
+            ["src", "member/" + RAW.user.href + "_avatar"],
+            ["onerror", "this.src='assets/img/defaultAvatar.jpg';"]
+        ]),
+        up_info = createTag("div", "feed-up-info"),
+        up_name = createTag("div", "up-name no-color"),
+        up_name_link = createTag("a", "text-overflow", [
+            ["target", "_blank"],
+            ["href", "https://www.acfun.cn/u/" + RAW.user.href]
+        ]),
+        up_verify = createTag("div", "verify"),
+        create_time = createTag("span", "feed-time");
+    RAW.user.verifiedTypes.forEach(function (i) {
+        let vIcon = createTag("span", "ac-icon ac-icon-small"), vInfo;
+        switch (i) {
+            case 1:
+                vInfo = [
+                    ["src", "assets/img/icon_monkey_new.svg"],
+                    ["title", "AcFun管理员认证"],
+                ];
+                break;
+            case 2:
+                vInfo = [
+                    ["src", "assets/img/icon_v.svg"],
+                    ["title", "AcFun官方认证"],
+                ];
+                break;
+            case 3:
+                vInfo = [
+                    ["src", "assets/img/icon_avi.svg"],
+                    ["title", "AVI虚拟偶像标识"],
+                ];
+                break;
+            case 4:
+                vInfo = [
+                    ["src", "assets/img/icon_gjdm.svg"],
+                    ["title", "高弹达人标识"],
+                ];
+                break;
+            case 5:
+                vIcon.setAttribute("class", "ac-icon ac-icon-small ac-icon-academy");
+                vInfo = [
+                    ["src", "assets/img/icon_up.svg"],
+                    ["title", "阿普学院标志"],
+                ];
+                break;
+        }
+        vIcon.append(createTag("img", "icon-img", vInfo));
+        up_verify.append(vIcon);
+    });
+    up_link.append(up_avatar_img);
+    up_avatar.append(up_link);
+    feed_up.append(up_avatar);
+    up_name_link.innerHTML = RAW.user.name;
+    up_name.append(up_name_link);
+    up_info.append(up_name);
+    up_info.append(up_verify);
+    create_time.innerHTML = RAW.createTime;
+    up_info.append(create_time);
+    feed_up.append(up_info);
+    momentUser.append(feed_up);
+    momentUser.addEventListener("click", function (event) {window.location.href = mLink;});
+    momentMain.append(momentUser);
+    // member-feed-moment
+    let feed_content = createTag("div", "member-feed-moment"),
+        content_text = createTag("div", "member-feed-text");
+    content_text.innerHTML = emot2html(RAW.text);
+    feed_content.append(content_text);
+    if((RAW.imgs||[]).length){
+        let feed_image = createTag("div", "member-feed-moment-image member-feed-moment-image-" + RAW.imgs.length);
+        RAW.imgs.forEach(function (item) {
+            feed_image.append(createTag("img", "", [["src", item.originUrl]]));
+        });
+        feed_content.append(feed_image);
+    }
+    // member-feed-repost-content
+    if(RAW.repostSource){
+        let repost = createTag("div", "member-feed-repost-content"),
+            repost_up = createTag("div", "repost-up"),
+            repost_up_link = createTag("a", "",
+                [["target", "_blank"],["href", "https://www.acfun.cn/u/" + RAW.repostSource.user.userId]]),
+            repost_up_name = createTag("span", "up-name"),
+            repost_up_follow = createTag("span", "follow"),
+            repost_resource = createTag("div", "member-feed-resource");
+        repost_up_name.innerHTML = "@" + RAW.repostSource.user.userName;
+        repost_up_link.append(repost_up_name);
+        repost_up_follow.innerHTML = "关注";
+        repost_up_link.append(repost_up_follow);
+        repost_up.append(repost_up_link);
+        repost.append(repost_up);
+        repost_resource.append(createTag("div", "member-feed-text"));
+        if([2,3].indexOf(RAW.repostSource.resourceType)>-1){
+            let resource_content = createTag("div", "member-feed-resource-content"),
+                content_left = createTag("div", "content-left"),
+                content_right = createTag("div", "content-right"),
+                resource_url = RAW.repostSource.shareUrl,
+                rtype = rTypeMap[RAW.repostSource.resourceType],
+                rid = RAW.repostSource.resourceId;
+            if(AcSaver[rtype].indexOf(rid.toString())>-1){
+                resource_url = rtype + "/" + rid + "/" + rid + ".html";
+            }
+            let left_link = createTag("a", "member-feed-resource-link",
+                    [["target", "_blank"],["href", resource_url]]),
+                cover_img = createTag("img", "cover", [["src", RAW.repostSource.coverUrl]]),
+                resource_tag = createTag("span", "resource-tag");
+            resource_tag.innerHTML = rTypeCnName[RAW.repostSource.resourceType];
+            left_link.append(cover_img);
+            left_link.append(resource_tag);
+            content_left.append(left_link);
+            resource_content.append(content_left);
+            if(rtype==='video'){
+                let video_time = createTag("div", "video-time");
+                video_time.innerHTML = RAW.repostSource.playDuration;
+                left_link.append(video_time);
+            }
+            let right_link = createTag("a", "member-feed-resource-link",
+                    [["target", "_blank"],["href", resource_url]]),
+                resource_title = createTag("h1", "title text-overflow feed-link"),
+                resource_desc = createTag("div", "desc"),
+                resource_info = createTag("div", "info"),
+                info_view = createTag("span", "view"),
+                info_view_icon = createTag("span", "ac-icon"),
+                info_danmu = createTag("span", "danmu"),
+                info_danmu_icon = createTag("span", "ac-icon");
+            resource_title.innerHTML = RAW.repostSource.caption||RAW.repostSource.articleTitle;
+            resource_desc.innerHTML = RAW.repostSource.articleBody||RAW.repostSource.detail.description;
+            info_view_icon.innerHTML = "<i class=\"iconfont\">&#xe62f;</i>";
+            info_view.append(info_view_icon);
+            info_view.append(RAW.repostSource.viewCount);
+            resource_info.append(info_view);
+            info_danmu_icon.innerHTML = "<i class=\"iconfont\">&#xe630;</i>";
+            info_danmu.append(info_danmu_icon);
+            info_danmu.append(RAW.repostSource.commentCount||RAW.repostSource.detail.danmakuCount);
+            resource_info.append(info_danmu);
+            right_link.append(resource_title);
+            right_link.append(resource_desc);
+            right_link.append(resource_info);
+            content_right.append(right_link);
+            resource_content.append(content_right);
+            // return
+            repost_resource.append(resource_content);
+        }
+        repost.append(repost_resource);
+        feed_content.append(repost);
+    }
+    momentContent.append(feed_content);
+    momentMain.append(momentContent);
+    let interactive = createTag("div", "feed-interactive"),
+        iComment = createTag("div", "feed-interactive-comment"),
+        iBanana = createTag("div", "feed-interactive-banana"),
+        iLike = createTag("div", "feed-interactive-like"),
+        iShare = createTag("div", "feed-interactive-repost");
+    iComment.innerHTML = "<div class=\"feed-interactive-comment\">" +
+        "<span class=\"ac-icon\"><i class=\"iconfont\"></i></span>" +
+        "<span>" + RAW.commentCount + "</span></div>";
+    interactive.append(iComment);
+    iBanana.innerHTML = "<div class=\"feed-interactive-banana\">" +
+        "<span class=\"icon_path ac-icon\"><i class=\"iconfont\"></i></span>" +
+        "<span class=\"icon_fill ac-icon\"><i class=\"iconfont\"></i></span>" +
+        "<span>" + RAW.commentCount + "</span></div>";
+    interactive.append(iBanana);
+    iLike.innerHTML = "<div class=\"feed-interactive-like\">" +
+        "<span class=\"icon_path ac-icon\"><i class=\"iconfont\"></i></span>" +
+        "<span class=\"icon_fill ac-icon\"><i class=\"iconfont\"></i></span>" +
+        "<span>" + RAW.likeCount + "</span></div>";
+    interactive.append(iLike);
+    iShare.innerHTML = "<div class=\"feed-interactive-repost\">" +
+        "<span class=\"ac-icon\"><i class=\"iconfont\"></i></span>" +
+        "<span>"+ RAW.shareCount + "</span></div>";
+    interactive.append(iShare);
+    momentInfos.append(interactive);
+    momentMain.append(momentInfos);
+    momentMain.append(momentSeparate);
+    momentMore.innerHTML = "<a href='"+mLink+"'><span class=\"ac-icon\"><i class=\"iconfont\"></i></span></a>";
+    momentMain.append(momentMore);
+    document.getElementById("feed-loading").before(momentMain);
 }

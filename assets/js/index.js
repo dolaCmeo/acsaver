@@ -66,7 +66,7 @@ let theList = {
             'iconfont', '', thisData.createTime));
         // 浏览量
         leftExtra.append(iconText('pts', 'icon ac-icon',
-            'iconfont', data[0]=='article'?'':'', thisData.viewCountShow || thisData.formatViewCount));
+            'iconfont', data[0]==='article'?'':'', thisData.viewCountShow || thisData.formatViewCount));
         // 评论数量
         leftExtra.append(iconText('pts shallow-gray', 'icon ac-icon',
             'iconfont', '', thisData.formatCommentCount || thisData.commentCountShow));

@@ -238,7 +238,8 @@
     padding: 12px 30px 11px 11px;
     font-size: 12px;
     line-height: 12px;
-    color: #333
+    color: #333;
+    cursor: default;
 }
 
 #header .nav-search-input .ac-input::-webkit-input-placeholder {

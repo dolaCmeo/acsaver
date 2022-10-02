@@ -1,5 +1,4 @@
-let is_LOCAL = window.location.protocol === "file:",
-    container_video = document.querySelector(".container-video"),
+let container_video = document.querySelector(".container-video"),
     video_bottom_info = document.querySelector(".control-bar-bottom");
 if(is_LOCAL){
     container_video.insertAdjacentHTML("afterBegin",
@@ -11,7 +10,6 @@ if(is_LOCAL){
     container_video.insertAdjacentHTML("afterBegin",
         "<div id=\"localPlayer\"></div>");
     video_bottom_info.innerHTML = "<p><span>✔️</span>已使用<a href='https://dplayer.diygod.dev/zh/' target='_blank'>DPlayer</a>播放器，可以加载本地弹幕</p>";
-    document.querySelector("#header .logo").setAttribute("href", "/");
 }
 
 let player = document.getElementById('localPlayer'),

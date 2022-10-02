@@ -188,5 +188,18 @@ function pageInit(pageData){
                 }
             });
         });
+    }else if([10].indexOf(pageData.rType)>-1){
+        let rdataTag = document.getElementById("member-feed-resource-data");
+        loadJs("../../data.js", function () {
+            if(rdataTag!==null){
+                let rrType = rdataTag.getAttribute('datatype'),
+                    rrId = rdataTag.getAttribute('datasrc');
+                if(AcSaver[rrType].indexOf(rrId)>-1){
+                    document.querySelectorAll(".member-feed-resource-link").forEach(function (ele) {
+                        ele.setAttribute('href', "../../"+rrType+"/"+rrId+"/"+rrId+".html");
+                    });
+                }
+            }
+        });
     }
 }
