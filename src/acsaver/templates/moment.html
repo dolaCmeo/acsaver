@@ -3,7 +3,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>AcFun弹幕视频网 - 认真你就输啦 (・ω・)ノ- ( ゜- ゜)つロ</title>
+    <title>@{{ RAW.user.name }}动态 - AcSaver</title>
     <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
     <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/moment.css">
@@ -107,7 +107,7 @@
                                                 </div>
                                                 <div class="content-right">
                                                     <a href="{{ repost.shareUrl }}" class="member-feed-resource-link">
-                                                    <h1 class="title text-overflow feed-link">{{ repost.caption }}</h1>
+                                                    <h1 class="title text-overflow feed-link">{{ repost.caption or repost.articleTitle }}</h1>
                                                     {% if repost.resourceType == 2 %}
                                                     <div class="desc">{{ repost.detail.description }}</div>
                                                     {% elif repost.resourceType == 3 %}
@@ -115,11 +115,11 @@
                                                     {% endif %}
                                                     <div class="info">
                                                         {% if repost.resourceType == 2 %}
-                                                        <span class="view"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.viewCount }}</span>
-                                                        <span class="danmu"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.detail.danmakuCount }}</span>
-                                                        {% elif repost.resourceType == 2 %}
-                                                        <span class="view article-view"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.viewCount }}</span>
-                                                        <span class="danmu"><span class="ac-icon"><i class="iconfont"></i></span>{{ repost.commentCount }}</span>
+                                                        <span class="view"><span class="ac-icon"><i class="iconfont">&#xe62f;</i></span>{{ repost.viewCount }}</span>
+                                                        <span class="danmu"><span class="ac-icon"><i class="iconfont">&#xe630;</i></span>{{ repost.detail.danmakuCount }}</span>
+                                                        {% elif repost.resourceType == 3 %}
+                                                        <span class="view"><span class="ac-icon"><i class="iconfont">&#xe1a8;</i></span>{{ repost.viewCount }}</span>
+                                                        <span class="danmu"><span class="ac-icon"><i class="iconfont">&#xe627;</i></span>{{ repost.commentCount }}</span>
                                                         {% endif %}
                                                     </div>
                                                     </a>
@@ -197,11 +197,12 @@
 <script type="text/javascript" src="../../assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
+    {% if RAW.get('imgs', [])|length %}
+    let gallery = new Viewer(document.getElementsByClassName("member-feed-moment-image")[0]);
+    {% endif %}
     let PAGE = {{ saver.page_data }};
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
     let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];
-    let momentImages = document.getElementsByClassName("member-feed-moment-image");
-    if(momentImages.length){let gallery = new Viewer(momentImages[0]);}
     tagsLoader(pagelets);
     pageInit(PAGE);
 </script>

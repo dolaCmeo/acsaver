@@ -2,9 +2,11 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>AcFun近期保存内容 - AcSaver</title>
-    <link type="image/ico" rel="shortcut icon" href="assets/favicon.ico">
+    <title>AcFun近期保存动态 - AcSaver</title>
+    <link href="assets/favicon.ico" rel="shortcut icon">
     <link type="text/css" rel="stylesheet" href="assets/css/base.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/moment.css">
+    <link type="text/css" rel="stylesheet" href="assets/css/pager.min.css"/>
 </head>
 <body>
     <div id="app">
@@ -12,7 +14,8 @@
             <header id="header" style="width: 100%;margin: 0;">
                 <div class="nav" style="width: 1190px;">
                     <div class="nav-links">
-                        <a href="https://www.acfun.cn/" class="logo"><img src="assets/img/acfunlogo.svg" width="94" height="30"></a>
+                        <a href="https://www.acfun.cn/" class="logo">
+                            <img src="assets/img/acfunlogo.svg" alt="" width="94" height="30"></a>
                     </div>
                     <div class="nav-title" style="display:none;"><a href=""></a></div>
                     <div class="nav-bread"></div>
@@ -20,7 +23,7 @@
                         <span class="nav-guide-main">导航<span class="ac-icon"><i class="iconfont"></i></span></span>
                         <ul class="nav-guide-2"><div class="nav-guide-3-place"></div></ul>
                     </div>
-                    <div class="nav-entrance-wrap">
+                    <div class="nav-entrance-wrap" style="display:none;">
                         <a class="nav-mall">
                             <span class="ac-icon"><i class="iconfont">&#xe3c5;</i></span>
                             <span class="entrance-title">近期保存内容</span></a>
@@ -41,37 +44,37 @@
                         <a href="https://github.com/dolaCmeo/acsaver" target="_blank" class="nav-user-item">
                             <span class="icon ac-icon"><i class="iconfont">&#xe62e;</i></span>
                             <p class="desc">AcSaver</p></a>
-                        <a href="https://www.acfun.cn" target="_blank" rel="noopener" class="user-upload">
+                        <a href="https://www.acfun.cn/member/feeds" target="_blank" rel="noopener" class="user-upload">
                             <button type="button" class="ac-button ac-button-primary ac-button-normal">
                                 <span class="ac-icon" style="margin-right:4px;"><i class="iconfont">&#xe3c9;</i></span> 去线上
                             </button></a>
                     </div>
                 </div>
                 </header>
-            <main style="margin: 60px 0 0;">
-                <div class="ac-rank-wrapper">
-                    <div class="header">
-                        <div class="header__content">
-                            <a class="header__logo"></a>
-                            <div class="header__rank-banner">
-                                <div class="text-wrapper">
-                                    <a href="/" class="text--ac">AcFun</a>
-                                    <span class="text--rank">Cache</span>
+            <main style="margin-top: 60px;">
+                <div class="ac-member">
+                    <nav class="ac-member-navigation">
+                        <a href="https://www.acfun.cn/" target="_blank" aria-current="page" class="ac-member-navigation-item">
+                            <span class="ac-icon"><i class="iconfont">&#xe3c9;</i></span> AcFun首页</a>
+                        <a href="index.html" class="ac-member-navigation-item">
+                            <span class="ac-icon"><i class="iconfont">&#xe3c5;</i></span> 近期保存内容</a>
+                        <a aria-current="page" class="ac-member-navigation-item ac-member-navigation-item-active">
+                            <span class="ac-icon"><i class="iconfont">&#xe3c4;</i></span> 近期保存动态</a>
+                    </nav>
+                    <div class="ac-member-main">
+                        <div class="ac-member-feeds">
+                            <div class="ac-member-feeds-header ac-tabs">
+                                <ul class="ac-tabs-nav"></ul>
+                                <div class="ac-tabs-container">
+                                    <div class="ac-tabs-panel">
+                                        <div class="feeds-panel" is-active="true">
+                                            <!---->
+                                            <div id="feed-loading" class="loading" style="display:none;"><img src="assets/img/loading.gif">Loading...</div>
+                                            <div class="observer" style=""></div>
+                                            <div class="ac-back-top" style="display:none;"><span class="ac-icon"><i class="iconfont"></i></span></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h1>近期保存</h1>
-                            </div>
-                        </div>
-                    </div>
-<!--                    <div class="filter"></div>-->
-                    <div class="rlist" id="ac-list">
-                        <div class="rlist__banner">
-                            <div class="rlist__title rlist__title--rank">
-                                <p class="rlist__text--cn">内容</p>
-                                <p class="rlist__text--en">Shows</p>
-                            </div>
-                            <div class="rlist__title rist__title--author">
-                                <p class="rlist__text--cn">Up主</p>
-                                <p class="rlist__text--en">Author</p>
                             </div>
                         </div>
                     </div>
@@ -89,21 +92,24 @@
         </div>
     </div>
 </div>
-<div id="pagelet_toolbar" style="visibility: visible;">
-    <div id="toolbar" class="toolbar showAll">
-        <a href="#app">
-            <div id="to-top" title="返回顶部" class="icon icon-arrow-slim-up tool-item tool-to-top toBottom"></div>
-        </a>
-    </div>
-</div>
 <script type="text/javascript" src="assets/js/lazyload.min.js"></script>
 <script type="text/javascript" src="assets/js/loader.js"></script>
 <script type="text/javascript" src="assets/js/saver.js"></script>
 <script type="text/javascript">
     let lazyLoadInstance = new LazyLoad({});
     let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
+    let lastMoment = [];
     navItemLoader();
+    loadJs("data.js", function () {
+        AcSaver.least.forEach(function (item) {
+            if(item[0]==='moment'){lastMoment.push(item[1]);}
+        });
+        lastMoment.reverse().splice(0,9).forEach(function (rid) {
+            loadJs('moment/'+rid+'/data/'+rid+'.js', function () {
+                momentLoader(rid);
+            });
+        });
+    });
 </script>
-<script type="text/javascript" src="assets/js/index.js"></script>
 </body>
 </html>

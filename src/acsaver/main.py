@@ -130,12 +130,19 @@ class SaverLocal:
 
     def _page_check(self):
         # 首页
-        # 搜索
-        # 用户
         index_html_path = os.path.join(self.root_path, 'index.html')
         if os.path.isfile(index_html_path) is False:
             templates = saver_template()
             index_html = templates.get_template('index.html').render()
             with open(index_html_path, 'wb') as index_file:
                 index_file.write(index_html.encode())
-        return os.path.isfile(index_html_path)
+        # 动态
+        feed_html_path = os.path.join(self.root_path, 'feed.html')
+        if os.path.isfile(feed_html_path) is False:
+            templates = saver_template()
+            feed_html = templates.get_template('feed.html').render()
+            with open(feed_html_path, 'wb') as feed_file:
+                feed_file.write(feed_html.encode())
+        # 用户
+
+        return True
