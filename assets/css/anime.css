@@ -1,0 +1,116 @@
+@import url('base.css');
+@import url('pager.min.css');
+
+main{
+    margin: 80px auto 0 !important;
+    width: 1160px !important;
+    min-height: calc(100vh - 170px) !important;
+}
+
+.ac-mod-list {
+    overflow: hidden;
+    margin: 0 -9px
+}
+
+.ac-mod-list .ac-mod-li {
+    float: left;
+    margin: 0 10px 30px
+}
+
+.ac-mod-list .ac-mod-li:hover .ac-mod-title span {
+    color: #fd4c5c
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-cover-wrap {
+    position: relative;
+    display: block;
+    width: 148px;
+    height: 197px;
+    overflow: hidden;
+    border-radius: 3px
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-cover-wrap:hover {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .3)
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-cover-wrap .pay-toast {
+    padding: 0 4px;
+    position: absolute;
+    font-size: 12px;
+    line-height: 15px;
+    height: 16px;
+    right: 0;
+    top: 0;
+    background-color: #fd4c5d;
+    color: #fff;
+    border-radius: 0 3px 0 3px
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-cover {
+    width: 100%;
+    height: 100%;
+    transition: all .15s ease-in-out;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-cover:hover {
+    transform: scale(1.05)
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-cover-icon-zhuifan:before {
+    content: "";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-bottom: -3px;
+    margin-right: 2px;
+    background: url(../img/icon_card_zhuifan.svg) no-repeat 50% 50%;
+    background-size: 15px 15px
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-cover-stats {
+    position: absolute;
+    top: 157px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 15px 8px 8px;
+    font-size: 13px;
+    line-height: 15px;
+    color: #fff;
+    background: linear-gradient(transparent, rgba(0, 0, 0, .4))
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-title {
+    height: 67px
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-title span {
+    font-size: 14px;
+    color: #333;
+    letter-spacing: 0;
+    line-height: 20px;
+    display: inline-block;
+    width: 140px;
+    word-break: break-all;
+    word-wrap: break-word;
+    margin-bottom: 5px;
+    margin-top: 7px;
+    max-height: 40px;
+    overflow: hidden
+}
+
+.ac-mod-list .ac-mod-li .ac-mod-title em {
+    font-style: normal;
+    font-size: 13px;
+    color: #999;
+    letter-spacing: 0;
+    line-height: 13px;
+    width: 140px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block
+}

@@ -1,0 +1,518 @@
+
+
+#gl-toast {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    z-index: 9999;
+    text-align: center;
+    transform: translateX(-50%)
+}
+
+#gl-toast p {
+    position: absolute;
+    padding: 12px 100px;
+    display: inline-block;
+    font-size: 14px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    color: #333;
+    line-height: 20px;
+    min-width: 100px;
+    max-width: 890px;
+    word-break: keep-all;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .3);
+    transition: all .3s ease-in-out;
+    transform: translate(-50%, 110px);
+    opacity: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, body, canvas, caption, center, cite, code, dd, del, details, dfn, div, dl, dt, em, embed, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, label, legend, li, mark, menu, nav, object, ol, output, p, pre, q, ruby, s, samp, section, small, span, strike, strong, sub, summary, sup, table, tbody, td, tfoot, th, thead, time, tr, tt, u, ul, var, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    font-size: 100%
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block
+}
+
+ol, ul {
+    list-style: none
+}
+
+blockquote, q {
+    quotes: none
+}
+
+blockquote:after, blockquote:before, q:after, q:before {
+    content: "";
+    content: none
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+input {
+    background-color: transparent !important;
+    box-shadow: none
+}
+
+input:-webkit-autofill, select:-webkit-autofill, textarea:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #fff inset
+}
+
+html.gray {
+    -moz-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    -o-filter: grayscale(100%);
+    filter: grayscale(100%);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+    filter: gray
+}
+
+body {
+    font-family: Helvetica Neue, Helvetica, Arial, pingfang SC, Microsoft Yahei, STHeiti, sans-serif;
+    font-size: 12px;
+    color: #666;
+    background-color: #f8f8f8;
+    scrollbar-arrow-color: none;
+    scrollbar-track-color: #fff;
+    scrollbar-face-color: #999;
+    scrollbar-shadow-color: none;
+    -webkit-font-smoothing: antialiased
+}
+
+b, strong {
+    font-weight: 700
+}
+
+em, i {
+    font-style: italic
+}
+
+img {
+    vertical-align: top
+}
+
+input {
+    padding: 0
+}
+
+a, button, input {
+    outline: none
+}
+
+a {
+    text-decoration: none;
+    color: #333
+}
+
+a:hover {
+    color: #fd4c5d
+}
+
+body, html {
+    width: 100%;
+    height: 100%
+}
+
+.text-overflow {
+    max-width: 100%;
+    display: inherit;
+    overflow: hidden;
+    word-break: break-all;
+    word-wrap: normal;
+    white-space: nowrap;
+    text-overflow: ellipsis
+}
+
+[class*=ac-], [class*=ac-] *, [class*=ac-] :after, [class*=ac-] :before, [class^=ac-], [class^=ac-] *, [class^=ac-] :after, [class^=ac-] :before {
+    box-sizing: border-box
+}
+
+.ac-motion-fade-in-linear-enter-active, .ac-motion-fade-in-linear-leave-active {
+    transition: opacity .2s linear
+}
+
+.ac-motion-fade-in-linear-enter, .ac-motion-fade-in-linear-leave, .ac-motion-fade-in-linear-leave-active {
+    opacity: 0
+}
+
+.ac-motion-fade-slide-down-enter-active, .ac-motion-fade-slide-down-leave-active {
+    transition: all .2s linear
+}
+
+.ac-motion-fade-slide-down-enter, .ac-motion-fade-slide-down-leave, .ac-motion-fade-slide-down-leave-active {
+    transform: translateY(-100%);
+    opacity: 0
+}
+
+.ac-motion-fade-slide-right-enter-active, .ac-motion-fade-slide-right-leave-active {
+    transition: all .2s linear
+}
+
+.ac-motion-fade-slide-right-enter, .ac-motion-fade-slide-right-leave, .ac-motion-fade-slide-right-leave-active {
+    transform: translateX(100%);
+    opacity: 0
+}
+
+.layout.sp-mode #header {
+    background: #c40100
+}
+
+.layout.sp-mode #header .nav-entrance-wrap a .entrance-title, .layout.sp-mode #header .nav-entrance-wrap a .iconfont {
+    color: #fff
+}
+
+.layout.sp-mode #header .nav-search .nav-search-input .ac-input {
+    color: #fff;
+    background: #c40100;
+    border: 1px solid #e79999
+}
+
+.layout.sp-mode #header .nav-search .nav-search-input .ac-input::-webkit-input-placeholder {
+    color: #e79999
+}
+
+.layout.sp-mode #header .nav-search .nav-search-input .ac-input::-moz-input-placeholder {
+    color: #e79999
+}
+
+.layout.sp-mode #header .nav-search .nav-search-input .ac-input:-ms-input-placeholder {
+    color: #e79999
+}
+
+.layout.sp-mode #header .nav-search .nav-search-input .ac-input:-moz-input-placeholder {
+    color: #e79999
+}
+
+.layout.sp-mode #header .nav-search .nav-search-input .ac-input-suffix-item .ac-icon .iconfont {
+    color: #e79999
+}
+
+.layout.sp-mode #header .nav-user .app .ac-icon .iconfont, .layout.sp-mode #header .nav-user .nav-user-item, .layout.sp-mode #header .nav-user .nologin {
+    color: #fff
+}
+
+.layout.sp-mode #header .nav-user .ac-badge-count, .layout.sp-mode #header .nav-user .ac-badge-dot, .layout.sp-mode #header .nav-user .nav-user-item .living, .layout.sp-mode #header .nav-user .user-upload .ac-button-primary {
+    background: #fff;
+    color: #c40100
+}
+
+.layout.sp-mode .channel-header.fixed .wrap .header-nav, .layout.sp-mode .channel-header.fixed .wrap .header-nav ul, .layout.sp-mode .channel-header .wrap .header-nav, .layout.sp-mode .channel-header .wrap .header-nav ul {
+    background: #c40100
+}
+
+.layout.sp-mode .channel-header.fixed .wrap .header-nav ul .nav-rank, .layout.sp-mode .channel-header.fixed .wrap .header-nav ul .nav-rank .ac-icon, .layout.sp-mode .channel-header.fixed .wrap .header-nav ul li a, .layout.sp-mode .channel-header .wrap .header-nav ul .nav-rank, .layout.sp-mode .channel-header .wrap .header-nav ul .nav-rank .ac-icon, .layout.sp-mode .channel-header .wrap .header-nav ul li a {
+    color: #fff
+}
+
+.layout {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background: #fff;
+    min-width: -webkit-fit-content;
+    min-width: -moz-fit-content;
+    min-width: fit-content
+}
+
+.layout > main {
+    min-height: calc(100vh - 400px);
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    margin: 60px auto 0;
+    background: #fff
+}
+
+.layout.sub-page > #header .nav {
+    width: 1190px;
+    padding: 0;
+    margin: 0 auto
+}
+
+.layout.sub-page > main {
+    width: 100%
+}
+
+.layout, .layout main {
+    background-color: #fafafa
+}
+
+@media screen and (max-width: 1360px) {
+    .page-404 {
+        width: 985px
+    }
+
+    .btn-top-shortcut {
+        position: fixed;
+        left: 90%
+    }
+}
+
+@media screen and (min-width: 1360px) {
+    .page-404 {
+        width: 1180px
+    }
+
+    .btn-top-shortcut {
+        position: fixed;
+        left: 84%
+    }
+}
+
+.page-404 {
+    margin: 0 auto;
+    height: auto;
+    background-color: #fafafa
+}
+
+.page-404 .img404 {
+    margin: 0 auto;
+    padding-top: 68px;
+    padding-bottom: 48px;
+    width: 718px;
+    height: 218px;
+    overflow: hidden;
+    display: flex
+}
+
+.page-404 .img404 .img-icon {
+    width: 282px;
+    height: 218px;
+    background-size: cover;
+    background: url(../img/acniang404.png) no-repeat center;
+}
+
+.page-404 .img404 .page-text {
+    margin-top: 55px;
+    text-align: left;
+    width: 406px;
+    padding-left: 30px;
+    line-height: 24px
+}
+
+.page-404 .img404 .page-text span {
+    font-family: PingFangSC-Regular;
+    font-size: 22px;
+    color: #333
+}
+
+.page-404 .img404 .page-text a {
+    background: #fd4c5b;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: 0;
+    text-align: center;
+    display: block;
+    width: 120px;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 15px;
+    margin-left: 0;
+    white-space: normal;
+    word-break: break-all;
+    cursor: pointer;
+    text-decoration: none
+}
+
+.page-404 .ac-monkey {
+    border-top: 1px solid #e5e5e5;
+    padding: 20px 0;
+    overflow: hidden
+}
+
+.page-404 .ac-monkey h1 {
+    font-size: 16px;
+    color: #000;
+    text-align: left;
+    padding-left: 11px
+}
+
+.page-404 .ac-monkey .nodata {
+    text-align: center;
+    font-size: 16px;
+    padding: 50px 0;
+    color: #000
+}
+
+.page-404 .ac-monkey ul {
+    overflow: hidden;
+    height: 530px;
+    list-style: none;
+    margin-bottom: 100px
+}
+
+.page-404 .ac-monkey ul li {
+    width: 196px;
+    padding: 20px 11px 0;
+    text-align: left;
+    float: left;
+    position: relative
+}
+
+.page-404 .ac-monkey ul li a {
+    color: #369;
+    white-space: normal;
+    word-break: break-all;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 400;
+    text-decoration: none;
+    display: block
+}
+
+.page-404 .ac-monkey ul li .temp-detail {
+    display: block;
+    overflow: hidden;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    width: 175px;
+    height: 100px;
+    position: relative;
+    opacity: 1
+}
+
+.page-404 .ac-monkey ul li .temp-detail img {
+    width: 175px;
+    height: 100px;
+    opacity: 1
+}
+
+.page-404 .ac-monkey ul li .temp-detail:hover {
+    background-color: #000
+}
+
+.page-404 .ac-monkey ul li .title {
+    transition: color .2s;
+    color: #0187c5;
+    color: #000;
+    font-size: 12px;
+    height: 40px;
+    line-height: 20px;
+    width: 100%;
+    overflow: hidden;
+    display: block
+}
+
+.page-404 .ac-monkey ul li .title:hover {
+    color: #c33
+}
+
+.page-404 .btn-top-shortcut {
+    bottom: 80px;
+    z-index: 65535;
+    width: 44px;
+    text-align: center
+}
+
+.page-404 .btn-top-shortcut .item {
+    width: 44px;
+    height: 44px;
+    margin: 8px 0 0;
+    padding: 0;
+    color: #bbb;
+    background-color: #fcfcfc;
+    border: 1px solid #ddd;
+    position: relative;
+    display: block;
+    cursor: pointer
+}
+
+.page-404 .btn-top-shortcut .item:hover {
+    background-color: #bbb;
+    border: 1px solid #aaa
+}
+
+.page-404 .btn-top-shortcut .item:hover img {
+    display: none
+}
+
+.page-404 .btn-top-shortcut .item:hover .hint {
+    display: block;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 700
+}
+
+.page-404 .btn-top-shortcut .item img {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    margin: 0;
+    padding: 0;
+    width: 27px;
+    height: 27px;
+    line-height: 32px;
+    font-size: 24px
+}
+
+.page-404 .btn-top-shortcut .item .hint {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    width: 32px;
+    height: 32px;
+    display: none;
+    line-height: 16px;
+    font-size: 12px;
+    overflow: hidden;
+    pointer-events: none
+}
+
+.page-404 .btn-top-shortcut #toTop img {
+    width: 22px;
+    height: 22px;
+    left: 11px;
+    top: 11px;
+    display: block;
+    transform: rotate(180deg)
+}
+
+.page-404 .btn-top-shortcut #toTop .hint-show {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    width: 32px;
+    height: 32px;
+    display: none;
+    line-height: 16px;
+    font-size: 12px;
+    overflow: hidden;
+    pointer-events: none;
+    color: #fff;
+    font-weight: 700
+}
+
+.page-404 .btn-top-shortcut #toTop:hover img {
+    display: none
+}
+
+.page-404 .btn-top-shortcut #toTop:hover .hint-show {
+    display: block
+}
+
+.page-404 .btn-top-shortcut .top {
+    visibility: hidden
+}
+
+.page-404 .btn-top-shortcut .show {
+    visibility: visible;
+    opacity: 1
+}

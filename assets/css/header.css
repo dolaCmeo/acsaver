@@ -208,7 +208,7 @@
 #header .nav-entrance-wrap a .iconfont {
     font-size: 18px;
     line-height: 18px;
-    color: #fd4c5d;
+    color: #6a95d7;
     vertical-align: sub
 }
 
@@ -376,7 +376,7 @@
 }
 
 #header .nav-user > a:hover {
-    color: #fd4c5d
+    color: #6a95d7;
 }
 
 #header .nav-user-item {
@@ -938,7 +938,7 @@
 
 [data-c-w-header] .channel-guide .channel-list {
     background-color: hsla(0, 0%, 100%, .98);
-    width: 1710px;
+    width: 1720px;
     height: 40px;
     min-width: 1000px;
     margin: 0 auto
@@ -1051,7 +1051,7 @@
 
 [data-c-w-header] #nav .nav-parent {
     width: 100%;
-    max-width: 1710px;
+    max-width: 1720px;
     position: relative;
     min-width: 1050px;
     margin: 0 auto;
@@ -2454,49 +2454,4 @@
 
 [data-c-w-header] .header-guide .guide-cretive a:before, [data-c-w-header] .header-guide .guide-msg a:before {
     vertical-align: baseline
-}
-
-#main {
-    margin: 80px 50px 0 50px;
-}
-
-@media screen and (max-width: 1300px) {
-    #header {
-        width: calc(100vw - 100px);
-        margin: auto 50px;
-    }
-
-    #header+#main {
-        width: calc(100vw - 100px);
-        margin: 80px 50px 0 50px;
-    }
-}
-
-@media screen and (min-width: 1050px) and (max-width: 1150px) {
-    #header {
-        width: 1050px;
-    }
-
-    #header+#main {
-        width: 1050px;
-        margin: 80px calc(50% - 525px);
-    }
-}
-
-@media screen and (min-width: 1151px) and (max-width: 1810px) {
-    #header {
-        width: calc(100% - 100px);
-        margin: auto 50px;
-    }
-
-    #header+#main {
-        width: calc(100% - 100px);
-        margin: 80px 50px 0 50px;
-    }
-}
-
-@media screen and (min-width: 1810px){
-    #header .nav {
-        width: 1710px;
-    }
 }

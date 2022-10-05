@@ -1,4 +1,53 @@
+@import url('base.css');
 @import url('comment.css');
+@import url('pager.min.css');
+@import url('viewer.min.css');
+
+
+#main {
+    margin: 80px 50px 0 50px;
+}
+
+@media screen and (max-width: 1300px) {
+    #header {
+        width: calc(100vw - 100px);
+        margin: auto 50px;
+    }
+
+    #header+#main {
+        width: calc(100vw - 100px);
+        margin: 80px 50px 0 50px;
+    }
+}
+
+@media screen and (min-width: 1050px) and (max-width: 1150px) {
+    #header {
+        width: 1050px;
+    }
+
+    #header+#main {
+        width: 1050px;
+        margin: 80px calc(50% - 525px);
+    }
+}
+
+@media screen and (min-width: 1151px) and (max-width: 1810px) {
+    #header {
+        width: calc(100% - 100px);
+        margin: auto 50px;
+    }
+
+    #header+#main {
+        width: calc(100% - 100px);
+        margin: 80px 50px 0 50px;
+    }
+}
+
+@media screen and (min-width: 1810px){
+    #header .nav {
+        width: 1710px;
+    }
+}
 
 .layout > main {
     width: 100%;
@@ -860,7 +909,7 @@
 }
 
 .member-feed-interactive .feed-interactive .member-feed-share {
-    margin-top: -4px;
+    margin-top: 70px;
     margin-left: -100px
 }
 
@@ -1526,8 +1575,7 @@
 }
 
 .ac-member {
-    width: 1100px;
-    min-width: 1100px;
+    width: 900px;
     background: #fff;
     display: flex;
     margin: 20px auto 30px
