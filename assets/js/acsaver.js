@@ -166,6 +166,7 @@ let lazyLoadInstance, gallery, player,
                 "(例如：<a href='https://docs.python.org/zh-cn/3/library/http.server.html#http.server.SimpleHTTPRequestHandler' target='_blank'>python -m http.server</a>)</p>",
         },
         errMsg: {
+            default: "<span>咦？世界线变动了，你好像来到了奇怪的地方。看看缺啥东西了~</span>",
             config: "<span>缺少 assets/js/config.js</span><br><span>这可是必要的数据</span>",
             main_data: "<span>缺少 data.js</span><br><span>用AcSaver保存点什么吧</span>",
             sub_data: "<span>缺少 data.js</span><br><span>一定是打开的姿势不对</span>"
@@ -187,14 +188,6 @@ let lazyLoadInstance, gallery, player,
             },
             quickJump: function (sec) {document.querySelector('video').currentTime = sec;},
             copyText: function (text) {navigator.clipboard?.writeText && navigator.clipboard.writeText(text)},
-            emot2html: function (s='') {
-                if(s.length===0){return "";}
-                let regex = /(?<emot>\[emot=(?<key>\w+),(?<num>\d+)\/])/gm,
-                    rep = '<img class="ubb-emotion" src="assets/emot/$2/$3.png" onerror="this.src=\'assets/emot/$2/$3.gif\';" alt="$1">';
-                return s
-                    .replace(regex, rep)
-                    .replace(/src="assets\/emot\/acfun\//gm, 'src="assets/emot/small/');
-            },
             pos2time: function (p) {
                 let t = new Date(p);
                 return t.toLocaleString("zh-CN");
@@ -666,7 +659,7 @@ let lazyLoadInstance, gallery, player,
                 return player;
             },
             resentListShow: function () {
-                if(document.querySelectorAll("#recommends > div").length===0){
+                if(document.querySelectorAll("#recommends > div").length>0){
                     document.querySelector("#pagelet_newrecommend").style.display = "block";
                 }
             },
@@ -821,7 +814,7 @@ let lazyLoadInstance, gallery, player,
         loader: {
             // 错误页
             errorLoader: function (msgHtml="") {
-                let msg = msgHtml||"<span>咦？世界线变动了，你好像来到了奇怪的地方。看看缺啥东西了~</span>",
+                let msg = msgHtml||SAVER.errMsg.default,
                     headHtml = "" +
                         "<link href=\"https://cdn.aixifan.com/ico/favicon.ico\" rel=\"shortcut icon\">" +
                         "<title>有喵病~ AcSaver - 认真你就输啦 (?ω?)ノ- ( ゜- ゜)つロ</title>" +
@@ -909,7 +902,7 @@ let lazyLoadInstance, gallery, player,
                             cSub = "<a href=\"https://www.acfun.cn/v/list"+cInfo.id+"/index.htm\" target=\"_blank\" class=\"channel-third\">"+cInfo.name+"</a>";
                         bread.innerHTML = cMain + cSub;
                     }else if(PAGE.keyName === 'bangumi'){
-                        bread.innerHTML = "<a href=\"/bangumilist\" target=\"blank\" class=\"channel-second\">番剧</a>";
+                        bread.innerHTML = "<a href=\"https://www.acfun.cn/bangumilist\" target=\"blank\" class=\"channel-second\">番剧</a>";
                     }
                     if(PAGE.keyName==='moment'){
                         document.querySelector("#header .logo").setAttribute("href", "../../feed.html");
@@ -1065,7 +1058,9 @@ let lazyLoadInstance, gallery, player,
             },
             // 加载动态
             momentLoader: function (rId) {
-                let RAW = LOADED.moment[rId],mLink="moment/"+rId+"/"+rId+".html";
+                let RAW = LOADED.moment[rId],
+                    mLink="moment/"+rId+"/"+rId+".html",
+                    rLink="https://www.acfun.cn/moment/am"+rId;
                 if(RAW===undefined){return false;}
                 let momentMain = SAVER.utils.createTag("div", "ac-member-feed"),
                     momentUser = SAVER.utils.createTag("div", "member-feed-user"),
@@ -1143,13 +1138,14 @@ let lazyLoadInstance, gallery, player,
                 momentMain.append(momentUser);
                 // member-feed-moment
                 let feed_content = SAVER.utils.createTag("div", "member-feed-moment"),
-                    content_text = SAVER.utils.createTag("div", "member-feed-text");
-                content_text.innerHTML = SAVER.utils.emot2html(RAW.text);
+                    content_text = SAVER.utils.createTag("div", "member-feed-text", [], RAW.text);
                 feed_content.append(content_text);
                 if((RAW.imgs||[]).length){
                     let feed_image = SAVER.utils.createTag("div", "member-feed-moment-image member-feed-moment-image-" + RAW.imgs.length);
                     RAW.imgs.forEach(function (item) {
-                        feed_image.append(SAVER.utils.createTag("img", "", [["src", item.originUrl]]));
+                        feed_image.append(SAVER.utils.createTag("img", "", [
+                            ["src", "moment/"+rId+"/data/"+item.originUrl.split("/").slice(-1)[0]]
+                        ]));
                     });
                     feed_content.append(feed_image);
                 }
@@ -1228,27 +1224,27 @@ let lazyLoadInstance, gallery, player,
                     iLike = SAVER.utils.createTag("div", "feed-interactive-like"),
                     iShare = SAVER.utils.createTag("div", "feed-interactive-repost");
                 iComment.innerHTML = "<div class=\"feed-interactive-comment\">" +
-                    "<span class=\"ac-icon\"><i class=\"iconfont\"></i></span>" +
+                    "<span class=\"ac-icon\"><i class=\"iconfont\">&#xe627;</i></span>" +
                     "<span>" + RAW.commentCount + "</span></div>";
                 interactive.append(iComment);
                 iBanana.innerHTML = "<div class=\"feed-interactive-banana\">" +
-                    "<span class=\"icon_path ac-icon\"><i class=\"iconfont\"></i></span>" +
-                    "<span class=\"icon_fill ac-icon\"><i class=\"iconfont\"></i></span>" +
+                    "<span class=\"icon_path ac-icon\"><i class=\"iconfont\">&#xe62a;</i></span>" +
+                    "<span class=\"icon_fill ac-icon\"><i class=\"iconfont\">&#xe154;</i></span>" +
                     "<span>" + RAW.commentCount + "</span></div>";
                 interactive.append(iBanana);
                 iLike.innerHTML = "<div class=\"feed-interactive-like\">" +
-                    "<span class=\"icon_path ac-icon\"><i class=\"iconfont\"></i></span>" +
-                    "<span class=\"icon_fill ac-icon\"><i class=\"iconfont\"></i></span>" +
+                    "<span class=\"icon_path ac-icon\"><i class=\"iconfont\">&#xe629;</i></span>" +
+                    "<span class=\"icon_fill ac-icon\"><i class=\"iconfont\">&#xe660;</i></span>" +
                     "<span>" + RAW.likeCount + "</span></div>";
                 interactive.append(iLike);
                 iShare.innerHTML = "<div class=\"feed-interactive-repost\">" +
-                    "<span class=\"ac-icon\"><i class=\"iconfont\"></i></span>" +
+                    "<span class=\"ac-icon\"><i class=\"iconfont\">&#xe628;</i></span>" +
                     "<span>"+ RAW.shareCount + "</span></div>";
                 interactive.append(iShare);
                 momentInfos.append(interactive);
                 momentMain.append(momentInfos);
                 momentMain.append(momentSeparate);
-                momentMore.innerHTML = "<a href='"+mLink+"'><span class=\"ac-icon\"><i class=\"iconfont\"></i></span></a>";
+                momentMore.innerHTML = "<a href='"+rLink+"'><span class=\"ac-icon\"><i class=\"iconfont\">&#xe167;</i></span></a>";
                 momentMain.append(momentMore);
                 document.getElementById("feed-loading").before(momentMain);
             },

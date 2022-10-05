@@ -2826,3 +2826,7 @@ body #main #main-content .right-column.dark-style {
 #pagelet_partlist .scroll-div.double-column li:last-child {
     margin-bottom: 10px
 }
+
+#header .nav{
+    max-width: 1720px;
+}
