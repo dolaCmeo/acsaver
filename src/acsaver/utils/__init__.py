@@ -50,6 +50,14 @@ class SaverBase:
     def page_template(self):
         return self.templates.get_template(f"{self.keyname}.html")
 
+    @property
+    def comment_count(self):
+        if self.rtype in [2, 3, 10]:
+            return self.ac_obj.raw_data.get("commentCount", 0)
+        elif self.rtype in [1]:
+            return self.ac_obj.raw_data.get("data", {}).get("commentCount", 0)
+        return 0
+
     def loading(self):
         assert self.ac_obj.__class__.__name__ in SaverData.ac_name_map.keys()
         self.keyname = SaverData.ac_name_map[self.ac_obj.__class__.__name__]
@@ -65,7 +73,8 @@ class SaverBase:
         url_saved = url_saver(self.ac_obj.referer, self._save_path, url_name)
         raw_saved = json_saver(self.ac_obj.raw_data, self._data_path, f"{self.ac_obj.resource_id}")
         json2js(os.path.join(self._data_path, f"{self.rid}.json"), f"LOADED.{self.keyname}['{self.rid}']")
-        self._save_member([self.ac_obj.up().uid], True)
+        if self.rtype not in [1]:
+            self._save_member([self.ac_obj.up().uid], True)
         return all([url_saved, raw_saved])
 
     def _save_image(self):
@@ -90,6 +99,13 @@ class SaverBase:
             ends = "" if num == 0 else f"_36188_{item_id}"
         return f"{self.rid}{ends}"
 
+    def _gen_html(self) -> bool:
+        page_html = self.page_template.render(dict(saver=self))
+        html_path = os.path.join(self._save_path, f"{self.rid}.html")
+        with open(html_path, 'wb') as html_file:
+            html_file.write(page_html.encode())
+        return os.path.isfile(html_path)
+
     def _save_video(self, num: int = 0, quality: [int, str] = 0):
         this_video = self.ac_obj.video(num)
         m3u8_url = this_video.m3u8_url(quality, False)
@@ -98,18 +114,21 @@ class SaverBase:
         scenes_data = this_video.scenes
         if isinstance(scenes_data, dict):
             json_saver(scenes_data, self._data_path, f"{vname}.scenes.json")
-            scenes_image_path = os.path.join(self._data_path, f"{vname}.scenes.png")
-            downloader(self.acer.client, [(scenes_data['sprite_image'], scenes_image_path)])
-            scenes_to_thumbnails(self._save_path)
+            scenes_to_thumbnails(self._save_path, vname)
+        else:
+            ffmpeg_gen_thumbnails(self._save_path, vname)
         hotspot_data = this_video.hotspot
         if isinstance(hotspot_data, dict):
             json_saver(hotspot_data, self._data_path, f"{vname}.hotspot.json")
         save_path = os.path.join(self._save_path, f"{vname}.mp4")
         if os.path.isfile(save_path):
             return True
-        first_try = m3u8_downloader(m3u8_url[0], save_path)
-        if first_try is False:
-            return m3u8_downloader(m3u8_url[1], save_path)
+        download_ok = m3u8_downloader(m3u8_url[0], save_path)
+        retry_count = 0
+        while download_ok is False and retry_count < 10:
+            u = m3u8_url[1][retry_count % len(m3u8_url[1])]
+            retry_count += 1
+            download_ok = m3u8_downloader(u, save_path)
         return True
 
     def _record_live(self, quality: [int, str] = -1):
@@ -133,7 +152,7 @@ class SaverBase:
         this_video = self.ac_obj.video(num)
         vname = self._part_video_name(num)
         json_saver(this_video.danmaku.danmaku_data, self._data_path, f"{vname}.danmaku.json")
-        json2js(os.path.join(self._data_path, f"{self.rid}.danmaku.json"), f"let danmakuData")
+        json2js(os.path.join(self._data_path, f"{vname}.danmaku.json"), f"LOADED.danmaku['{vname}']")
         ass_req = danmaku2ass(self._save_path, vname, quality)
         player_req = danmaku2dplayer(self._save_path, vname)
         return all([ass_req, player_req])
@@ -147,7 +166,10 @@ class SaverBase:
             local_comment_floors = [x['floor'] for x in local_comment_data['rootComments']]
         if update is True or comment_json_path_saved is False:
             comment_obj = self.ac_obj.comment()
-            comment_obj.get_all_comments()
+            if self.comment_count < 1000:
+                comment_obj.get_all_comments()
+            else:
+                comment_obj.get_all_comments(3)
             if local_comment_data is not None:
                 comment_data = local_comment_data
                 comment_data['hotComments'] = comment_obj.hot_comments

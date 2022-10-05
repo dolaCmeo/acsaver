@@ -2,9 +2,10 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
+    <meta name="referer" content="https://www.acfun.cn/">
     <title>AcFun近期保存内容 - AcSaver</title>
     <link type="image/ico" rel="shortcut icon" href="assets/favicon.ico">
-    <link type="text/css" rel="stylesheet" href="assets/css/base.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/index.css"/>
 </head>
 <body>
     <div id="app">
@@ -23,10 +24,13 @@
                     <div class="nav-entrance-wrap">
                         <a class="nav-mall">
                             <span class="ac-icon"><i class="iconfont">&#xe3c5;</i></span>
-                            <span class="entrance-title">近期保存内容</span></a>
+                            <span class="entrance-title">视频文章</span></a>
+                        <a href="anime.html" class="nav-mall">
+                            <span class="ac-icon"><i class="iconfont">&#xe3cb;</i></span>
+                            <span class="entrance-title">番剧</span></a>
                         <a href="feed.html" class="face-catcher">
                             <span class="ac-icon"><i class="iconfont">&#xe3c4;</i></span>
-                            <span class="entrance-title">近期保存动态</span></a>
+                            <span class="entrance-title">动态</span></a>
                     </div>
                     <div class="nav-search">
                         <span class="nav-search-input ac-input-wrapper ac-input-suffix">
@@ -41,13 +45,13 @@
                         <a href="https://github.com/dolaCmeo/acsaver" target="_blank" class="nav-user-item">
                             <span class="icon ac-icon"><i class="iconfont">&#xe62e;</i></span>
                             <p class="desc">AcSaver</p></a>
-                        <a href="https://www.acfun.cn" target="_blank" rel="noopener" class="user-upload">
+                        <a href="https://www.acfun.cn" target="_blank" rel="noopener" class="user-upload" id='online-link'>
                             <button type="button" class="ac-button ac-button-primary ac-button-normal">
                                 <span class="ac-icon" style="margin-right:4px;"><i class="iconfont">&#xe3c9;</i></span> 去线上
                             </button></a>
                     </div>
                 </div>
-                </header>
+            </header>
             <main style="margin: 60px 0 0;">
                 <div class="ac-rank-wrapper">
                     <div class="header">
@@ -96,14 +100,6 @@
         </a>
     </div>
 </div>
-<script type="text/javascript" src="assets/js/lazyload.min.js"></script>
-<script type="text/javascript" src="assets/js/loader.js"></script>
-<script type="text/javascript" src="assets/js/saver.js"></script>
-<script type="text/javascript">
-    let lazyLoadInstance = new LazyLoad({});
-    let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
-    navItemLoader();
-</script>
-<script type="text/javascript" src="assets/js/index.js"></script>
+<script type="text/javascript" src="assets/js/acsaver.js"></script>
 </body>
 </html>

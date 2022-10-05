@@ -2,10 +2,10 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="referer" content="https://www.acfun.cn/member/feeds">
-    <title>AcFun近期保存动态 - AcSaver</title>
+    <meta name="referer" content="https://www.acfun.cn/bangumilist">
+    <title>AcFun近期保存番剧 - AcSaver</title>
     <link type="image/ico" rel="shortcut icon" href="assets/favicon.ico">
-    <link type="text/css" rel="stylesheet" href="assets/css/feed.css">
+    <link type="text/css" rel="stylesheet" href="assets/css/anime.css">
 </head>
 <body>
     <div id="app">
@@ -26,10 +26,10 @@
                         <a href="index.html" class="nav-mall">
                             <span class="ac-icon"><i class="iconfont">&#xe3c5;</i></span>
                             <span class="entrance-title">视频文章</span></a>
-                        <a href="anime.html" class="nav-mall">
+                        <a class="nav-mall">
                             <span class="ac-icon"><i class="iconfont">&#xe3cb;</i></span>
                             <span class="entrance-title">番剧</span></a>
-                        <a class="face-catcher">
+                        <a href="feed.html" class="face-catcher">
                             <span class="ac-icon"><i class="iconfont">&#xe3c4;</i></span>
                             <span class="entrance-title">动态</span></a>
                     </div>
@@ -53,33 +53,11 @@
                     </div>
                 </div>
                 </header>
-            <main style="margin-top: 60px;">
-                <div class="ac-member">
-{#                    <nav class="ac-member-navigation">#}
-{#                        <a href="https://www.acfun.cn/" target="_blank" aria-current="page" class="ac-member-navigation-item">#}
-{#                            <span class="ac-icon"><i class="iconfont">&#xe3c9;</i></span> AcFun首页</a>#}
-{#                        <a href="index.html" class="ac-member-navigation-item">#}
-{#                            <span class="ac-icon"><i class="iconfont">&#xe3c5;</i></span> 视频文章</a>#}
-{#                        <a href="anime.html" class="ac-member-navigation-item">#}
-{#                            <span class="ac-icon"><i class="iconfont">&#xe3cb;</i></span> 番剧</a>#}
-{#                        <a aria-current="page" class="ac-member-navigation-item ac-member-navigation-item-active">#}
-{#                            <span class="ac-icon"><i class="iconfont">&#xe3c4;</i></span> 动态</a>#}
-{#                    </nav>#}
-                    <div class="ac-member-main">
-                        <div class="ac-member-feeds">
-                            <div class="ac-member-feeds-header ac-tabs">
-                                <ul class="ac-tabs-nav"></ul>
-                                <div class="ac-tabs-container">
-                                    <div class="ac-tabs-panel">
-                                        <div class="feeds-panel" is-active="true">
-                                            <!---->
-                                            <div id="feed-loading" class="loading" style="display:none;"><img src="assets/img/loading.gif">Loading...</div>
-                                            <div class="observer" style=""></div>
-                                            <div class="ac-back-top" style="display:none;"><span class="ac-icon"><i class="iconfont"></i></span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <main>
+                <div class="ac-bangumi-list">
+                    <div id="bangumiList">
+                        <div class="ac-mod-list">
+                            <ul class="ac-mod-ul"></ul>
                         </div>
                     </div>
                 </div>
@@ -94,13 +72,6 @@
                     <img src="assets/img/logo-gray.png" width="78" height="24" loading="lazy" alt=""></a>
                 <p>Copyright © 2007-<script>document.write(new Date().getFullYear().toString())</script> AcFun. 保留所有权利</p></div>
         </div>
-    </div>
-</div>
-<div id="pagelet_toolbar" style="visibility: visible;">
-    <div id="toolbar" class="toolbar showAll">
-        <a href="#app">
-            <div id="to-top" title="返回顶部" class="icon icon-arrow-slim-up tool-item tool-to-top toBottom"></div>
-        </a>
     </div>
 </div>
 <script type="text/javascript" src="assets/js/acsaver.js"></script>

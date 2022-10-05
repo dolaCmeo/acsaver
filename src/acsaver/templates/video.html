@@ -2,34 +2,17 @@
 <html lang="zh">
 <head>{% set RAW = saver.ac_obj.raw_data %}{% set UP = saver.ac_obj.up().raw_data %}
     <meta charset="UTF-8">
+    <meta name="referer" content="{{ saver.ac_obj.referer }}">
     <title>{{ RAW.title }} - AcSaver</title>
     <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
-    <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/video.css"/>
-    <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
 </head>
 <body>
 <header id="header"></header>
 <div id="main" class="single-part">
     <div id="main-content" class="clearfix" style="margin: 0 auto;">
         <div class="left-column">
-            <div class="player-box">
-                <div id="player">
-                    <div id="ACPlayer">
-                        <div class="container-player" style="">
-                            <div class="container-video">
-                                <div class="container-plugins-inner">
-                                    <div class="container-controls">
-                                        <div class="control-bar-bottom"></div>
-                                        <div class="video-status" data-bind-key="playStatus" data-bind-attr="pause"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="container-plugins-outer"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="player-box" id="player-box"></div>
             <div class="video-description clearfix dark-style">
                 <h1 class="title">
 <!--                    <a class="reco-tag" href="https://www.acfun.cn/rank/list/#cid=-1;range=1;pcid=-3" title="综合榜Top2" target="_blank">综合榜Top2</a>-->
@@ -64,7 +47,7 @@
                                                 <div class="share-desc">获取原视频地址</div>
                                                 <div class="area-share clearfix">
                                                     <input aria-label="" id="videoUrl" class="ipt-url fl" type="text" readonly="readonly" value="https://www.acfun.cn/v/ac{{ saver.rid }}">
-                                                    <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="copyText('https://www.acfun.cn/v/ac{{ saver.rid }}')">复制</span>
+                                                    <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="SAVER.utils.copyText('https://www.acfun.cn/v/ac{{ saver.rid }}')">复制</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -162,72 +145,27 @@
                     </div>
                 </div>
             </div>
-            <div class="pagelet_newcomment" style="visibility: visible;">
-                <div class="comment-area">
-                    <div class="clearfix comm">
-                        <div class="columen-left fl">
-                            <div id="area-comment" class="block"></div>
-                            <div class="ac-pc-comment" id="ac-pc-comment"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="pagelet_newcomment" style="visibility: visible;"></div>
         </div>
         <div class="right-column">
-            <div id="danmaku" style="display: block;">
-                <div class="danmaku-wrapper">
-                    <div class="danmaku-container">
-                        <div class="danmaku-list-container">
-                            <div class="danmaku-list">
-                                <div class="list-title">
-                                    <div class="time-grid">时间<i></i></div>
-                                    <div class="content-grid">弹幕内容<i></i></div>
-                                </div>
-                                <div class="list-body">
-                                    <div class="scroll-content">
-                                        <ul class="danmaku-items" id="danmaku-items">
-                                        </ul>
-                                    </div>
-                                    <div class="message-box"></div>
-                                    <div class="danmaku-page">
-                                        <div class="last-page"></div>
-                                        <div class="current-page">
-                                            <div class="cur-page">
-                                                <span id="page-info"></span>
-                                                <i></i>
-                                            </div>
-                                            <ul class="page-pool">
-                                                <li data-page="3">第3页</li>
-                                                <li data-page="2">第2页</li>
-                                                <li data-page="1">第1页</li>
-                                            </ul>
-                                        </div>
-                                        <div class="next-page"></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
+            <div id="danmaku" class="pagelet_danmaku" style="visibility: visible;"></div>
+            <div id="pagelet_partlist"{% if RAW.videoList|length < 2 %} style="display: none{% endif %};">
+                <div class="part">
+                    <div class="part-title"><h3>分段列表</h3>
+                        <p>共{{ RAW.videoList|length }}P, 当前正在播放<span class="current-priority">1</span>P</p></div>
+                    <div class="fl part-wrap">
+                        <ul class="scroll-div">
+                            {% for part in RAW.videoList %}
+                            <li class="single-p{% if loop.first %} active{% endif %}" data-index="{{ loop.index0 }}"
+                                data-href="{{ RAW.dougaId }}{{ "_"+loop.index|string if loop.index > 1 else "" }}"
+                                title="{{ RAW.title }}" data-id="{{ RAW.dougaId }}" data-vid="{{ part.id }}"
+                                data-title="{{ part.title }}">{{ part.title }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <div class="danmaku-fold">弹幕列表</div>
                 </div>
             </div>
-            {% if RAW.videoList|length > 1 %}
-            <div class="part">
-                <div class="part-title"><h3>分段列表</h3>
-                    <p>共{{ RAW.videoList|length }}P, 当前正在播放<span class="current-priority">{{ partNum + 1 }}</span>P</p></div>
-                <div class="fl part-wrap">
-                    <ul class="scroll-div">
-                        {% for part in RAW.videoList %}
-                        <li class="single-p{% if loop.index0 == partNum %} active{% endif %}"
-                            data-href="{{ RAW.dougaId }}{{ "_"+loop.index|string if loop.index > 1 else "" }}.html"
-                            title="{{ part.title }}" data-id="{{ part.id }}">{{ part.title }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
-            <div id="pagelet_newrecommend" style="visibility: visible;">
+            <div id="pagelet_newrecommend" style="display: none">
                 <div class="recmd">
                     <h2 class="recommend-title">最新保存</h2>
                     <div class="clearfix area recommendation" id="recommends"></div>
@@ -238,17 +176,6 @@
 </div>
 <div id="pagelet_toolbar" style="visibility: visible;"></div>
 <div id="pagelet_footer" style="visibility: visible;"></div>
-<script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
-<script type="text/javascript" src="../../assets/js/DPlayer.min.js"></script>
-<script type="text/javascript" src="../../assets/js/loader.js"></script>
-<script type="text/javascript" src="../../assets/js/saver.js"></script>
-<script type="text/javascript">
-    let lazyLoadInstance = new LazyLoad({});
-    let PAGE = {{ saver.page_data }};PAGE.rName = "{{ vname }}";
-    let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
-    let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];
-    tagsLoader(pagelets);
-    pageInit(PAGE);
-</script>
+<script type="text/javascript" src="../../assets/js/acsaver.js"></script>
 </body>
 </html>

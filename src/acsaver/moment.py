@@ -16,7 +16,7 @@ class MomentSaver(SaverBase):
         html_str, img_task = tans_uub2html(self.ac_obj.raw_data.get('text'), self._save_path)
         if len(img_task) > 0:
             downloader(self.acer.client, img_task, display=True)
-        return html_str.replace(r"\"", '"')
+        return html_str.replace(r"\"", '"').replace('emot/big', 'emot/small')
 
     @property
     def images(self):
@@ -55,7 +55,7 @@ class MomentSaver(SaverBase):
 
     def save_all(self):
         self._save_raw()
-        # self._save_image()
+        self._save_image()
         self._gen_html()
         self._save_comment()
         self.update_js_data()

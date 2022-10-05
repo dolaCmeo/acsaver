@@ -2,12 +2,10 @@
 <html lang="zh">
 <head>{% set RAW = saver.ac_obj.raw_data %}{% set UP = saver.ac_obj.up().raw_data %}
     <meta charset="UTF-8">
+    <meta name="referer" content="{{ saver.ac_obj.referer }}">
     <title>{{ RAW.title }} - AcSaver</title>
     <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
-    <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
     <link type="text/css" rel="stylesheet" href="../../assets/css/article.css"/>
-    <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
-    <link type="text/css" rel="stylesheet" href="../../assets/css/viewer.min.css">
 </head>
 <body>
 <header id="header"></header>
@@ -55,7 +53,7 @@
                                                         <div class="share-desc">获取原文章地址</div>
                                                         <div class="area-share clearfix">
                                                             <input aria-label="" id="videoUrl" class="ipt-url fl" type="text" readonly="readonly" value="https://www.acfun.cn/a/ac{{ saver.rid }}">
-                                                            <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="copyText('https://www.acfun.cn/a/ac{{ saver.rid }}')">复制</span>
+                                                            <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="SAVER.utils.copyText('https://www.acfun.cn/a/ac{{ saver.rid }}')">复制</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -123,7 +121,7 @@
                                                     <div class="share-desc">获取原文章地址</div>
                                                     <div class="area-share clearfix">
                                                         <input id="videoUrl" class="ipt-url fl" type="text" readonly="readonly" value="https://www.acfun.cn/a/ac{{ saver.rid }}">
-                                                        <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="copyText('https://www.acfun.cn/a/ac{{ saver.rid }}')">复制</span>
+                                                        <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="SAVER.utils.copyText('https://www.acfun.cn/a/ac{{ saver.rid }}')">复制</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -141,16 +139,7 @@
                         </div>
                     </div>
                 </section>
-                <div class="pagelet_newcomment" style="visibility: visible;">
-                    <div class="comment-area">
-                        <div class="clearfix comm">
-                            <div class="columen-left fl">
-                                <div id="area-comment" class="block"></div>
-                                <div class="ac-pc-comment" id="ac-pc-comment"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="pagelet_newcomment" style="visibility: visible;"></div>
             </div>
             <div class="fr" style="width:280px">
                 <section id="up-info">
@@ -192,31 +181,19 @@
                         <a href="https://message.acfun.cn/im?targetid={{ RAW.user.href }}" target="_blank" class="mail">私信</a>
                     </div>
                 </section>
-                <section class="up-contributions">
+                <section class="up-contributions" id="pagelet_newrecommend" style="display: none">
                     <div class="ctb-head">
                         <h1 class="ctb-title">最新保存</h1>
                         <a href="../../index.html" target="_blank" class="showall">全部</a>
                     </div>
+                    <div id="recommends"></div>
                 </section>
-                <div id="recommends"></div>
             </div>
         </div>
     </section>
 </div>
-<div id="pagelet_toolbar" style="visibility: visible;"></div>
 <div id="pagelet_footer" style="visibility: visible;"></div>
-<script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
-<script type="text/javascript" src="../../assets/js/viewer.min.js"></script>
-<script type="text/javascript" src="../../assets/js/loader.js"></script>
-<script type="text/javascript" src="../../assets/js/saver.js"></script>
-<script type="text/javascript">
-    let lazyLoadInstance = new LazyLoad({});
-    let gallery = new Viewer(document.getElementsByClassName("article-content")[0]);
-    let PAGE = {{ saver.page_data }};
-    let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
-    let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];
-    tagsLoader(pagelets);
-    pageInit(PAGE);
-</script>
+<div id="pagelet_toolbar" style="visibility: visible;"></div>
+<script type="text/javascript" src="../../assets/js/acsaver.js"></script>
 </body>
 </html>

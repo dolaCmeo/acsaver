@@ -3,12 +3,10 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
+    <meta name="referer" content="{{ saver.ac_obj.referer }}">
     <title>@{{ RAW.user.name }}动态 - AcSaver</title>
     <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
-    <link type="text/css" rel="stylesheet" href="../../assets/css/base.css"/>
-    <link type="text/css" rel="stylesheet" href="../../assets/css/moment.css">
-    <link type="text/css" rel="stylesheet" href="../../assets/css/pager.min.css"/>
-    <link type="text/css" rel="stylesheet" href="../../assets/css/viewer.min.css">
+    <link type="text/css" rel="stylesheet" href="../../assets/css/moment.css"/>
 </head>
 <body>
     <div id="app">
@@ -74,7 +72,7 @@
                             <div class="feed-content">
                                 <div class="member-feed-moment">
                                     <a id="srcUrl" href="{{ saver.ac_obj.referer }}"></a>
-                                    <div class="member-feed-text">{{ saver.html_content|replace('emot/big', 'emot/small') }}</div>
+                                    <div class="member-feed-text">{{ saver.html_content }}</div>
                                     {% if RAW.get('imgs', [])|length %}{% set momentImages = saver.images %}
                                     <div class="member-feed-moment-image member-feed-moment-image-{{ momentImages|length }}">
                                         {% for img in momentImages %}
@@ -168,7 +166,7 @@
                                                         <p>分享动态到博客或论坛</p>
                                                         <div class="share-copy">
                                                             <input aria-label="" readonly="readonly" class="share-copy-content" value="{{ saver.ac_obj.referer }}">
-                                                            <div class="share-copy-btn" onclick="copyText('{{ saver.ac_obj.referer }}')">复制动态地址</div>
+                                                            <div class="share-copy-btn" onclick="SAVER.utils.copyText('{{ saver.ac_obj.referer }}')">复制动态地址</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -176,11 +174,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <div class="feed-comment">
-                                        <div class="ac-pc-comment" id="ac-pc-comment"></div>
-                                    </div>
-                                </div>
+                                <div class="pagelet_newcomment" style="visibility: visible;"></div>
                             </div>
                             <div class="feed-more"><span class="ac-icon"><i class="iconfont"></i></span></div>
                         </div>
@@ -191,20 +185,6 @@
     </div>
 <div id="pagelet_footer" style="visibility: visible;"></div>
 <div id="pagelet_toolbar" style="visibility: visible;"></div>
-<script type="text/javascript" src="../../assets/js/lazyload.min.js"></script>
-<script type="text/javascript" src="../../assets/js/viewer.min.js"></script>
-<script type="text/javascript" src="../../assets/js/loader.js"></script>
-<script type="text/javascript" src="../../assets/js/saver.js"></script>
-<script type="text/javascript">
-    let lazyLoadInstance = new LazyLoad({});
-    {% if RAW.get('imgs', [])|length %}
-    let gallery = new Viewer(document.getElementsByClassName("member-feed-moment-image")[0]);
-    {% endif %}
-    let PAGE = {{ saver.page_data }};
-    let LOADED = {"bangumi":{},"article":{},"video":{},"live":{},"moment":{},"comment":[]};
-    let pagelets = ['header', 'ac-pc-comment', 'pagelet_footer', 'pagelet_toolbar'];
-    tagsLoader(pagelets);
-    pageInit(PAGE);
-</script>
+<script type="text/javascript" src="../../assets/js/acsaver.js"></script>
 </body>
 </html>

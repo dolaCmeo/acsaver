@@ -11,6 +11,7 @@ import filetype
 import subprocess
 from urllib import parse
 from PIL import Image
+from bs4 import BeautifulSoup as Bs
 from rich.console import Console
 from rich.text import Text
 from rich.align import Align
@@ -35,6 +36,7 @@ __all__ = (
     "Panel",
     "Live",
     "Progress",
+    "Bs",
     "AcSource",
     "SaverData",
     "FfmpegProgress",
@@ -46,6 +48,7 @@ __all__ = (
     "json2js",
     "downloader",
     "m3u8_downloader",
+    "ffmpeg_gen_thumbnails",
     "scenes_to_thumbnails",
     "danmaku2dplayer",
     "danmaku2ass",
@@ -97,6 +100,10 @@ def url_saver(url: str, base_path: [os.PathLike, str], filename: str):
 
 def json2js(src_path: [os.PathLike, str], keyname: str, dest_path: [str, None] = None):
     data = json.load(open(src_path, 'r'))
+    if "moment" in src_path:
+        text = tans_uub2html(data['text'], os.path.dirname(os.path.dirname(src_path)))
+        data['text'] = text[0].replace(r"\"", '"').replace('emot/big', 'emot/small')
+
     str_data = json.dumps(data, separators=(',', ':'))
     data_js = f"{keyname}={str_data};"
     if dest_path is None:
@@ -120,23 +127,56 @@ def json_saver(data: dict, base_path: [os.PathLike, str], filename: str):
     return result
 
 
-def scenes_to_thumbnails(base_path: [os.PathLike, str]):
-    rid = os.path.basename(base_path)
-    scenes_img_path = os.path.join(base_path, "data", f"{rid}.scenes.png")
-    scenes_data_path = os.path.join(base_path, "data", f"{rid}.scenes.json")
-    if not (os.path.isfile(scenes_img_path) and os.path.isfile(scenes_data_path)):
+def ffmpeg_gen_thumbnails(base_path: [os.PathLike, str], filename: str):
+    media_path = os.path.join(base_path, f"{filename}.mp4")
+    thumbnails_path = os.path.join(base_path, "data", f"{filename}.thumbnails.png")
+    if os.path.isfile(thumbnails_path) is True:
+        return True
+    ffprobe_params = [
+        "ffprobe", "-v", "error", "-show_entries", "stream=width,height,duration",
+        "-of", "default=noprint_wrappers=1", "-print_format", "json", media_path
+    ]
+    p = subprocess.Popen(ffprobe_params, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    media_info = json.loads(p.stdout.read()).get("streams", [None])[0]
+    w, h, d = media_info['width'], media_info['height'], media_info['duration']
+    scale = "160:90" if w > h else "90:160"
+    ffmpeg_cmd = get_usable_ffmpeg()
+    ffmpeg_params = [
+        ffmpeg_cmd, '-y', '-i', media_path, '-vsync', 'vfr', '-vf',
+        f'fps=1/{float(d) / 100},scale={scale},tile=100x1',
+        '-qscale:v', '3', thumbnails_path,
+        # "-v", "quiet"
+    ]
+    # print(f"{ffmpeg_params=}")
+    p = subprocess.Popen(ffmpeg_params, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p.stdout.read()
+    return os.path.isfile(thumbnails_path)
+
+
+def scenes_to_thumbnails(base_path: [os.PathLike, str], filename: str):
+    scenes_data_path = os.path.join(base_path, "data", f"{filename}.scenes.json")
+    if not os.path.isfile(scenes_data_path):
         return False
-    pos = json.load(open(scenes_data_path, 'r'))['pos']
-    pos = [x[2] for x in pos]
-    if len(pos) != 0 and len(pos) % 50 != 0:
+    sprite = json.load(open(scenes_data_path, 'r'))
+    pos = sprite['pos']
+    if "bangumi" in base_path and len(pos) % 100 == 1:
+        pos = pos[1:]
+    if len(pos) == 0 or len(pos) % 100 != 0:
         return False
-    scenes = Image.open(scenes_img_path)
-    thumbnails = Image.new('RGB', (16000, 90))
+    img_task = list()
+    for i, x in enumerate(sprite['sprite_images']):
+        img_task.append([x, os.path.join(base_path, "data", f"{filename}.scenes.{i}.png")])
+    downloader(httpx.Client(), img_task, os.path.join(base_path, "data"))
+    scenes0 = Image.open(img_task[0][1])
+    ww, hh = scenes0.width // 5, scenes0.height // 10
+    thumbnails = Image.new('RGB', (ww * 100, hh))
+    step = len(pos) // 100
     for i in range(100):
-        x, y, w, h = list(map(int, pos[i // 2].split(',')))
-        region = scenes.crop((x, y, x + w, y + h))
-        thumbnails.paste(region, (160 * i, 0))
-    thumbnails_path = os.path.join(base_path, "data", f"{rid}.thumbnails.png")
+        x, y, w, h = list(map(int, pos[i * step][2].split(',')))
+        img = Image.open(img_task[pos[i * step][3]][1])
+        region = img.crop((x, y, x + w, y + h))
+        thumbnails.paste(region, (ww * i, 0))
+    thumbnails_path = os.path.join(base_path, "data", f"{filename}.thumbnails.png")
     thumbnails.save(thumbnails_path, "png")
     return os.path.isfile(thumbnails_path)
 
@@ -202,18 +242,32 @@ def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: i
     thisVideoHeight = quality_data['height']
     thisDuration = 10
     channelNum = math.floor(thisVideoWidth / fontsize)
-    scriptInfo = "\n".join([
-        "[Script Info]",
-        f"; AcVid: {folder_name}",
-        f"; StreamName: {main_data['title']}",
-        f"Title: {folder_name} - {main_data['user']['name']} - {main_data['title']}",
-        f"Original Script: {folder_name} - {main_data['user']['name']} - {main_data['title']}",
-        "Script Updated By: acfunSDK转换",
-        "ScriptType: v4.00+",
-        "Collisions: Normal",
-        f"PlayResX: {thisVideoWidth}",
-        f"PlayResY: {thisVideoHeight}"
-    ])
+    if "dougaId" in main_data:
+        scriptInfo = "\n".join([
+            "[Script Info]",
+            f"; AcVid: {folder_name}",
+            f"; StreamName: {main_data['title']}",
+            f"Title: {folder_name} - {main_data['user']['name']} - {main_data['title']}",
+            f"Original Script: {folder_name} - {main_data['user']['name']} - {main_data['title']}",
+            "Script Updated By: acfunSDK转换",
+            "ScriptType: v4.00+",
+            "Collisions: Normal",
+            f"PlayResX: {thisVideoWidth}",
+            f"PlayResY: {thisVideoHeight}"
+        ])
+    elif "bangumiId" in main_data.get("data", {}):
+        scriptInfo = "\n".join([
+            "[Script Info]",
+            f"; AcVid: {folder_name}",
+            f"; StreamName: {main_data['data']['bangumiTitle']}",
+            f"Title: {folder_name} - {main_data['data']['bangumiTitle']}",
+            f"Original Script: {folder_name} - {main_data['data']['bangumiTitle']}",
+            "Script Updated By: acfunSDK转换",
+            "ScriptType: v4.00+",
+            "Collisions: Normal",
+            f"PlayResX: {thisVideoWidth}",
+            f"PlayResY: {thisVideoHeight}"
+        ])
     styles = "\n".join([
         "[V4+ Styles]",
         "Format: " + ", ".join([
@@ -302,7 +356,7 @@ def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: i
 def get_usable_ffmpeg(cmd: [str, None] = None):
     cmds = ['ffmpeg', os.path.join(os.getcwd(), 'ffmpeg.exe')]
     if cmd is not None and os.path.isfile(cmd):
-        cmds.append(cmd)
+        cmds = [cmd] + cmds
     for x in cmds:
         try:
             p = subprocess.Popen([x, '-version'], stdin=subprocess.DEVNULL,
@@ -328,6 +382,7 @@ def m3u8_downloader(m3u8_url: str, save_path: [str, os.PathLike, None] = None):
     try:
         ff = FfmpegProgress(ffmpeg_params)
         with Progress() as pp:
+            print(f"{m3u8_url=}")
             ff_download = pp.add_task(filename, total=100)
             for progress in ff.run_command_with_progress():
                 if progress > 0:
@@ -336,6 +391,12 @@ def m3u8_downloader(m3u8_url: str, save_path: [str, os.PathLike, None] = None):
             pp.stop()
     except RuntimeError as e:
         print(f"RuntimeError.ERROR: downloader run {ffmpeg_params=}")
+        return False
+    except TypeError as e:
+        print(f"TypeError.ERROR: downloader run {ffmpeg_params=}")
+        return False
+    except KeyboardInterrupt as e:
+        os.remove(save_path)
         return False
     return os.path.isfile(save_path)
 
@@ -362,7 +423,7 @@ def downloader(client, src_urls_with_filename: list,
                         continue
                     total = int(resp.headers.get("Content-Length", 0))
                     total = None if total == 0 else total // 1024
-                    download_task = pp.add_task(filename, total=(total or 100))
+                    download_task = pp.add_task(os.path.basename(filename), total=(total or 100))
                     with open(filename, 'wb') as save_file:
                         for chunk in resp.iter_bytes():
                             save_file.write(chunk)
@@ -465,7 +526,7 @@ def tans_uub2html(src: str, save_path: str) -> tuple:
             elif n == 'at_old':
                 src = src.replace(tag[0], f'<a class=\\"ubb-name\\">@{tag[1]}</a>')
             elif n == 'jump':
-                src = src.replace(tag[0], f'<a class=\\"quickJump\\" onclick=\\"quickJump({tag[1]})\\">{tag[2]}</a>')
+                src = src.replace(tag[0], f'<a class=\\"quickJump\\" onclick=\\"SAVER.utils.quickJump({tag[1]})\\">{tag[2]}</a>')
             elif n == 'resource':
                 resource_a = '<a class=\\"ubb-ac\\" data-aid=\\"{ac_num}\\" href=\\"{href}\\" target=\\"_blank\\">{title}</a>'
                 src = src.replace(

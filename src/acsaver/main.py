@@ -2,10 +2,11 @@
 import os
 import zipfile
 from .utils import downloader, saver_template, SaverData, update_js_data, create_py_http_server_bat
-from .article import ArticleSaver
+from .bangumi import BangumiSaver
 from .video import VideoSaver
-from .live import LiveSaver
+from .article import ArticleSaver
 from .moment import MomentSaver
+from .live import LiveSaver
 
 __author__ = 'dolacmeo'
 
@@ -26,17 +27,20 @@ class AcSaver:
         update_js_data(self.local.root_path)
         create_py_http_server_bat(self.local.root_path)
 
-    def ArticleSaver(self, ac_obj):
-        return ArticleSaver(self.acer, ac_obj)
+    def BangumiSaver(self, ac_obj):
+        return BangumiSaver(self.acer, ac_obj)
 
     def VideoSaver(self, ac_obj):
         return VideoSaver(self.acer, ac_obj)
 
-    def LiveSaver(self, ac_obj):
-        return LiveSaver(self.acer, ac_obj)
+    def ArticleSaver(self, ac_obj):
+        return ArticleSaver(self.acer, ac_obj)
 
     def MomentSaver(self, ac_obj):
         return MomentSaver(self.acer, ac_obj)
+
+    def LiveSaver(self, ac_obj):
+        return LiveSaver(self.acer, ac_obj)
 
     def _get_saver(self, ac_obj):
         s = SaverData.ac_saver_map.get(ac_obj.__class__.__name__)
@@ -129,20 +133,17 @@ class SaverLocal:
         return True
 
     def _page_check(self):
-        # 首页
-        index_html_path = os.path.join(self.root_path, 'index.html')
-        if os.path.isfile(index_html_path) is False:
-            templates = saver_template()
-            index_html = templates.get_template('index.html').render()
-            with open(index_html_path, 'wb') as index_file:
-                index_file.write(index_html.encode())
-        # 动态
-        feed_html_path = os.path.join(self.root_path, 'feed.html')
-        if os.path.isfile(feed_html_path) is False:
-            templates = saver_template()
-            feed_html = templates.get_template('feed.html').render()
-            with open(feed_html_path, 'wb') as feed_file:
-                feed_file.write(feed_html.encode())
-        # 用户
-
+        index_names = [
+            'index',  # 首页
+            'anime',  # 番剧
+            'feed',  # 动态
+            # 用户
+        ]
+        for page in index_names:
+            index_html_path = os.path.join(self.root_path, f'{page}.html')
+            if os.path.isfile(index_html_path) is False:
+                templates = saver_template()
+                index_html = templates.get_template(f'{page}.html').render()
+                with open(index_html_path, 'wb') as index_file:
+                    index_file.write(index_html.encode())
         return True

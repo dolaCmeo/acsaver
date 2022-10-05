@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>{% set RAW = saver.ac_obj.raw_data %}
+    <meta charset="UTF-8">{% set episode = RAW['list']['items'][partNum] %}
+    <meta name="referer" content="{{ saver.ac_obj.referer }}">
+    <title>{{ RAW.data.bangumiTitle }} - AcSaver</title>
+    <link type="image/ico" rel="shortcut icon" href="../../assets/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="../../assets/css/bangumi.css"/>
+</head>
+<body>
+<header id="header"></header>
+<div id="main">
+    <div id="movie-player"></div>
+    <div id="main-content" class="clearfix" style="margin: 0px auto;">
+        <div class="left-column">
+            <div class="player-box" id="player-box"></div>
+            <div class="video-description clearfix dark-style">
+                <h1 class="title" id="bangumiTitle"><a id="srcUrl" href="https://www.acfun.cn/bangumi/aa{{ saver.rid }}">{{ RAW.data.bangumiTitle }}&nbsp;：
+                    <span class="episode">{{ RAW.data.episodeName }}&nbsp;{{ RAW.data.title }}</span></a></h1>
+                <div class="action-area">
+                    <div class="left-area">
+                        <div class="views"><span class="viewsCount">{{ RAW.data.playCountShow }}</span>播放</div>
+                        <div class="danmu"><span class="danmuCount sp2">0</span>弹幕</div>
+                        <div class="comment"><span class="commentCount">{{ RAW.data.commentCountShow }}</span>评论</div>
+                    </div>
+                    <div class="right-area">
+                        <div class="like"><span class="icon"></span><span class="likeCount">{{ RAW.data.bangumiLikeCountShow }}</span></div>
+                        <div class="banana"><span class="icon"></span><span class="bananaCount">{{ RAW.data.bangumiBananaCountShow }}</span></div>
+                        <div class="share"><span class="icon"></span><span class="shareCount">分享</span>
+                            <div class="share-module">
+                                <div class="share-title">分享本番剧给朋友吧</div>
+                                <div class="share-action-area">
+                                    <div class="share-left-area">
+                                        <div class="qrcode"><img src="data/share_qrcode.png" alt=""></div>
+                                        <p class="scan">扫一扫</p><p>分享到微信/朋友圈</p></div>
+                                    <div class="share-right-area">
+                                        <div class="share-type">
+                                            <a class="bds_tieba" title="分享到百度贴吧" data-cmd="tieba" data-plat="OTHER"></a>
+                                            <a class="weibo bds_tsina" title="分享到新浪微博" data-cmd="tsina" data-plat="WEIBO"></a>
+                                            <a class="qzone bds_qzone" title="分享到QQ空间" data-cmd="qzone" data-plat="QQ_FRIENDZONE"></a>
+                                        </div>
+                                        <div class="share-container">
+                                            <div id="share-component">
+                                                <div class="share-desc">分享番剧到博客或论坛</div>
+                                                <div class="area-share clearfix">
+                                                    <input aria-label="" id="videoUrl" type="text" readonly="readonly" class="ipt-url fl" value="https://www.acfun.cn/bangumi/aa{{ saver.rid }}">
+                                                    <span data-clipboard-target="#videoUrl" class="copy fl cp-url" onclick="SAVER.utils.copyText('https://www.acfun.cn/bangumi/aa{{ saver.rid }}')">复制视频地址</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collection active">
+                            <span class="icon-ks icon-button_fast_zhuifan_p"></span>
+                            <span class="collection-status">已追番</span>
+                            <span class="collectionCount">{{ RAW.data.stowCountShow }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="introduction">
+                <div class="content-description">
+                    <div class="description-container">{{ RAW.data.bangumiIntro }}</div>
+                </div>
+                <div class="tag" id="bd_tag">
+                    {% for tag in RAW.data.bangumiStyleList %}
+                    <span class="tag-single fl">
+                        <a href="https://www.acfun.cn/search?keyword={{ tag.name }}" data-tid="{{ tag.id }}" target="_blank" class="fl">{{ tag.name }}</a>
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+{#            <div class="recommend-bangumis" style="visibility: visible;">#}
+{#                <h1 class="recommend-bangumis-title">番剧推荐</h1>#}
+{#                <ul class="recommend-bangumis-wrapper">#}
+{#                    {% for bangumi in RAW.data.recommendBangumis %}#}
+{#                    <li class="recommend-bangumis-item{% if bangumi.paymentType.value == 0 %} free-bangumi{% endif %}">#}
+{#                        <a href="https://www.acfun.cn//bangumi/aa{{ bangumi.id }}" class="recommend-bangumis-content-top" target="_blank">#}
+{#                            <div class="show-cover" style="background-image:url({{ bangumi.coverImageV }})"></div>#}
+{#                            <div class="data-wrap"></div>#}
+{#                            <span class="icon-ks play-count icon-icon_card_zhuifan">{{ bangumi.stowCountShow }}</span>#}
+{#                            {% if bangumi.paymentType.value == 2 %}#}
+{#                            <div class="needpay">付费观看</div>#}
+{#                            {% endif %}#}
+{#                        </a>#}
+{#                        <a class="recommend-bangumis-item-title" title="{{ bangumi.title }}" href="https://www.acfun.cn//bangumi/aa{{ bangumi.id }}">{{ bangumi.title }}</a>#}
+{#                        <div class="recommend-bangumis-item-latest">{{ bangumi.lastUpdateItemName }}</div>#}
+{#                    </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+            <div class="pagelet_newcomment" style="visibility: visible;"></div>
+        </div>
+        <div class="right-column">
+            <div id="danmaku" class="pagelet_danmaku" style="visibility: visible;"></div>
+            <div class="right-list">
+                <div class="basic-info">
+                    <div class="part-head  clearfix">
+                        <div class="bangumi-info">
+                            <h1 class="part-title" title="{{ RAW.data.bangumiTitle }}">{{ RAW.data.bangumiTitle }}</h1>
+                            <p class="update-status" title="{{ RAW.data.latestItem }}">{{ RAW.data.latestItem }}</p></div>
+                        <div class="follow-bangumi followed icon-ks">已追番</div>
+                    </div>
+                </div>
+                {% if RAW.data.relatedBangumis|length > 1 %}
+                <div class="bangumi-list showAll">
+                    {%- for season in RAW.data.relatedBangumis -%}
+                    <div class="bangumi-item{% if season.id == RAW.data.bangumiId %} active{% endif %}" data-id="{{ season.id }}"><span class="bangumi-item-title" title="{{ season.name }}">{{ season.name }}</span></div>
+                    {%- endfor -%}
+                </div>
+                {% endif %}
+                <div id="pagelet_partlist" style="visibility: visible;">
+                    <div class="part">
+                        <div class="fl part-wrap">
+                            <ul class="scroll-div over-parts{% if RAW['list']['items']|length > 20 %} double-column{% endif %}">
+                                {%- for episode in RAW['list']['items'] -%}
+                                <li class="single-p{% if loop.first %} active{% endif %}" data-index="{{ loop.index0 }}"
+                                    data-href="{{ episode.bangumiId }}{% if not loop.first %}_36188_{{ episode.itemId }}{% endif %}"
+                                    title="{{ episode.title }}" data-id="{{ episode.bangumiId }}" data-vid="{{ episode.videoId }}"
+                                    data-title="{{ episode.episodeName }}&nbsp;{{ episode.title }}">{{ episode.episodeName }}&nbsp;{{ episode.title }}</li>
+                                {%- endfor -%}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagelet_newrecommend" style="display: none">
+                <div class="recmd">
+                    <h2 class="recommend-title">最新保存</h2>
+                    <div class="clearfix area recommendation" id="recommends"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="pagelet_footer" style="visibility: visible;"></div>
+<div id="pagelet_toolbar" style="visibility: visible;"></div>
+<script type="text/javascript" src="../../assets/js/acsaver.js"></script>
+</body>
+</html>

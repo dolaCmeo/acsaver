@@ -1,7 +1,5 @@
 # coding=utf-8
-import os
-from bs4 import BeautifulSoup as Bs
-from .utils import SaverBase, downloader
+from .utils import os, Bs, SaverBase, downloader
 
 __author__ = 'dolacmeo'
 
