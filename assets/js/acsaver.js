@@ -197,6 +197,7 @@ let lazyLoadInstance, gallery, player,
                 let t = new Date(0,0,0,0,0, 0,p);
                 return t.toLocaleTimeString();
             },
+            src2root: function (s) {return s.replace(/src="\.\.\/\.\.\/assets/gm, "src=\"assets");},
             commentBlock: function (commentItem, subCommentsMap, isTop=false, nohr =false) {
                 let userLink = 'https://www.acfun.cn/u/',
                     userPath = '../../member/',
@@ -1139,7 +1140,8 @@ let lazyLoadInstance, gallery, player,
                 momentMain.append(momentUser);
                 // member-feed-moment
                 let feed_content = SAVER.utils.createTag("div", "member-feed-moment"),
-                    content_text = SAVER.utils.createTag("div", "member-feed-text", [], RAW.text);
+                    content_text = SAVER.utils.createTag("div", "member-feed-text", [],
+                        SAVER.utils.src2root(RAW.text));
                 feed_content.append(content_text);
                 if((RAW.imgs||[]).length){
                     let feed_image = SAVER.utils.createTag("div", "member-feed-moment-image member-feed-moment-image-" + RAW.imgs.length);
