@@ -74,7 +74,7 @@ class SaverBase:
         raw_saved = json_saver(self.ac_obj.raw_data, self._data_path, f"{self.ac_obj.resource_id}")
         json2js(os.path.join(self._data_path, f"{self.rid}.json"), f"LOADED.{self.keyname}['{self.rid}']")
         if self.rtype not in [1]:
-            self._save_member([self.ac_obj.up().uid], True)
+            self._save_member([self.ac_obj.up().uid])
         return all([url_saved, raw_saved])
 
     def _save_image(self):
@@ -157,7 +157,7 @@ class SaverBase:
         player_req = danmaku2dplayer(self._save_path, vname)
         return all([ass_req, player_req])
 
-    def _save_comment(self, update: bool = False):
+    def _save_comment(self, update: bool = False, with_user_data: bool = False):
         local_comment_data, local_comment_floors = None, []
         comment_json_path = os.path.join(self._data_path, f"{self.rid}.comment.json")
         comment_json_path_saved = os.path.isfile(comment_json_path)
@@ -192,8 +192,9 @@ class SaverBase:
                 for j in i['subComments']:
                     if j['userId'] not in uids:
                         uids.append(j['userId'])
-            self._save_member(uids)
             json_saver(comment_data, self._data_path, f"{self.rid}.comment.json")
+            if with_user_data is True:
+                self._save_member(uids)
         img_task = tans_comment_uub2html(self._save_path)
         if len(img_task) > 0:
             os.makedirs(os.path.join(self._save_path, 'img'), exist_ok=True)

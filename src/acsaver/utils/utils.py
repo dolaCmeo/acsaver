@@ -7,6 +7,7 @@ import json
 import httpx
 import shutil
 import random
+import zipfile
 import filetype
 import subprocess
 from urllib import parse
@@ -29,6 +30,7 @@ __all__ = (
     "time",
     "json",
     "parse",
+    "zipfile",
     "subprocess",
     "Console",
     "Text",
@@ -57,7 +59,7 @@ __all__ = (
     "tans_comment_uub2html",
     "live_recorder",
     "update_js_data",
-    "create_py_http_server_bat"
+    "create_http_server_bat"
 )
 
 
@@ -159,10 +161,11 @@ def scenes_to_thumbnails(base_path: [os.PathLike, str], filename: str):
         return False
     sprite = json.load(open(scenes_data_path, 'r'))
     pos = sprite['pos']
-    if "bangumi" in base_path and len(pos) % 100 == 1:
-        pos = pos[1:]
-    if len(pos) == 0 or len(pos) % 100 != 0:
-        return False
+    if len(pos) % 100 != 0:
+        if (len(pos) % 100) <= 10:
+            pos = pos[:-(len(pos) % 100)]
+        else:
+            return ffmpeg_gen_thumbnails(base_path, filename)
     img_task = list()
     for i, x in enumerate(sprite['sprite_images']):
         img_task.append([x, os.path.join(base_path, "data", f"{filename}.scenes.{i}.png")])
@@ -403,7 +406,8 @@ def m3u8_downloader(m3u8_url: str, save_path: [str, os.PathLike, None] = None):
 
 def downloader(client, src_urls_with_filename: list,
                dest_dir: [os.PathLike, str, None] = None,
-               display: [bool, None] = None) -> dict:
+               display: [bool, None] = None,
+               force: bool = False) -> dict:
     assert isinstance(client, httpx.Client)
     assert len(src_urls_with_filename) > 0 and len(src_urls_with_filename[0]) == 2
     dest_dir = os.getcwd() if dest_dir is None else dest_dir
@@ -417,6 +421,8 @@ def downloader(client, src_urls_with_filename: list,
             if filename is None:
                 filename = src_url.split("/")[-1] if filename is None else filename
                 filename = os.path.join(dest_dir, filename)
+            if force is False and os.path.isfile(filename):
+                continue
             try:
                 with client.stream("GET", src_url) as resp:
                     if resp.status_code // 100 != 2:
@@ -443,6 +449,9 @@ def downloader(client, src_urls_with_filename: list,
                         resp = downloader(client, [(new_url, filename)])
                         if all(list(resp.values())):
                             break
+                continue
+            except ValueError as e:
+                print("ValueError:", f"{src_url=}")
                 continue
             except KeyboardInterrupt:
                 if os.path.isfile(filename):
@@ -652,8 +661,8 @@ def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] =
     def display_tui(data):
         filesize = int(data.get('total_size', 0))
         infos = f" 已录制 {data.get('out_time', '00:00:00.000000')}\r\n " \
-                f" 比特率: {data.get('bitrate', '???')}   " \
-                f"大小: {sizeof_fmt(filesize): >6} "
+                f" 比特率: {data.get('bitrate', '???')}  " \
+                f" 大小: {sizeof_fmt(filesize): >6} "
         record_panel = Panel(Text(infos, justify='center'),
                              title=f"AcLive({live_obj.uid})@{time_now}.mp4",
                              border_style='red', width=50, style="black on white")
@@ -719,9 +728,15 @@ def update_js_data(save_root: [os.PathLike, str]):
     return os.path.isfile(saver_data_path)
 
 
-def create_py_http_server_bat(save_root: [os.PathLike, str]):
-    cmd = "@echo off\nstart http://127.0.0.1:666\npython -m http.server 666\n"
-    bat_path = os.path.join(save_root, "pyHttpServer.bat")
+def create_http_server_bat(save_root: [os.PathLike, str]):
+    bat_path = os.path.join(save_root, "CivetWeb.bat")
+    if os.path.isfile(bat_path) is True:
+        return True
+    cmd = "@echo off\nstart http://127.0.0.1:666/index.html\n" \
+          "if exist CivetWeb64.exe (\n    CivetWeb64.exe -listening_ports 666" \
+          "\n) else if exist CivetWeb32.exe (\n    CivetWeb32.exe -listening_ports 666" \
+          "\n) else (\n    echo 需要CivetWeb64.exe或CivetWeb32.exe，赶紧去下载一个" \
+          "\n    start https://github.com/civetweb/civetweb/releases\n    pause\n)"
     with open(bat_path, 'w') as bat:
         bat.write(cmd)
     return os.path.isfile(bat_path)

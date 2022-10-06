@@ -1,7 +1,5 @@
 # coding=utf-8
-import os
-import zipfile
-from .utils import downloader, saver_template, SaverData, update_js_data, create_py_http_server_bat
+from .utils import os, zipfile, json, downloader, saver_template, SaverData, update_js_data, create_http_server_bat
 from .bangumi import BangumiSaver
 from .video import VideoSaver
 from .article import ArticleSaver
@@ -25,7 +23,6 @@ class AcSaver:
 
     def loading(self):
         update_js_data(self.local.root_path)
-        create_py_http_server_bat(self.local.root_path)
 
     def BangumiSaver(self, ac_obj):
         return BangumiSaver(self.acer, ac_obj)
@@ -71,12 +68,18 @@ class SaverLocal:
         self.loading()
 
     def history(self):
-        pass
+        saver_data_path = os.path.join(self.root_path, "data.js")
+        if os.path.isfile(saver_data_path) is False:
+            return None
+        with open(saver_data_path, 'r') as js_string:
+            saver_data = json.loads(js_string.read()[12:-1])  # let AcSaver=.....;
+        return saver_data
 
     def loading(self):
         self._folder_check()
         self._assets_check()
         self._page_check()
+        create_http_server_bat(self.root_path)
         pass
 
     def _folder_check(self):
