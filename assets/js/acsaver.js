@@ -1,6 +1,7 @@
 
 
 let lazyLoadInstance, gallery, player,
+    is_ONLINE = window.navigator.onLine,
     is_LOCAL = window.location.protocol === "file:",
     is_MAIN = null,
     LOADED = {bangumi:{},article:{},video:{},live:{},moment:{},comment:[],danmaku: {}},
@@ -163,7 +164,7 @@ let lazyLoadInstance, gallery, player,
             "player_info": "<p><span>✔️</span>已使用<a href='https://dplayer.diygod.dev/zh/' target='_blank'>DPlayer</a>播放器，可以加载本地弹幕</p>",
             "player_warning": "" +
                 "<p><span>⚠️</span>因为受到<a href='https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS' target='_blank'>浏览器跨域访问限制</a>，无法加载弹幕。如需观看弹幕，请使用http服务。" +
-                "(例如：<a href='https://docs.python.org/zh-cn/3/library/http.server.html#http.server.SimpleHTTPRequestHandler' target='_blank'>python -m http.server</a>)</p>",
+                "(例如：<a href='https://github.com/civetweb/civetweb' target='_blank'>推荐使用 CivetWeb</a>)</p>",
         },
         errMsg: {
             default: "<span>咦？世界线变动了，你好像来到了奇怪的地方。看看缺啥东西了~</span>",
@@ -227,7 +228,7 @@ let lazyLoadInstance, gallery, player,
                     commentAcerAvatarImg = SAVER.utils.createTag("img", 'avatar lazy', [
                         ['alt', commentItem.userId.toString()],
                         ['src', "../../assets/img/defaultAvatar.jpg"],
-                        ['data-src', userPath+commentItem.userId.toString()+'_avatar'],
+                        ['data-src', is_ONLINE?commentItem.userHeadImgInfo.thumbnailImageCdnUrl:(userPath+commentItem.userId.toString()+'_avatar')],
                         ['onerror', "this.src='../../assets/img/defaultAvatar.jpg';"]
                     ]),
                     commentFirstRight = SAVER.utils.createTag("div", "area-comment-right"),
@@ -1258,7 +1259,7 @@ let lazyLoadInstance, gallery, player,
             }else{
                 if(window.location.pathname==='/'){window.location.href="/index.html";return false;}
                 if(topPages.indexOf(pathinfo.slice(-1)[0])>-1){is_MAIN = true;}
-                else if(pathinfo.length===4){is_MAIN = false;}
+                else if(pathinfo.length>=4){is_MAIN = false;}
             }
             SAVER.jsLoader((is_MAIN?"":"../../")+"assets/js/config.js", function () {
                 if(is_MAIN===true){
