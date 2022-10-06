@@ -1,0 +1,31 @@
+{% extends "part/main.html" %}{% set main_style = "margin: 60px 0 0;" %}
+
+{% block main %}
+<div class="ac-rank-wrapper">
+    <div class="header">
+        <div class="header__content">
+            <a class="header__logo"></a>
+            <div class="header__rank-banner">
+                <div class="text-wrapper">
+                    <a href="/" class="text--ac">AcFun</a>
+                    <span class="text--rank">Cache</span>
+                </div>
+                <h1>近期保存</h1>
+            </div>
+        </div>
+    </div>
+{#    <div class="filter"></div>#}
+    <div class="rlist" id="ac-list">
+        <div class="rlist__banner">
+            <div class="rlist__title rlist__title--rank">
+                <p class="rlist__text--cn">内容</p>
+                <p class="rlist__text--en">Shows</p>
+            </div>
+            <div class="rlist__title rist__title--author">
+                <p class="rlist__text--cn">Up主</p>
+                <p class="rlist__text--en">Author</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}

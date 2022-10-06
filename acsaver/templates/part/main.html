@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referer" content="{{ main.referer }}">
+    <title>AcFun近期保存{{ main.title }} - AcSaver</title>
+    <link type="image/ico" rel="shortcut icon" href="assets/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="assets/css/{{ main.name }}.css"/>
+</head>
+<body>
+    <div id="app">
+        <div class="layout">
+            {% include "part/main_header.html" %}
+            <main{% if main_style %} style="{{ main_style }}"{% endif %}>
+            {% block main %}
+            {% endblock main %}
+            </main>
+        </div>
+    </div>
+{% include "part/main_footer.html" %}
+{% include "part/main_toolbar.html" %}
+<script type="text/javascript" src="assets/js/acsaver.js"></script>
+</body>
+</html>

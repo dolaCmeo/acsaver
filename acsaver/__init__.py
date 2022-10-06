@@ -1,12 +1,17 @@
 # coding=utf-8
-from .utils import os, zipfile, json, downloader, saver_template, SaverData, update_js_data, create_http_server_bat
 from .bangumi import BangumiSaver
 from .video import VideoSaver
 from .article import ArticleSaver
 from .moment import MomentSaver
 from .live import LiveSaver
+from .utils import os, json, zipfile, SaverData, downloader, \
+    saver_template, update_js_data, create_http_server_bat, live_recorder
 
 __author__ = 'dolacmeo'
+__all__ = (
+    "AcSaver",
+    "SaverLocal"
+)
 
 
 class AcSaver:
@@ -137,16 +142,17 @@ class SaverLocal:
 
     def _page_check(self):
         index_names = [
-            'index',  # 首页
-            'anime',  # 番剧
-            'feed',  # 动态
-            # 用户
+            ['index', '内容', 'https://www.acfun.cn/'],
+            ['anime', '番剧', 'https://www.acfun.cn/bangumilist'],
+            ['feed', '动态', 'https://www.acfun.cn/member/feeds'],
+            # 直播
         ]
-        for page in index_names:
+        for page, title, referer in index_names:
             index_html_path = os.path.join(self.root_path, f'{page}.html')
             if os.path.isfile(index_html_path) is False:
                 templates = saver_template()
-                index_html = templates.get_template(f'{page}.html').render()
+                index_html = templates.get_template(f'{page}.html').render(
+                    main=dict(zip(["name", "title", "referer"], [page, title, referer])))
                 with open(index_html_path, 'wb') as index_file:
                     index_file.write(index_html.encode())
         return True

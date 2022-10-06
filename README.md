@@ -28,9 +28,11 @@ acfunsdk是 **非官方的 [AcFun弹幕视频网][acfun.cn]** Python库。
 **依赖: 包含在 `requirements.txt` 中**
 
 下载及html页面渲染:
++ [`acfunsdk`](https://pypi.org/project/acfunsdk/)`>=0.9.5`
 + [`filetype`](https://pypi.org/project/filetype/)`>=1.1`
 + [`jinja2`](https://pypi.org/project/jinja2/)`>=3.1`
-+ [`emoji`](https://pypi.org/project/emoji/)`>=2`
++ [`rich`](https://pypi.org/project/rich/)`>=12.5`
++ [`click`](https://pypi.org/project/click/)`>=8.1`
 
 </details>
 

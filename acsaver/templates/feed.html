@@ -1,0 +1,22 @@
+{% extends "part/main.html" %}{% set main_style = "margin: 60px 0 0;" %}
+
+{% block main %}
+<div class="ac-member">
+    <div class="ac-member-main">
+        <div class="ac-member-feeds">
+            <div class="ac-member-feeds-header ac-tabs">
+                <ul class="ac-tabs-nav"></ul>
+                <div class="ac-tabs-container">
+                    <div class="ac-tabs-panel">
+                        <div class="feeds-panel" is-active="true">
+                            <div id="feed-loading" class="loading" style="display:none;"><img src="assets/img/loading.gif">Loading...</div>
+                            <div class="observer" style=""></div>
+                            <div class="ac-back-top" style="display:none;"><span class="ac-icon"><i class="iconfont"></i></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}

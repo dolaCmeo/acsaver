@@ -56,4 +56,6 @@ class LiveSaver(SaverBase):
         self._save_raw()
         self.live_raw_save()
         self._record_live()
+        # 记录弹幕
+        # 保存直播信息
         # self.update_js_data()
