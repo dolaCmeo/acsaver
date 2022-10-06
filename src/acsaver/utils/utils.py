@@ -732,11 +732,14 @@ def create_http_server_bat(save_root: [os.PathLike, str]):
     bat_path = os.path.join(save_root, "CivetWeb.bat")
     if os.path.isfile(bat_path) is True:
         return True
-    cmd = "@echo off\nstart http://127.0.0.1:666/index.html\n" \
-          "if exist CivetWeb64.exe (\n    CivetWeb64.exe -listening_ports 666" \
-          "\n) else if exist CivetWeb32.exe (\n    CivetWeb32.exe -listening_ports 666" \
-          "\n) else (\n    echo 需要CivetWeb64.exe或CivetWeb32.exe，赶紧去下载一个" \
-          "\n    start https://github.com/civetweb/civetweb/releases\n    pause\n)"
+    cmd = "@echo off\n" \
+          "if exist CivetWeb64.exe (set \"exename=CivetWeb64.exe\" & goto run\n" \
+          ") else if exist CivetWeb32.exe (set \"exename=CivetWeb32.exe\" & goto run\n" \
+          ") else (echo \"需要CivetWeb64.exe或CivetWeb32.exe，赶紧去下载一个\" " \
+          "& start https://github.com/civetweb/civetweb/releases & pause)\n" \
+          ":run\nstart http://127.0.0.1:666/index.html\n" \
+          "tasklist /fi \"ImageName eq %exename%\" /fo csv 2>NUL | find /I \"%exename%\">NUL\n" \
+          "if \"%ERRORLEVEL%\"==\"1\" (start %exename% -listening_ports 666)\ngoto end"
     with open(bat_path, 'w') as bat:
         bat.write(cmd)
     return os.path.isfile(bat_path)
