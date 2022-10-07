@@ -51,7 +51,7 @@ class AcSaver:
         return getattr(self, s)(ac_obj)
 
     def resource(self, rtype: int, rid: int):
-        obj = self.acer.resource(rtype, rid)
+        obj = self.acer.acfun.resource(rtype, rid)
         if obj is None:
             return None
         return self._get_saver(obj)

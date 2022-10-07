@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "acsaver"
-version = "0.1.0"
+version = "0.1.1"
 description = "acfunsdk - AcSaver"
 license = "MIT"
 authors = ["dolacmeo <dolacmeo@gmail.com>"]
