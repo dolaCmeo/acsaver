@@ -44,7 +44,7 @@ class AcSaver:
     def LiveSaver(self, ac_obj):
         return LiveSaver(self.acer, ac_obj)
 
-    def _get_saver(self, ac_obj):
+    def get_saver(self, ac_obj):
         s = SaverData.ac_saver_map.get(ac_obj.__class__.__name__)
         if s is None:
             return None
@@ -54,13 +54,13 @@ class AcSaver:
         obj = self.acer.acfun.resource(rtype, rid)
         if obj is None:
             return None
-        return self._get_saver(obj)
+        return self.get_saver(obj)
 
     def get(self, url_str: str):
         obj = self.acer.get(url_str)
         if obj is None:
             return None
-        return self._get_saver(obj)
+        return self.get_saver(obj)
 
 
 class SaverLocal:

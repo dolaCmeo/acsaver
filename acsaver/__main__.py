@@ -1,7 +1,7 @@
 # coding=utf-8
 import click
 from acfunsdk import Acer
-from . import AcSaver, live_recorder
+from acsaver import AcSaver, live_recorder
 
 __author__ = 'dolacmeo'
 
