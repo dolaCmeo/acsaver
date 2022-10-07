@@ -1089,44 +1089,46 @@ let lazyLoadInstance, gallery, player,
                     ], RAW.user.name),
                     up_verify = SAVER.utils.createTag("div", "verify"),
                     create_time = SAVER.utils.createTag("span", "feed-time", [], RAW.createTime);
-                RAW.user.verifiedTypes.forEach(function (i) {
-                    let vIcon = SAVER.utils.createTag("span", "ac-icon ac-icon-small"), vInfo;
-                    switch (i) {
-                        case 1:
-                            vInfo = [
-                                ["src", "assets/img/icon_monkey_new.svg"],
-                                ["title", "AcFun管理员认证"],
-                            ];
-                            break;
-                        case 2:
-                            vInfo = [
-                                ["src", "assets/img/icon_v.svg"],
-                                ["title", "AcFun官方认证"],
-                            ];
-                            break;
-                        case 3:
-                            vInfo = [
-                                ["src", "assets/img/icon_avi.svg"],
-                                ["title", "AVI虚拟偶像标识"],
-                            ];
-                            break;
-                        case 4:
-                            vInfo = [
-                                ["src", "assets/img/icon_gjdm.svg"],
-                                ["title", "高弹达人标识"],
-                            ];
-                            break;
-                        case 5:
-                            vIcon.setAttribute("class", "ac-icon ac-icon-small ac-icon-academy");
-                            vInfo = [
-                                ["src", "assets/img/icon_up.svg"],
-                                ["title", "阿普学院标志"],
-                            ];
-                            break;
-                    }
-                    vIcon.append(SAVER.utils.createTag("img", "icon-img", vInfo));
-                    up_verify.append(vIcon);
-                });
+                if(RAW.user.verifiedTypes){
+                    RAW.user.verifiedTypes.forEach(function (i) {
+                        let vIcon = SAVER.utils.createTag("span", "ac-icon ac-icon-small"), vInfo;
+                        switch (i) {
+                            case 1:
+                                vInfo = [
+                                    ["src", "assets/img/icon_monkey_new.svg"],
+                                    ["title", "AcFun管理员认证"],
+                                ];
+                                break;
+                            case 2:
+                                vInfo = [
+                                    ["src", "assets/img/icon_v.svg"],
+                                    ["title", "AcFun官方认证"],
+                                ];
+                                break;
+                            case 3:
+                                vInfo = [
+                                    ["src", "assets/img/icon_avi.svg"],
+                                    ["title", "AVI虚拟偶像标识"],
+                                ];
+                                break;
+                            case 4:
+                                vInfo = [
+                                    ["src", "assets/img/icon_gjdm.svg"],
+                                    ["title", "高弹达人标识"],
+                                ];
+                                break;
+                            case 5:
+                                vIcon.setAttribute("class", "ac-icon ac-icon-small ac-icon-academy");
+                                vInfo = [
+                                    ["src", "assets/img/icon_up.svg"],
+                                    ["title", "阿普学院标志"],
+                                ];
+                                break;
+                        }
+                        vIcon.append(SAVER.utils.createTag("img", "icon-img", vInfo));
+                        up_verify.append(vIcon);
+                    });
+                }
                 up_link.append(up_avatar_img);
                 up_avatar.append(up_link);
                 feed_up.append(up_avatar);
