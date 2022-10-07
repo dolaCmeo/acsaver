@@ -13,16 +13,16 @@ class LiveSaver(SaverBase):
 
     @property
     def begin_time(self):
-        if self.ac_obj.live.is_open is False:
-            return None
-        return self.ac_obj.live.start_time.replace("-", "").replace(":", "").replace(" ", "")
+        if self.ac_obj.past_time > 0:
+            return self.ac_obj.live.start_time.replace("-", "").replace(":", "").replace(" ", "")
+        return None
 
     @property
     def save_dir(self):
         return os.path.join(self._save_path, self.begin_time)
 
     def live_raw_save(self):
-        if self.ac_obj.live.is_open is False:
+        if self.ac_obj.past_time == -1:
             return False
         os.makedirs(self.save_dir, exist_ok=True)
         url_name = f"{self.ac_obj.live.raw_data.get('caption', '@'+self.ac_obj.username)}"
@@ -55,7 +55,10 @@ class LiveSaver(SaverBase):
     def save_all(self):
         self._save_raw()
         self.live_raw_save()
-        self._record_live()
+        if self.ac_obj.past_time > 0:
+            self._record_live()
+        else:
+            print(f"Live is CLOSED.")
         # 记录弹幕
         # 保存直播信息
         # self.update_js_data()
