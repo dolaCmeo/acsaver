@@ -220,7 +220,8 @@ class SaverBase:
                     pp.update(get_member, advance=1)
                     done.append(uid)
                     continue
-                user_req = self.acer.client.get(AcSource.apis['userInfo'], params=dict(userId=uid))
+                api_url = "https://www.acfun.cn/rest/pc-direct/user/userInfo"
+                user_req = self.acer.client.get(api_url, params=dict(userId=uid))
                 user_data = user_req.json()
                 profile = user_data.get('profile')
                 user_json = os.path.join(member_dir, f"{uid}.json")

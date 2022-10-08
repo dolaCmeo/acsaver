@@ -1,7 +1,6 @@
 # coding=utf-8
 import os.path
 from dataclasses import dataclass
-from acfunsdk.source import AcSource
 
 __author__ = 'dolacmeo'
 
@@ -65,11 +64,11 @@ class SaverData:
         "jump": r"(\[time duration=(\d+)\]([^\[]+)\[/time\])",
     }
     ubb_resource_url = {
-        "1": AcSource.routes['bangumi'],
-        "2": AcSource.routes['video'],
-        "3": AcSource.routes['article'],
-        "4": AcSource.routes['album'],
-        "5": AcSource.routes['up']
+        "1": f"https://www.acfun.cn/bangumi/aa",
+        "2": f"https://www.acfun.cn/v/ac",
+        "3": f"https://www.acfun.cn/a/ac",
+        "4": f"https://www.acfun.cn/a/aa",
+        "5": f"https://www.acfun.cn/u/",
     }
     ubb_resource_icon = {
         "1": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_video_pc.png\">',

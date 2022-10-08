@@ -15,24 +15,33 @@ acfunsdk是 **非官方的 [AcFun弹幕视频网][acfun.cn]** Python库。
 
 > `acsaver` 是`acfunsdk`的附属组件，提供内容离线保存支持。
 
+**‼需要`ffmpeg`**  主要用于下载视频。
+> 建议去官网下载 https://ffmpeg.org/download.html
+>
+> 可执行文件 `ffmpeg` `ffprobe` 需要加入到环境变量，或复制到运行根目录。
+
 - - -
 
 
 <details>
 <summary>依赖库</summary>
 
->内置+修改: 位于 `libs` 文件夹内
->
->+ [`ffmpeg_progress_yield`](https://github.com/slhck/ffmpeg-progress-yield)
-
 **依赖: 包含在 `requirements.txt` 中**
 
-下载及html页面渲染:
 + [`acfunsdk`](https://pypi.org/project/acfunsdk/)`>=0.9.5`
+
+下载及html页面渲染:
 + [`filetype`](https://pypi.org/project/filetype/)`>=1.1`
 + [`jinja2`](https://pypi.org/project/jinja2/)`>=3.1`
++ [`pillow`](https://pypi.org/project/pillow/)`>=9.1`
+
+命令行及输出控制:
 + [`rich`](https://pypi.org/project/rich/)`>=12.5`
 + [`click`](https://pypi.org/project/click/)`>=8.1`
+
+>内置+修改: 位于 `utils` 文件夹内
+>
+>+ [`ffmpeg_progress_yield`](https://github.com/slhck/ffmpeg-progress-yield)
 
 </details>
 

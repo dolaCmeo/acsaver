@@ -20,7 +20,6 @@ from rich.panel import Panel
 from rich.live import Live
 from rich.progress import Progress
 from jinja2 import PackageLoader, Environment
-from acfunsdk.source import AcSource
 from .ffmpeg_progress_yield import FfmpegProgress
 from .source import SaverData
 
@@ -39,7 +38,6 @@ __all__ = (
     "Live",
     "Progress",
     "Bs",
-    "AcSource",
     "SaverData",
     "FfmpegProgress",
     "saver_template",
@@ -240,7 +238,6 @@ def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: i
         return None
     if len(danmaku_data) == 0:
         return None
-    thisVideoInfo = AcSource.videoQualitiesRefer[vq]
     thisVideoWidth = quality_data['width']
     thisVideoHeight = quality_data['height']
     thisDuration = 10
@@ -469,48 +466,15 @@ def downloader(client, src_urls_with_filename: list,
 
 
 def tans_uub2html(src: str, save_path: str) -> tuple:
-    ubb_tag_basic = {
-        r"\r\n": "<br>",
-        "[b]": "<b>", "[/b]": "</b>",
-        "[i]": "<i>", "[/i]": "</i>",
-        "[u]": "<u>", "[/u]": "</u>",
-        "[s]": "<s>", "[/s]": "</s>",
-        "[/color]": r"</color>"
-    }
-    ubb_tag_rex = {
-        "color": r"(\[color=(#[a-f0-9]{6})\])",
-        "size": r"(\[size=(\d+px)\]([^\[]+)\[/size\])",
-        "emot": r"(\[emot=acfun,(\S+?)\/])",
-        "emot_old": r"(\[emot=([a-z0-9]+),(\S+?)\/])",
-        "image": r"(\[img=\\u56fe\\u7247\]([^\[]*)\[\/img\])",
-        "at": r"(\[at uid=(\d+)\](@[^\[]+)\[/at\])",
-        "at_old": r"(\[at\]([^\[]+)\[/at\])",
-        "resource": r"(\[resource id=(\d+) type=([1-5]) icon=[^\]]*\]([^\[]*)\[\/resource\])",
-        "jump": r"(\[time duration=(\d+)\]([^\[]+)\[/time\])",
-    }
-    ubb_resource_url = {
-        "1": AcSource.routes['bangumi'],
-        "2": AcSource.routes['video'],
-        "3": AcSource.routes['article'],
-        "4": AcSource.routes['album'],
-        "5": AcSource.routes['up']
-    }
-    ubb_resource_icon = {
-        "1": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_video_pc.png\">',
-        "2": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_pc_vid_18_3.png\">',
-        "3": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_popup_article_pc.png\">',
-        "4": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_heji_pc.png\">',
-        "5": r'<img class=\"ubb-icon\" src=\"../../assets/img/icon_comment_human_pc.png\">',
-    }
     root_path = os.path.dirname(os.path.dirname(save_path))
     emot_map_path = os.path.join(root_path, 'assets', 'emot', 'emotion_map.json')
     emot_map = json.load(open(emot_map_path, 'r'))
     # 基础替换：换行,加粗,斜体,下划线,删除线,颜色结尾
-    for ubb, tag in ubb_tag_basic.items():
+    for ubb, tag in SaverData.ubb_tag_basic.items():
         src = src.replace(ubb, tag)
     # 正则替换：颜色,表情,图片
     img_task = list()
-    for n, rex_rule in ubb_tag_rex.items():
+    for n, rex_rule in SaverData.ubb_tag_rex.items():
         for tag in re.compile(rex_rule).findall(src):
             if n == 'color':
                 src = src.replace(tag[0], f'<font color=\\"{tag[1]}\\">')
@@ -539,9 +503,9 @@ def tans_uub2html(src: str, save_path: str) -> tuple:
             elif n == 'resource':
                 resource_a = '<a class=\\"ubb-ac\\" data-aid=\\"{ac_num}\\" href=\\"{href}\\" target=\\"_blank\\">{title}</a>'
                 src = src.replace(
-                    tag[0], ubb_resource_icon[tag[2]] + resource_a.format(
+                    tag[0], SaverData.ubb_resource_icon[tag[2]] + resource_a.format(
                         ac_num=tag[1],
-                        href=ubb_resource_url[tag[2]] + tag[1],
+                        href=SaverData.ubb_resource_url[tag[2]] + tag[1],
                         title=tag[3]
                     ))
     # for tag in re.compile(r"(\[([^\]]+)\])").findall(src):
@@ -736,7 +700,7 @@ def create_http_server_bat(save_root: [os.PathLike, str]):
           "if exist CivetWeb64.exe (set \"exename=CivetWeb64.exe\" & goto run\n" \
           ") else if exist CivetWeb32.exe (set \"exename=CivetWeb32.exe\" & goto run\n" \
           ") else (echo \"需要CivetWeb64.exe或CivetWeb32.exe，赶紧去下载一个\" " \
-          "& start https://github.com/civetweb/civetweb/releases & pause)\n" \
+          "& start https://github.com/civetweb/civetweb/releases/latest & pause)\nexit\n" \
           ":run\nstart http://127.0.0.1:666/index.html\n" \
           "tasklist /fi \"ImageName eq %exename%\" /fo csv 2>NUL | find /I \"%exename%\">NUL\n" \
           "if \"%ERRORLEVEL%\"==\"1\" (start %exename% -listening_ports 666)\ngoto end"
