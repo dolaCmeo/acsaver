@@ -515,7 +515,7 @@ reference = 'aliyun.mirrors'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "6384a434949736d7ab4846564dd4b3400a535aa2e02a9a0cdd084b91b45558b6"
+content-hash = "6b8f8879098cce7d5c8c16571326dfcefce615ec1ab98e2b876c9c3cc407ecf7"
 
 [metadata.files]
 acfunsdk = [
