@@ -22,6 +22,7 @@ from rich.progress import Progress
 from jinja2 import PackageLoader, Environment
 from .ffmpeg_progress_yield import FfmpegProgress
 from .source import SaverData
+from acfunsdk.page.utils import emoji_cleanup
 from importlib.metadata import version as pip_version
 from importlib.metadata import PackageNotFoundError
 exts = {}
@@ -65,6 +66,7 @@ __all__ = (
     "tans_uub2html",
     "tans_comment_uub2html",
     "live_recorder",
+    "live_danmaku_logger",
     "update_js_data",
     "create_http_server_bat"
 )
@@ -662,20 +664,23 @@ def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] =
 def live_danmaku_logger(live_uid: int, save_path: [os.PathLike, str]):
     assert exts.get('acfunsdk-ws', False) is True
     assert os.path.isdir(save_path) is True
+    console = Console()
 
     def display_tui(log_path, title: str = ""):
-        log_file = open(log_path, "r", encoding="utf8")
-        title = title if len(title) else os.path.basename(log_path)
-        last = log_file.readlines()[-1].split('\t')
-        infos = f" 已记录条数: {len(log_file.readlines())}\r\n " \
-                f" 最后一条: {last[-1]}  "
-        record_panel = Panel(Text(infos, justify='center'), title=f"AcLive({title})",
-                             border_style='red', width=50, style="black on white")
-        log_file.close()
-        return Align.center(record_panel)
+        with open(log_path, "r", encoding="utf8") as log_file:
+            title = title if len(title) else os.path.basename(log_path)
+            total = log_file.read().count('\n')
+            log_file.seek(0)
+            last = log_file.readlines()[-1].split('\t')
+            last = emoji_cleanup(":".join(last[1:]))[:76]
+            infos = f" 已记录条数: {total}\r\n " \
+                    f" {last}  "
+            record_panel = Panel(Text(infos, justify='center'),
+                                 title=f"AcLive({title})",
+                                 border_style='red', width=80)
+            return record_panel
 
     class AcLiveDanmakuLogger(AcLiveDanmaku):
-        live_console = Live(console=Console())
 
         def output(self, seq_id: int, command, result):
             if command.startswith("LivePush.") and result:
@@ -686,11 +691,14 @@ def live_danmaku_logger(live_uid: int, save_path: [os.PathLike, str]):
                     return None
                 with open(self.log_file_path, "a", encoding="utf8") as log:
                     log.write("\n" + "\n".join(data))
-                self.live_console.update(display_tui(self.log_file_path))
+                console.print(display_tui(self.log_file_path))
                 return True
 
     live = AcLiveDanmakuLogger()
-    live.enter_room(live_uid, save_path)
+    try:
+        live.enter_room(live_uid, save_path)
+    except KeyboardInterrupt as e:
+        live.close()
     return True
 
 

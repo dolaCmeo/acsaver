@@ -57,6 +57,7 @@ class LiveSaver(SaverBase):
         self.live_raw_save()
         if self.ac_obj.past_time > 0:
             self._record_live()
+            self._live_danmaku_logger()
         else:
             print(f"Live is CLOSED.")
         # 记录弹幕

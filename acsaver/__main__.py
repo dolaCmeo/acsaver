@@ -1,8 +1,8 @@
 # coding=utf-8
 import click
 from acfunsdk import Acer
-from .saver import AcSaver
-from .utils import live_recorder
+from acsaver import AcSaver
+from acsaver.utils import live_recorder, live_danmaku_logger
 
 __author__ = 'dolacmeo'
 
@@ -17,6 +17,8 @@ def cli(cmd_name, url, root, args):
         acer = Acer()
         live_obj = acer.get(args[0]).live
         return live_recorder(live_obj, *args[1:])
+    elif cmd_name == 'live_danmaku':
+        return live_danmaku_logger(int(args[0]), args[1])
     elif cmd_name == "download":
         obj = AcSaver(Acer(), root).get(url)
         return obj.save_all()

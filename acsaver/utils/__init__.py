@@ -148,6 +148,22 @@ class SaverBase:
         ]
         subprocess.Popen(cmd_with_progress, shell=True)
 
+    def _live_danmaku_logger(self):
+        live = self.ac_obj.live
+        if self.ac_obj.past_time < 0:
+            return False
+        cmd_with_progress = [
+            "start", "cmd", "/q", "/k",
+            f"chcp 65001 && mode con cols=86 lines=6 && title AcLive({live.uid}) &&",
+            "python", SaverData.cmd_path,
+            "live_danmaku",
+            "--args",
+            f"{self.ac_obj.uid}",
+            f"{self._save_path}",
+            "0"
+        ]
+        subprocess.Popen(cmd_with_progress, shell=True)
+
     def _save_danmaku(self, num: int = 0, quality: [int, str] = "1080p"):
         this_video = self.ac_obj.video(num)
         vname = self._part_video_name(num)
