@@ -22,6 +22,15 @@ from rich.progress import Progress
 from jinja2 import PackageLoader, Environment
 from .ffmpeg_progress_yield import FfmpegProgress
 from .source import SaverData
+from importlib.metadata import version as pip_version
+from importlib.metadata import PackageNotFoundError
+exts = {}
+try:
+    if pip_version('acfunsdk-ws') >= "0.1.0":
+        from acfunsdk_ws import AcLiveDanmaku
+        exts['acfunsdk-ws'] = True
+except PackageNotFoundError:
+    pass
 
 __author__ = 'dolacmeo'
 __all__ = (
@@ -647,6 +656,41 @@ def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] =
                 tmp.update({r[0]: r[1]})
                 live_console.update(Align.center(display_tui(tmp)))
 
+    return True
+
+
+def live_danmaku_logger(live_uid: int, save_path: [os.PathLike, str]):
+    assert exts.get('acfunsdk-ws', False) is True
+    assert os.path.isdir(save_path) is True
+
+    def display_tui(log_path, title: str = ""):
+        log_file = open(log_path, "r", encoding="utf8")
+        title = title if len(title) else os.path.basename(log_path)
+        last = log_file.readlines()[-1].split('\t')
+        infos = f" 已记录条数: {len(log_file.readlines())}\r\n " \
+                f" 最后一条: {last[-1]}  "
+        record_panel = Panel(Text(infos, justify='center'), title=f"AcLive({title})",
+                             border_style='red', width=50, style="black on white")
+        log_file.close()
+        return Align.center(record_panel)
+
+    class AcLiveDanmakuLogger(AcLiveDanmaku):
+        live_console = Live(console=Console())
+
+        def output(self, seq_id: int, command, result):
+            if command.startswith("LivePush.") and result:
+                if self.live_reader is None:
+                    return None
+                data = self.live_reader(result)
+                if len(data) == 0:
+                    return None
+                with open(self.log_file_path, "a", encoding="utf8") as log:
+                    log.write("\n" + "\n".join(data))
+                self.live_console.update(display_tui(self.log_file_path))
+                return True
+
+    live = AcLiveDanmakuLogger()
+    live.enter_room(live_uid, save_path)
     return True
 
 
