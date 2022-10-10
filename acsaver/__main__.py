@@ -1,4 +1,5 @@
 # coding=utf-8
+import sys
 import click
 from acfunsdk import Acer
 from acsaver import AcSaver
@@ -14,11 +15,15 @@ __author__ = 'dolacmeo'
 @click.option("--args", nargs=3)
 def cli(cmd_name, url, root, args):
     if cmd_name == 'live_recorder':
-        acer = Acer()
-        live_obj = acer.get(args[0]).live
+        live_obj = Acer().get(args[0]).live
         return live_recorder(live_obj, *args[1:])
     elif cmd_name == 'live_danmaku':
-        return live_danmaku_logger(int(args[0]), args[1])
+        try:
+            fin = live_danmaku_logger(Acer(), int(args[0]), args[1])
+            return fin
+        except SystemExit:
+            input("woooooooo")
+            sys.exit()
     elif cmd_name == "download":
         obj = AcSaver(Acer(), root).get(url)
         return obj.save_all()

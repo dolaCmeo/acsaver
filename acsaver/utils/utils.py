@@ -661,44 +661,54 @@ def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] =
     return True
 
 
-def live_danmaku_logger(live_uid: int, save_path: [os.PathLike, str]):
+def live_danmaku_logger(acer, live_uid: int, save_path: [os.PathLike, str]):
     assert exts.get('acfunsdk-ws', False) is True
-    assert os.path.isdir(save_path) is True
+    if os.path.isdir(save_path) is False:
+        raise SystemError(f"{save_path=}")
     console = Console()
-
-    def display_tui(log_path, title: str = ""):
-        with open(log_path, "r", encoding="utf8") as log_file:
-            title = title if len(title) else os.path.basename(log_path)
-            total = log_file.read().count('\n')
-            log_file.seek(0)
-            last = log_file.readlines()[-1].split('\t')
-            last = emoji_cleanup(":".join(last[1:]))[:76]
-            infos = f" 已记录条数: {total}\r\n " \
-                    f" {last}  "
+    with Live(console=console) as screen:
+        def display_tui(log_path, title: str = ""):
+            infos = f" 已连接直播间，等待接收弹幕 \r\n "
+            if os.path.isfile(log_path) is True:
+                with open(log_path, "r", encoding="utf8") as log_file:
+                    title = title if len(title) else os.path.basename(log_path)
+                    total = log_file.read().count('\n')
+                    log_file.seek(0)
+                    last = log_file.readlines()[-1].split('\t')
+                    last = emoji_cleanup(":".join(last[1:]))
+                    infos = f" 已记录条数: {total}\r\n" \
+                            f" {last[:40]} "
             record_panel = Panel(Text(infos, justify='center'),
                                  title=f"AcLive({title})",
-                                 border_style='red', width=80)
-            return record_panel
+                                 border_style='red', width=50, style="black on white")
+            danmaku_info = Align.center(record_panel)
+            return screen.update(danmaku_info)
 
-    class AcLiveDanmakuLogger(AcLiveDanmaku):
+        class AcLiveDanmakuLogger(AcLiveDanmaku):
 
-        def output(self, seq_id: int, command, result):
-            if command.startswith("LivePush.") and result:
-                if self.live_reader is None:
-                    return None
-                data = self.live_reader(result)
-                if len(data) == 0:
-                    return None
-                with open(self.log_file_path, "a", encoding="utf8") as log:
-                    log.write("\n" + "\n".join(data))
-                console.print(display_tui(self.log_file_path))
-                return True
+            def output(self, seq_id: int, command, result):
+                if command.startswith("LivePush.") and result:
+                    if self.live_reader is None:
+                        return None
+                    data = self.live_reader(result)
+                    if len(data) == 0:
+                        return None
+                    with open(self.log_file_path, "a", encoding="utf8") as log:
+                        log.write("\n" + "\n".join(data))
+                    display_tui(self.log_file_path)
+                    return True
 
-    live = AcLiveDanmakuLogger()
-    try:
+            def __exit__(self, exc_type, exc_value, traceback):
+                print(('exit', exc_type, exc_value, traceback))
+                self.close()
+                create_time = self.live_obj.raw_data.get("createTime", 0)
+                with open(os.path.join(save_path, f"{live_uid}_{create_time}.log"), "a", encoding="utf8") as log:
+                    log.write("nonono")
+                return False
+
+        live = AcLiveDanmakuLogger(acer)
+        display_tui(save_path, str(live_uid))
         live.enter_room(live_uid, save_path)
-    except KeyboardInterrupt as e:
-        live.close()
     return True
 
 

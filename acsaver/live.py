@@ -1,5 +1,6 @@
 # coding=utf-8
-from .utils import os, SaverBase, SaverData, url_saver, json_saver, json2js, downloader
+from .utils import os, subprocess, SaverBase, SaverData, \
+    url_saver, json_saver, json2js, downloader
 
 __author__ = 'dolacmeo'
 
@@ -52,6 +53,32 @@ class LiveSaver(SaverBase):
         self._save_member([self.ac_obj.uid])
         return url_saved
 
+    def _record_live(self, quality: [int, str] = -1):
+        live = self.ac_obj.live
+        if live is None:
+            return False
+        if quality in [-1, "-1"]:
+            quality = len(live.representation) - 1
+        cmd_with_progress = [
+            "start", "cmd", "/q", "/k",
+            f"chcp 65001 && mode con cols=49 lines=4 && title AcLive({live.uid}) &&",
+            "python", SaverData.cmd_path, "live_recorder",
+            "--args", f"{self.ac_obj.referer}", f"{self._save_path}", f"{quality}"
+        ]
+        subprocess.Popen(cmd_with_progress, shell=True)
+
+    def _live_danmaku_logger(self):
+        live = self.ac_obj.live
+        if self.ac_obj.past_time < 0:
+            return False
+        cmd_with_progress = [
+            "start", "cmd", "/q", "/k",
+            f"chcp 65001 && mode con cols=49 lines=6 && title AcLive({live.uid}) &&",
+            "python", SaverData.cmd_path, "live_danmaku",
+            "--args", f"{self.ac_obj.uid}", f"{self.save_dir}", "0"
+        ]
+        subprocess.Popen(cmd_with_progress, shell=True)
+
     def save_all(self):
         self._save_raw()
         self.live_raw_save()
@@ -60,6 +87,5 @@ class LiveSaver(SaverBase):
             self._live_danmaku_logger()
         else:
             print(f"Live is CLOSED.")
-        # 记录弹幕
         # 保存直播信息
         # self.update_js_data()

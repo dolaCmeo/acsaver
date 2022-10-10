@@ -131,39 +131,6 @@ class SaverBase:
             download_ok = m3u8_downloader(u, save_path)
         return True
 
-    def _record_live(self, quality: [int, str] = -1):
-        live = self.ac_obj.live
-        if live is None:
-            return False
-        if quality in [-1, "-1"]:
-            quality = len(live.representation) - 1
-        cmd_with_progress = [
-            "start", "cmd", "/q", "/k",
-            f"chcp 65001 && mode con cols=49 lines=4 && title AcLive({live.uid}) &&",
-            "python", SaverData.cmd_path, "live_recorder",
-            "--args",
-            f"{self.ac_obj.referer}",
-            f"{self._save_path}",
-            f"{quality}"
-        ]
-        subprocess.Popen(cmd_with_progress, shell=True)
-
-    def _live_danmaku_logger(self):
-        live = self.ac_obj.live
-        if self.ac_obj.past_time < 0:
-            return False
-        cmd_with_progress = [
-            "start", "cmd", "/q", "/k",
-            f"chcp 65001 && mode con cols=86 lines=6 && title AcLive({live.uid}) &&",
-            "python", SaverData.cmd_path,
-            "live_danmaku",
-            "--args",
-            f"{self.ac_obj.uid}",
-            f"{self._save_path}",
-            "0"
-        ]
-        subprocess.Popen(cmd_with_progress, shell=True)
-
     def _save_danmaku(self, num: int = 0, quality: [int, str] = "1080p"):
         this_video = self.ac_obj.video(num)
         vname = self._part_video_name(num)
