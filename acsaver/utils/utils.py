@@ -67,6 +67,7 @@ __all__ = (
     "tans_comment_uub2html",
     "live_recorder",
     "live_danmaku_logger",
+    "live_danmaku_log_to_json",
     "update_js_data",
     "create_http_server_bat"
 )
@@ -127,7 +128,7 @@ def json2js(src_path: [os.PathLike, str], keyname: str, dest_path: [str, None] =
     return os.path.isfile(dest_path)
 
 
-def json_saver(data: dict, base_path: [os.PathLike, str], filename: str):
+def json_saver(data: [dict, list], base_path: [os.PathLike, str], filename: str):
     file_path = os.path.join(base_path, filename)
     if not file_path.endswith(".json"):
         file_path = f"{file_path}.json"
@@ -196,8 +197,14 @@ def scenes_to_thumbnails(base_path: [os.PathLike, str], filename: str):
 def danmaku2dplayer(folder_path: str, filenameId: str):
     # 检查路径
     assert os.path.isdir(folder_path) is True
-    danmaku_data_path = os.path.join(folder_path, 'data', f"{filenameId}.danmaku.json")
-    assert os.path.isfile(danmaku_data_path) is True
+    data_path = os.path.join(folder_path, 'data')
+    if os.path.isdir(os.path.join(folder_path, 'data')):
+        danmaku_data_path = os.path.join(folder_path, 'data', f"{filenameId}.danmaku.json")
+        assert os.path.isfile(danmaku_data_path) is True
+    else:
+        data_path = folder_path
+        danmaku_data_path = os.path.join(folder_path, f"{filenameId}.danmaku.json")
+        assert os.path.isfile(danmaku_data_path) is True
     danmaku_data = json.load(open(danmaku_data_path, 'rb'))
     dplayer_data = dict(code=0, data=list())
     for danmaku in danmaku_data:
@@ -208,7 +215,7 @@ def danmaku2dplayer(folder_path: str, filenameId: str):
             f"{danmaku['userId']}",
             danmaku['body']
         ])
-    return json_saver(dplayer_data, os.path.join(folder_path, 'data'), f"{filenameId}.dplayer.json")
+    return json_saver(dplayer_data, data_path, f"{filenameId}.dplayer.json")
 
 
 def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: int = 40):
@@ -233,27 +240,53 @@ def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: i
     main_json_name = f"{filenameId}.json"
     if "_" in filenameId:
         main_json_name = f"{filenameId.split('_')[0]}.json"
-    main_data_path = os.path.join(folder_path, 'data', main_json_name)
-    danmaku_data_path = os.path.join(folder_path, 'data', f"{filenameId}.danmaku.json")
-    video_data_path = os.path.join(folder_path, 'data', f"{filenameId}.video.json")
-    assert all([os.path.isfile(main_data_path), os.path.isfile(danmaku_data_path)]) is True
-    main_data = json.load(open(main_data_path, 'rb'))
+    if os.path.isdir(os.path.join(folder_path, 'data')):
+        main_data_path = os.path.join(folder_path, 'data', main_json_name)
+        danmaku_data_path = os.path.join(folder_path, 'data', f"{filenameId}.danmaku.json")
+        video_data_path = os.path.join(folder_path, 'data', f"{filenameId}.video.json")
+    else:
+        main_data_path = os.path.join(folder_path, main_json_name)
+        danmaku_data_path = os.path.join(folder_path, f"{filenameId}.danmaku.json")
+        video_data_path = os.path.join(folder_path, f"{folder_name}.video.json")
+    assert os.path.isfile(danmaku_data_path) is True
+    main_data = json.load(open(main_data_path, 'rb')) if os.path.isfile(main_data_path) else None
     danmaku_data = json.load(open(danmaku_data_path, 'rb'))
     video_data = json.load(open(video_data_path, 'rb'))
-    ks_data = json.loads(video_data['ksPlayJson'])
     quality_data = None
-    for x in ks_data['adaptationSet'][0]['representation']:
-        if x['qualityType'] == vq:
-            quality_data = x
+    if "ksPlayJson" in video_data:
+        ks_data = json.loads(video_data.get("ksPlayJson"))
+        for x in ks_data['adaptationSet'][0]['representation']:
+            if x['qualityType'] == vq:
+                quality_data = x
+    elif "videoPlayRes" in video_data:
+        ks_data = json.loads(video_data.get("videoPlayRes"))
+        for x in ks_data['liveAdaptiveManifest'][0]['adaptationSet']['representation']:
+            if x['qualityType'] == vq:
+                quality_data = x
+    else:
+        return None
     if isinstance(quality_data, dict) is False:
         return None
     if len(danmaku_data) == 0:
         return None
-    thisVideoWidth = quality_data['width']
-    thisVideoHeight = quality_data['height']
+    thisVideoWidth = quality_data.get('width', 1920)
+    thisVideoHeight = quality_data.get('height', 1080)
     thisDuration = 10
     channelNum = math.floor(thisVideoWidth / fontsize)
-    if "dougaId" in main_data:
+    if main_data is None:
+        scriptInfo = "\n".join([
+            "[Script Info]",
+            f"; AcVid: {folder_name}",
+            f"; StreamName: {video_data['caption']}",
+            f"Title: {folder_name} - {video_data['caption']}",
+            f"Original Script: {folder_name} - {video_data['caption']}",
+            "Script Updated By: acfunSDK转换",
+            "ScriptType: v4.00+",
+            "Collisions: Normal",
+            f"PlayResX: {thisVideoWidth}",
+            f"PlayResY: {thisVideoHeight}"
+        ])
+    elif "dougaId" in main_data:
         scriptInfo = "\n".join([
             "[Script Info]",
             f"; AcVid: {folder_name}",
@@ -313,8 +346,9 @@ def danmaku2ass(folder_path: str, filenameId: str, vq: str = "720p", fontsize: i
     def choice_channel(startT, endT):
         # 按新时间移除频道占位
         empty = []
+        bans = [0, 1, 2]
         for i, thisEnd in enumerate(screenChannel):
-            if i in [0, 1]:
+            if i in bans and (channelNum - i) in bans:
                 continue
             elif thisEnd is None:
                 empty.append(i)
@@ -597,7 +631,7 @@ def saver_template(**filters):
     return templates
 
 
-def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] = 0):
+def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] = -1):
     assert live_obj.is_open is True
     if isinstance(quality, str) and quality.isdigit():
         quality = int(quality)
@@ -638,9 +672,10 @@ def live_recorder(live_obj, save_path: [os.PathLike, str], quality: [int, str] =
         infos = f" 已录制 {data.get('out_time', '00:00:00.000000')}\r\n " \
                 f" 比特率: {data.get('bitrate', '???')}  " \
                 f" 大小: {sizeof_fmt(filesize): >6} "
-        record_panel = Panel(Text(infos, justify='center'),
-                             title=f"AcLive({live_obj.uid})@{time_now}.mp4",
-                             border_style='red', width=50, style="black on white")
+        record_panel = Panel(
+            Text(infos, justify='center'),
+            title=f"AcLive({live_obj.uid})@{time_now}.mp4",
+            border_style='red', width=50, style="black on white")
         return record_panel
 
     with Live(console=console) as live_console:
@@ -678,11 +713,10 @@ def live_danmaku_logger(acer, live_uid: int, save_path: [os.PathLike, str]):
                     last = emoji_cleanup(":".join(last[1:]))
                     infos = f" 已记录条数: {total}\r\n" \
                             f" {last[:40]} "
-            record_panel = Panel(Text(infos, justify='center'),
-                                 title=f"AcLive({title})",
-                                 border_style='red', width=50, style="black on white")
-            danmaku_info = Align.center(record_panel)
-            return screen.update(danmaku_info)
+            record_panel = Panel(
+                Text(infos, justify='center'), title=f"AcLive({title})",
+                border_style='red', width=50, style="black on white")
+            return screen.update(Align.center(record_panel))
 
         class AcLiveDanmakuLogger(AcLiveDanmaku):
 
@@ -698,17 +732,44 @@ def live_danmaku_logger(acer, live_uid: int, save_path: [os.PathLike, str]):
                     display_tui(self.log_file_path)
                     return True
 
-            def __exit__(self, exc_type, exc_value, traceback):
-                print(('exit', exc_type, exc_value, traceback))
-                self.close()
-                create_time = self.live_obj.raw_data.get("createTime", 0)
-                with open(os.path.join(save_path, f"{live_uid}_{create_time}.log"), "a", encoding="utf8") as log:
-                    log.write("nonono")
-                return False
-
         live = AcLiveDanmakuLogger(acer)
         display_tui(save_path, str(live_uid))
         live.enter_room(live_uid, save_path)
+    return True
+
+
+def live_danmaku_log_to_json(log_path, live_record_path):
+    assert os.path.isfile(log_path) is True
+    assert os.path.isfile(live_record_path) is True
+    base_path = os.path.dirname(live_record_path)
+    video_date = os.path.basename(live_record_path).split(".")[0]
+    video_unix_start = time.mktime(time.strptime(video_date, '%Y%m%d%H%M%S'))
+    video_unix_start = int(video_unix_start) * 1000
+    ffprobe_params = [
+        "ffprobe", "-v", "error", "-show_entries", "stream=width,height,duration",
+        "-of", "default=noprint_wrappers=1", "-print_format", "json", live_record_path
+    ]
+    p = subprocess.Popen(ffprobe_params, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    media_info = json.loads(p.stdout.read()).get("streams", [None])[0]
+    duration = int(float(media_info['duration']) * 1000)
+    video_unix_end = video_unix_start + duration
+    danmaku_json_data = list()
+    danmaku_file = open(log_path, 'r', encoding='utf8')
+    danmaku_log = danmaku_file.read()
+    danmaku_file.close()
+    for danmaku in danmaku_log.split("\n"):
+        if danmaku.count("\t") == 0:
+            continue
+        ct, uid, content = danmaku.split("\t")
+        if video_unix_start <= int(ct) <= video_unix_end:
+            danmaku_json_data.append({
+                "size": 25, "mode": 1, "danmakuType": 0, "color": 16777215,
+                "createTime": int(ct), "position": int(ct) - video_unix_start,
+                "userId": uid, "body": emoji_cleanup(content),
+            })
+    json_saver(danmaku_json_data, base_path, f"{video_date}.danmaku.json")
+    danmaku2dplayer(base_path, video_date)
+    danmaku2ass(base_path, video_date, "BLUE_RAY")
     return True
 
 

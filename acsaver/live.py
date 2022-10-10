@@ -1,6 +1,6 @@
 # coding=utf-8
-from .utils import os, subprocess, SaverBase, SaverData, \
-    url_saver, json_saver, json2js, downloader
+from .utils import os, json, subprocess, SaverBase, SaverData, \
+    url_saver, json_saver, json2js, downloader, live_danmaku_log_to_json
 
 __author__ = 'dolacmeo'
 
@@ -28,8 +28,8 @@ class LiveSaver(SaverBase):
         os.makedirs(self.save_dir, exist_ok=True)
         url_name = f"{self.ac_obj.live.raw_data.get('caption', '@'+self.ac_obj.username)}"
         url_saved = url_saver(self.ac_obj.referer, self.save_dir, url_name)
-        raw_saved = json_saver(self.ac_obj.live.raw_data, self.save_dir, f"{self.begin_time}")
-        json2js(os.path.join(self.save_dir, f"{self.begin_time}.json"),
+        raw_saved = json_saver(self.ac_obj.live.raw_data, self.save_dir, f"{self.begin_time}.video.json")
+        json2js(os.path.join(self.save_dir, f"{self.begin_time}.video.json"),
                 f"LOADED.live['{self.ac_obj.uid}_{self.begin_time}']")
         downloader(self.acer.client, [(self.ac_obj.cover, os.path.join(self.save_dir, 'cover._'))])
         return all([url_saved, raw_saved])
@@ -79,13 +79,38 @@ class LiveSaver(SaverBase):
         ]
         subprocess.Popen(cmd_with_progress, shell=True)
 
-    def save_all(self):
+    def record(self):
         self._save_raw()
         self.live_raw_save()
         if self.ac_obj.past_time > 0:
             self._record_live()
+            print("已开启一个直播录像窗口")
             self._live_danmaku_logger()
+            print("已开启一个直播弹幕记录窗口")
+            print("提前关闭窗口会导致记录不完整。\n如直播结束则自动关闭。")
         else:
             print(f"Live is CLOSED.")
-        # 保存直播信息
-        # self.update_js_data()
+        return True
+
+    def gen_datas(self, live_start_date_str: [str, None] = None):
+        if live_start_date_str is None:
+            if self.begin_time is None:
+                print(f"Live is CLOSED.")
+                return False
+            base_dir = self.save_dir
+        else:
+            base_dir = os.path.join(self._save_path, live_start_date_str)
+            if os.path.isdir(base_dir) is False:
+                print(f"NOT FOUND: {base_dir=}")
+                return False
+        uid = os.path.basename(os.path.dirname(base_dir))
+        start_date = os.path.basename(base_dir)
+        vdata = json.load(open(os.path.join(base_dir, f"{start_date}.video.json"), "r"))
+        start_unix = vdata.get("liveStartTime")
+        danmaku_log_path = os.path.join(base_dir, f"{uid}_{start_unix}.log")
+        videos = [x for x in os.listdir(base_dir) if x.endswith(".mp4")]
+        for video in videos:
+            video_path = os.path.join(base_dir, video)
+            print(f"{video_path=}")
+            live_danmaku_log_to_json(danmaku_log_path, video_path)
+        return True
