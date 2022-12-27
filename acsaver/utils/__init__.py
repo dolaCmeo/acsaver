@@ -111,15 +111,6 @@ class SaverBase:
         m3u8_url = this_video.m3u8_url(quality, False)
         vname = self._part_video_name(num)
         json_saver(this_video.raw_data, self._data_path, f"{vname}.video.json")
-        scenes_data = this_video.scenes
-        if isinstance(scenes_data, dict):
-            json_saver(scenes_data, self._data_path, f"{vname}.scenes.json")
-            scenes_to_thumbnails(self._save_path, vname)
-        else:
-            ffmpeg_gen_thumbnails(self._save_path, vname)
-        hotspot_data = this_video.hotspot
-        if isinstance(hotspot_data, dict):
-            json_saver(hotspot_data, self._data_path, f"{vname}.hotspot.json")
         save_path = os.path.join(self._save_path, f"{vname}.mp4")
         if os.path.isfile(save_path):
             return True
@@ -129,6 +120,15 @@ class SaverBase:
             u = m3u8_url[1][retry_count % len(m3u8_url[1])]
             retry_count += 1
             download_ok = m3u8_downloader(u, save_path)
+        hotspot_data = this_video.hotspot
+        if isinstance(hotspot_data, dict):
+            json_saver(hotspot_data, self._data_path, f"{vname}.hotspot.json")
+        scenes_data = this_video.scenes
+        if isinstance(scenes_data, dict):
+            json_saver(scenes_data, self._data_path, f"{vname}.scenes.json")
+            scenes_to_thumbnails(self._save_path, vname)
+        else:
+            ffmpeg_gen_thumbnails(self._save_path, vname)
         return True
 
     def _save_danmaku(self, num: int = 0, quality: [int, str] = "1080p"):
